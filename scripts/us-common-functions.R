@@ -78,8 +78,16 @@ replace_to_space <- function(str) {
 }
 
 
+#---------------------------------#
+#-------   Date and Time   -------#
+#---------------------------------#
+convert_date <- function(data, date_format) {
+  return(as.POSIXct(data, format=date_format))
+}
 
-
+convert_s_interface_date <- function(data) {
+  convert_date(data, s_interface_date_format)
+}
 
 
 #--------------------------#
