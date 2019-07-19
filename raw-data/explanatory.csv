@@ -1,0 +1,6 @@
+Name,Acr,Type,Cluster,MathType,Units
+Perinasal Perspiration,PP,Primary,1,Categorical,^C
+Heart Rate - E4,HR,Primary,2,Categorical,BPM
+Heart Rate - iWatch,HR,Primary,3,Categorical,BPM
+EDA,EDA,Primary,4,Categorical,micro simenns
+Breathing Rate,BR,Primary,5,Categorical,BPM
