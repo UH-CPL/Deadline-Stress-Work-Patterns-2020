@@ -1,0 +1,7 @@
+Session,StartTime,startTimestamp,EndTime,EndTimestamp,Comment
+Break1,1569.275,Mon Feb 18 12:40:20.942 2019,2881.537,Mon Feb 18 13:09:07.204 2019,Talking at phone
+Break2,2881.537,Mon Feb 18 13:10:10.204 2019,2881.537,Mon Feb 18 13:15:15.204 2019,Went outside
+Break3,2881.537,Mon Feb 18 13:15:16.204 2019,4179.078,Mon Feb 18 13:34:30.745 2019,Lunch
+Break4,4430.663,Mon Feb 18 13:36:30.330 2019,6462.883,Mon Feb 18 14:31:30.551 2019,"Went outside, disscussing with postdoc"
+Break5,8082.763,Mon Feb 18 14:38:20.431 2019,17235.93,Mon Feb 18 15:38:40.593 2019,"Went outside, disscussing with postdoc"
+Break6,15842.234,Mon Feb 18 16:41:40.431 2019,17235.93,Mon Feb 18 16:52:05.593 2019,"Went outside, was eating"
