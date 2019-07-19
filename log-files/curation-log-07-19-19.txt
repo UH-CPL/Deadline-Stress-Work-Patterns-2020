@@ -1,0 +1,71 @@
+--- noise reduced pp file found ---
+T001-Day1-Baseline: SUCCESSFUL
+--- noise reduced pp file found ---
+T001-Day1-WorkingSession: SUCCESSFUL
+--- noise reduced pp file found ---
+T001-Day2-Baseline: SUCCESSFUL
+--- noise reduced pp file found ---
+T001-Day2-WorkingSession: SUCCESSFUL
+--- noise reduced pp file found ---
+T001-Day3-Baseline: SUCCESSFUL
+----------------------------------------------------------
+T001-Day3-WorkingSession: ERROR!
+Error in eval(lhs, parent, parent): object 'downsampled_pp_df' not found
+
+
+--- noise reduced pp file found ---
+T001-Day4-Baseline: SUCCESSFUL
+--- noise reduced pp file found ---
+T001-Day4-WorkingSession: SUCCESSFUL
+--- noise reduced pp file found ---
+T003-Day1-Baseline: SUCCESSFUL
+--- noise reduced pp file found ---
+T003-Day1-WorkingSession: SUCCESSFUL
+--- noise reduced pp file found ---
+T003-Day2-Baseline: SUCCESSFUL
+--- noise reduced pp file found ---
+T003-Day2-WorkingSession: SUCCESSFUL
+--- noise reduced pp file found ---
+T003-Day3-Baseline: SUCCESSFUL
+--- noise reduced pp file found ---
+T003-Day3-WorkingSession: SUCCESSFUL
+--- noise reduced pp file found ---
+T003-Day4-Baseline: SUCCESSFUL
+--- noise reduced pp file found ---
+T003-Day4-WorkingSession: SUCCESSFUL
+--- noise reduced pp file found ---
+T005-Day1-Baseline: SUCCESSFUL
+--- noise reduced pp file found ---
+T005-Day1-WorkingSession: SUCCESSFUL
+--- noise reduced pp file found ---
+T005-Day2-Baseline: SUCCESSFUL
+--- noise reduced pp file found ---
+T005-Day2-WorkingSession: SUCCESSFUL
+--- noise reduced pp file found ---
+T005-Day3-Baseline: SUCCESSFUL
+--- noise reduced pp file found ---
+T005-Day3-WorkingSession: SUCCESSFUL
+--- noise reduced pp file found ---
+T005-Day4-Baseline: SUCCESSFUL
+--- noise reduced pp file found ---
+T005-Day4-WorkingSession: SUCCESSFUL
+--- noise reduced pp file found ---
+T005-Day5-Baseline: SUCCESSFUL
+--- noise reduced pp file found ---
+T005-Day5-WorkingSession: SUCCESSFUL
+--- noise reduced pp file found ---
+T007-Day1-Baseline: SUCCESSFUL
+--- noise reduced pp file found ---
+T007-Day1-WorkingSession: SUCCESSFUL
+--- noise reduced pp file found ---
+T007-Day2-Baseline: SUCCESSFUL
+--- noise reduced pp file found ---
+T007-Day2-WorkingSession: SUCCESSFUL
+--- noise reduced pp file found ---
+T007-Day3-Baseline: SUCCESSFUL
+--- noise reduced pp file found ---
+T007-Day3-WorkingSession: SUCCESSFUL
+--- noise reduced pp file found ---
+T007-Day4-Baseline: SUCCESSFUL
+--- noise reduced pp file found ---
+T007-Day4-WorkingSession: SUCCESSFUL
