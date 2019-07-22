@@ -1,5 +1,16 @@
-Session,StartTime,startTimestamp,EndTime,EndTimestamp
-Session 1,16923.16,Sat May 25 15:28:29.127 2019,16923.47,Sat May 25 15:28:29.436 2019
-Session 2,16923.76,Sat May 25 15:28:29.722 2019,16924.03,Sat May 25 15:28:29.995 2019
-Session 3,16924.33,Sat May 25 15:28:30.299 2019,16924.69,Sat May 25 15:28:30.653 2019
-Session 4,16925.19,Sat May 25 15:28:31.158 2019,16925.9,Sat May 25 15:28:31.868 2019
+Session,StartTime,startTimestamp,EndTime,EndTimestamp,Ontologies
+Session 1,16923.16,Sat May 25 10:42:00.127 2019,16923.47,Sat May 25 10:45:40.436 2019,HC - Writing
+Session 2,16923.16,Sat May 25 10:48:00.127 2019,16923.47,Sat May 25 10:50:50.436 2019,C - Reading 
+Session 3,16923.16,Sat May 25 10:50:55.127 2019,16923.47,Sat May 25 11:15:55.436 2019,C - Reading 
+Session 4,16925.19,Sat May 25 11:15:55.127 2019,16923.47,Sat May 25 11:45:05.436 2019,Break Out - Tea/Coffee
+Session 5,16925.19,Sat May 25 11:45:45.127 2019,16923.47,Sat May 25 11:50:40.436 2019,"Listening on Headphone, HC - Writing"
+Session 6,16925.19,Sat May 25 12:11:30.127 2019,16923.47,Sat May 25 12:20:40.436 2019,SP - Talking
+Session 7,16925.19,Sat May 25 12:31:50.127 2019,16923.47,Sat May 25 12:36:25.436 2019,SP - Looking 
+Session 8,16925.19,Sat May 25 12:36:25.127 2019,16923.47,Sat May 25 12:38:30.436 2019,SP - Talking
+Session 9,16925.19,Sat May 25 12:59:10.127 2019,16923.47,Sat May 25 13:47:00.436 2019,Break Out -Other
+Session 10,16925.19,Sat May 25 14:14:15.127 2019,16923.47,Sat May 25 14:20:20.127 2019,SP - Talking
+Session 11,16925.19,Sat May 25 14:20:20.127 2019,16923.47,Sat May 25 14:25:10.127 2019,SP - Looking 
+Session 12,16925.19,Sat May 25 14:25:10.127 2019,16923.47,Sat May 25 14:31:40.127 2019,C - Reading 
+Session 13,16925.19,Sat May 25 14:31:40.127 2019,16923.47,Sat May 25 14:33:07.127 2019,"C - Reading, HC - Writing"
+Session 14,16925.19,Sat May 25 14:53:00.127 2019,16923.47,Sat May 25 15:02:50.127 2019,SP - Talking
+Session 15,16925.19,Sat May 25 17:12:25.127 2019,16923.47,Sat May 25 17:20:10.127 2019,Break Out - Tea/Coffee
