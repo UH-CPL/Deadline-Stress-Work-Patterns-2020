@@ -1,0 +1,30 @@
+Strating Processing...T001-Day1-Baseline
+T001-Day1-Baseline: SUCCESSFUL
+Strating Processing...T001-Day1-WorkingSession
+
+
+T001-Day1-WorkingSession: SUCCESSFUL
+Strating Processing...T001-Day2-Baseline
+T001-Day2-Baseline: SUCCESSFUL
+Strating Processing...T001-Day2-WorkingSession
+
+
+T001-Day2-WorkingSession: SUCCESSFUL
+Strating Processing...T001-Day3-Baseline
+T001-Day3-Baseline: SUCCESSFUL
+Strating Processing...T001-Day3-WorkingSession
+
+
+----------------------------------------------------------
+T001-Day3-WorkingSession: ERROR!
+Error in rbind(deparse.level, ...): numbers of columns of arguments do not match
+
+
+Strating Processing...T001-Day4-Baseline
+T001-Day4-Baseline: SUCCESSFUL
+Strating Processing...T001-Day4-WorkingSession
+----------------------------------------------------------
+T001-Day4-WorkingSession: ERROR!
+Error in `$<-.data.frame`(`*tmp*`, "Ontologies", value = "SP - Talking, Break Out - Other, H-H Interaction"): replacement has 1 row, data has 0
+
+

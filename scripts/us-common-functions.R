@@ -105,3 +105,7 @@ get_matched_file_names <- function(directory, file_pattern) {
   return(list.files(path=directory, pattern=file_pattern, recursive=F))
 }
 
+get_matched_file_names_recursively <- function(directory, file_pattern) {
+  return(list.files(path=directory, pattern=file_pattern, recursive=T))
+}
+

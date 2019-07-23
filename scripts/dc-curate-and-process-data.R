@@ -41,9 +41,10 @@ all_subj_df <- tibble()
 #-------------------------#
 refactor_and_export_all_subj_data <- function() {
   
+  ## VERY BAD CODING!!!
   ## This is for T001 & T003, for whom we only noted the break times
-  all_subj_df[is.na(all_subj_df$Ontologies) & all_subj_df$Treatment=='WS' & all_subj_df$Participant_ID=='T001', ]$Ontologies <<- 'Working'
-  all_subj_df[is.na(all_subj_df$Ontologies) & all_subj_df$Treatment=='WS' & all_subj_df$Participant_ID=='T003', ]$Ontologies <<- 'C - Writing/Reading'
+  # all_subj_df[is.na(all_subj_df$Ontologies) & all_subj_df$Treatment=='WS' & all_subj_df$Participant_ID=='T001', ]$Ontologies <<- 'Working'
+  # all_subj_df[is.na(all_subj_df$Ontologies) & all_subj_df$Treatment=='WS' & all_subj_df$Participant_ID=='T003', ]$Ontologies <<- 'C - Writing/Reading'
   
   
   
@@ -55,7 +56,9 @@ refactor_and_export_all_subj_data <- function() {
            Time,
            Ontologies,
            PP,
-           NR_PP
+           NR_PP,
+           HR,
+           EDA
     )
   
   convert_to_csv(all_subj_df, file.path(curated_data_dir, physiological_data_dir, 'quantitative_df_qc0.csv'))
@@ -87,7 +90,7 @@ get_downsampled_pp <- function(nr_pp_file_name) {
 }
 
 add_ontologies <- function(ontologies_df, pp_df) {
-  write_log_msg(paste(ontologies_df$startTimestamp, " - ", ontologies_df$EndTimestamp, ': ', ontologies_df$Ontologies), curation_log_file)
+  # write_log_msg(paste(ontologies_df$startTimestamp, " - ", ontologies_df$EndTimestamp, ': ', ontologies_df$Ontologies), curation_log_file)
   
   if("Ontologies" %in% colnames(ontologies_df)) {
     ont_start_time <- convert_s_interface_date(ontologies_df$startTimestamp)
@@ -145,8 +148,66 @@ get_session_abbr <- function(session_name) {
   }
 }
 
+
+get_e4_data <- function(day_dir, e4_file_name) {
+  e4_df <- read_csv(file.path(day_dir, e4_file_name), col_names=F, col_types = cols())
+  
+  
+  ## 1st row indicates the start time
+  timestamp <- as.numeric(e4_df[1, 1]) 
+  
+  ## 2nd row indicates the rate of the signal
+  rate <- as.numeric(e4_df[2, 1]) 
+  
+  ## The actual signal starts from 3rd row
+  e4_df <- e4_df[-(1:2), ]
+  
+  
+  timestamp_vector <- c(timestamp)
+  if (rate==1) { 
+    ## Sample rate is 1 - just add a CovertedTime timestamp
+    for (i in 1:nrow(e4_df)) { 
+      timestamp_vector <- c(timestamp_vector, timestamp + i) 
+    } 
+    
+  } else { 
+    ## Sample rate is not 1 - take mean for every `rate` values, then add a CovertedTime timestamp 
+    for (i in 1:round(nrow(e4_df)/rate)) { 
+      e4_df[i, ] <- sum(e4_df[(rate * (i - 1) + 1):(rate * i), ])/rate 
+      timestamp_vector <- c(timestamp_vector, timestamp + i) 
+    }
+    
+    ## list is one element too large after the loop, so we delete the final element 
+    # timestamp_vector <- timestamp_vector[-length(timestamp_vector)] 
+    message(nrow(e4_df))
+    e4_df <- e4_df[1:round(nrow(e4_df)/rate), ] 
+    message(nrow(e4_df))
+  } 
+  
+  ## list is one element too large after the loop, so we delete the final element 
+  timestamp_vector <- timestamp_vector[-length(timestamp_vector)] 
+  
+  colnames(e4_df) <- c(sub('.csv', '', sub('.*/', '', e4_file_name)) )
+  e4_df$Timestamp <- as.POSIXct(timestamp_vector, origin='1970-01-01', tz='America/Chicago') # timestamp with Houston timezone 
+  e4_df <- data.frame(e4_df)
+  
+  # message(str(e4_df))
+  # message(str(merged_df))
+  
+  
+  ## TIMEZONE BUG FIX 
+  # if (!subj_name %in% bad_eda_subj_list) {
+  #   if (as.numeric(e4_df$CovertedTime[1] - merged_df$CovertedTime[1]) > 1) { 
+  #     e4_df$CovertedTime <- e4_df$CovertedTime - 2 * one_hour_sec 
+  #   } 
+  # }
+  
+}
+
 curate_session_data <- function(subj_name, day_serial, session_name) {
-  session_dir <- file.path(raw_data_dir, grp_dir, subj_name, day_serial, session_name)
+  day_dir <- file.path(raw_data_dir, grp_dir, subj_name, day_serial)
+  session_dir <- file.path(day_dir, session_name)
+  
   pp_file_name <- get_matched_file_names(session_dir, pp_file_pattern)
   nr_pp_file_name <- get_matched_file_names(file.path(curated_data_dir, subj_data_dir), paste0('.*', subj_name, '.*', day_serial, '.*', session_name, nr_pp_file_pattern))
   
@@ -171,10 +232,8 @@ curate_session_data <- function(subj_name, day_serial, session_name) {
     mutate(Participant_ID=subj_name,
            Day=day_serial,
            Treatment=get_session_abbr(session_name),
-           Ontologies=NA) 
-  
-  # %>%
-  #   mutate_if(is.logical, as.character)
+           Ontologies=NA) %>%
+    mutate_if(is.logical, as.character)
   # 
   # write_log_msg(class(downsampled_pp_df$Ontologies), curation_log_file)
   
@@ -189,54 +248,67 @@ curate_session_data <- function(subj_name, day_serial, session_name) {
     ###################################################
     
     
+    
+    
+    rb_pp_df <<- downsampled_pp_df
+    
   } else { ## WorkingSession
     ## Find out the ontologies
-    downsampled_pp_df <- get_ontologies(marker_df, downsampled_pp_df)
-    
-    
+    ws_pp_df <- get_ontologies(marker_df, downsampled_pp_df)
     
     ###################################################
     ## Find out the activity log
     ###################################################
+    
+    
+    
+    ## We will merge all signal data in merged_data
+    write_log_msg(str(rb_pp_df), curation_log_file)
+    write_log_msg(str(ws_pp_df), curation_log_file)
+    merged_df <- rbind(rb_pp_df, ws_pp_df)
+    rb_pp_df <<- data.frame() ## initializing again
+    
+    
+    
+    
+    ###################################################
+    ## Now add e4 data
+    ###################################################
+    e4_file_list <- get_matched_file_names_recursively(day_dir, e4_file_pattern)
+    for(e4_file_name in e4_file_list) {
+      e4_df <- get_e4_data(day_dir, e4_file_name)
+      merged_df <- merge(merged_df, e4_df, by='Timestamp', all.x=T)
+    }
+    
+    
+    
+    
+    
+    
+    ###################################################
+    ## Now add iWatch data
+    ###################################################
+    
+    
+    
+    
+    
+    all_subj_df <<- rbind(all_subj_df, merged_df)
   }
-  
-  
-  ## We will merge all signal data in merged_data
-  merged_df <- downsampled_pp_df
-  
-  
-  
-  ###################################################
-  ## Now add e4 data
-  ###################################################
-  
-  
-  
-  
-  
-  ###################################################
-  ## Now add iWatch data
-  ###################################################
-  
-  
-  
-  
-  
-  all_subj_df <<- rbind(all_subj_df, merged_df)
 }
 
 curate_data <- function() {
   # subj_list <- get_dir_list(file.path(raw_data_dir, grp_dir))
   subj_list <- read.csv(file.path(curated_data_dir, utility_data_dir, subj_list_file_name))$Subject
   
-  sapply(subj_list, function(subj_name) {
-    # sapply(subj_list[4], function(subj_name) {
+  # sapply(subj_list, function(subj_name) {
+  sapply(subj_list[1], function(subj_name) {
     
     subj_dir <- file.path(raw_data_dir, grp_dir, subj_name)
     day_list <- get_dir_list(subj_dir)
     
     sapply(day_list, function(day_serial) {
-      # sapply(day_list[1], function(day_serial) {
+    # sapply(day_list[1], function(day_serial) {
       day_dir <- file.path(raw_data_dir, grp_dir, subj_name, day_serial)
       sapply(session_list, function(session_name) {
         tryCatch({
