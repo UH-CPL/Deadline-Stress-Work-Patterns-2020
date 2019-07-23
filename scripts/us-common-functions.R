@@ -32,7 +32,7 @@ e4_file_pattern <- 'HR.csv|EDA.csv'
 s_interface_date_format <- '%a %b %d %H:%M:%S'
 
 
-
+decorator_hash <- '###########################################################'
 
 
 
