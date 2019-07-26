@@ -1,0 +1,55 @@
+---
+title: "Ontologies"
+output:
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(readr)
+current_dir <- getwd()
+setwd('..')
+root_dir <- getwd()
+data_dir <- file.path(root_dir, 'curated-data/physiological-data')
+data_file_name<-'quantitative_df_qc0.csv'
+```
+
+
+```{r cars, echo=FALSE}
+DF<-read.csv(file.path(data_dir,data_file_name))
+
+```
+
+
+```{r, echo=FALSE}
+Plot1<-function(fun.data, fun.x, Day, SID, title,y_max ){
+p<-ggplot(fun.data, aes(x=fun.x)) + 
+  geom_bar(stat="count", width=0.5)+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  ylab("Seconds")+
+  xlab("")+
+  labs(title =title )+
+  theme(plot.title = element_text(hjust = 0.5))
+ return(p)
+ 
+}
+```
+
+
+```{r, echo=FALSE}
+sid<-factor(DF$Participant_ID)
+n=nlevels(sid)
+for (i in 1:n) {
+  DF_T001<-subset(DF, Participant_ID==levels(sid)[i] & Treatment=="WS")
+  D_id<-factor(DF_T001$Day)
+  m=nlevels(D_id)
+  for (j in 1:m) {
+    
+    DF_S_D<-subset(DF_T001, Day==levels(D_id)[j])
+    title=paste(levels(sid)[i],levels(D_id)[j])
+    y_max=max(DF_S_D$Time)
+    print(Plot1(DF_S_D,  DF_S_D$Ontologies, DF_S_D$Day,DF_S_D$Participant_ID, title, y_max))
+  }
+}
+```

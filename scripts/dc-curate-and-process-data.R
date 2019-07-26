@@ -73,33 +73,70 @@ reduce_noise_and_downsample <- function(session_dir, pp_file_name) {
 
 add_ontologies <- function(ontologies_df, pp_df) {
   # write_log_msg(paste(ontologies_df$startTimestamp, " - ", ontologies_df$EndTimestamp, ': ', ontologies_df$Ontologies), curation_log_file)
-  
-  if("Ontologies" %in% colnames(ontologies_df)) {
+
+  # if("Ontologies" %in% colnames(ontologies_df)) {
     ont_start_time <- convert_s_interface_date(ontologies_df$startTimestamp)
     ont_end_time <- convert_s_interface_date(ontologies_df$EndTimestamp)
-    
+
     # write_log_msg(paste(ont_start_time, " - ", ont_end_time, ': ', ontologies_df$Ontologies), curation_log_file)
+    # write_log_msg(nrow(pp_df), curation_log_file)
+    # write_log_msg(class(ont_start_time), curation_log_file)
+    # write_log_msg(class(pp_df$Timestamp), curation_log_file)
+    # write_log_msg(head(sort(pp_df$Timestamp), 1), curation_log_file)
+    # write_log_msg(tail(sort(pp_df$Timestamp), 1), curation_log_file)
     
     
-    # pp_df[pp_df$Timestamp >= ont_start_time & pp_df$Timestamp <= ont_end_time, ]$Ontologies <- ontologies_df$Ontologies
-    
+    # write_log_msg(head(sort(pp_df[pp_df$Timestamp >= ont_start_time & pp_df$Timestamp <= ont_end_time, 'Timestamp']), 1), curation_log_file)
+    # write_log_msg(tail(sort(pp_df[pp_df$Timestamp >= ont_start_time & pp_df$Timestamp <= ont_end_time, 'Timestamp']), 1), curation_log_file)
+
+
+    pp_df[pp_df$Timestamp >= ont_start_time & pp_df$Timestamp <= ont_end_time, ]$Ontologies <- ontologies_df$Ontologies
+
     #################################################################################
     ## CHECK - DPLYR PROBLEM
-    pp_df <- pp_df %>%
-      mutate(Ontologies=case_when(Timestamp >= ont_start_time & Timestamp <= ont_end_time~ontologies_df$Ontologies))
+    # pp_df <- pp_df %>%
+    #   mutate(Ontologies=case_when(Timestamp >= ont_start_time & Timestamp <= ont_end_time~ontologies_df$Ontologies))
     #################################################################################
-  }
-  
+  # }
+
   return(pp_df)
 }
+
+# add_ontologies <- function(ontologies_df, pp_df) {
+#   write_log_msg(paste(ontologies_df[['startTimestamp']], " - ", ontologies_df[['EndTimestamp']], ': ', ontologies_df[['Ontologies']]), curation_log_file)
+#   
+#   if("Ontologies" %in% colnames(ontologies_df)) {
+#     ont_start_time <- convert_s_interface_date(ontologies_df[['startTimestamp']])
+#     ont_end_time <- convert_s_interface_date(ontologies_df[['EndTimestamp']])
+#     
+#     # write_log_msg(paste(ont_start_time, " - ", ont_end_time, ': ', ontologies_df$Ontologies), curation_log_file)
+#     
+#     
+#     pp_df[ont_start_time <= pp_df$Timestamp & pp_df$Timestamp <= ont_end_time, ]$Ontologies <- ontologies_df[['Ontologies']]
+#     # write_log_msg(nrow(pp_df[pp_df$Timestamp >= ont_start_time & pp_df$Timestamp <= ont_end_time, ]), curation_log_file)
+#     
+#     #################################################################################
+#     ## CHECK - DPLYR PROBLEM
+#     # pp_df <- pp_df %>%
+#     #   mutate(Ontologies=case_when(Timestamp >= ont_start_time & Timestamp <= ont_end_time~ontologies_df$Ontologies))
+#     #################################################################################
+#   }
+#   
+#   return(pp_df)
+# }
 
 get_ontologies <- function(ontologies_df, pp_df) {
   ## Check for loop if apply is complex
   # pp_df <- apply(ontologies_df, 1, add_ontologies, pp_df)
   
   for(i in rownames(ontologies_df)) {
+    # write_log_msg(i, curation_log_file)
     pp_df <- add_ontologies(ontologies_df[i, ], pp_df)
   }
+  
+  # apply(ontologies_df, 1, function(ontologies_row) {
+  #   pp_df <- add_ontologies(ontologies_row, pp_df)
+  # })
   
   
   ## This is for T001 & T003, for whom we only noted the break times
@@ -196,7 +233,9 @@ get_downsampled_pp <- function(subj_name, day_serial, session_name) {
       downsampled_pp_df$Timestamp <- as.POSIXct(downsampled_pp_df$Timestamp)
     }
   }
-  # downsampled_pp_df <- reduce_noise_and_downsample(subj_name, day_serial, session_name)
+  
+  ## This is when we need to update the *pp_nr.csv file
+  # downsampled_pp_df <- reduce_noise_and_downsample(session_dir, pp_file_name)
   
   
   downsampled_pp_df <- downsampled_pp_df %>% 
@@ -275,8 +314,8 @@ refactor_and_export_all_subj_data <- function() {
   
   ## VERY BAD CODING!!!
   ## This is for T001 & T003, for whom we only noted the break times
-  # all_subj_df[is.na(all_subj_df$Ontologies) & all_subj_df$Treatment=='WS' & all_subj_df$Participant_ID=='T001', ]$Ontologies <<- 'Working'
-  # all_subj_df[is.na(all_subj_df$Ontologies) & all_subj_df$Treatment=='WS' & all_subj_df$Participant_ID=='T003', ]$Ontologies <<- 'C - Writing/Reading'
+  all_subj_df[is.na(all_subj_df$Ontologies) & all_subj_df$Treatment=='WS' & all_subj_df$Participant_ID=='T001', ]$Ontologies <<- 'Working'
+  all_subj_df[is.na(all_subj_df$Ontologies) & all_subj_df$Treatment=='WS' & all_subj_df$Participant_ID=='T003', ]$Ontologies <<- 'C - Writing/Reading'
   
   
   
@@ -301,8 +340,8 @@ curate_data <- function() {
   # subj_list <- get_dir_list(file.path(raw_data_dir, grp_dir))
   subj_list <- custom_read_csv(file.path(curated_data_dir, utility_data_dir, subj_list_file_name))$Subject
   
-  # sapply(subj_list, function(subj_name) {
-  sapply(subj_list[1], function(subj_name) {
+  sapply(subj_list, function(subj_name) {
+  # sapply(subj_list[1], function(subj_name) {
     
     subj_dir <- file.path(raw_data_dir, grp_dir, subj_name)
     day_list <- get_dir_list(subj_dir)

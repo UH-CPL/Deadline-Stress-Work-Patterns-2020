@@ -1,5 +1,4 @@
 Session,StartTime,startTimestamp,EndTime,EndTimestamp,Ontologies
-Session 1,16923.16,Sat May 25 10:42:00.127 2019,16923.47,Sat May 25 10:45:40.436 2019,HC - Writing
 Session 2,16923.16,Sat May 25 10:48:00.127 2019,16923.47,Sat May 25 10:50:50.436 2019,C - Reading 
 Session 3,16923.16,Sat May 25 10:50:55.127 2019,16923.47,Sat May 25 11:15:55.436 2019,C - Reading 
 Session 4,16925.19,Sat May 25 11:15:55.127 2019,16923.47,Sat May 25 11:45:05.436 2019,Break Out - Tea/Coffee
