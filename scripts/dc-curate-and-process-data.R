@@ -50,7 +50,7 @@ get_session_abbr <- function(session_name) {
 
 
 read_downsampled_pp <- function(nr_pp_file_name) {
-  downsampled_pp_df <- read.csv(file.path(curated_data_dir, subj_data_dir, nr_pp_file_name))
+  downsampled_pp_df <- custom_read_csv(file.path(curated_data_dir, subj_data_dir, nr_pp_file_name))
   downsampled_pp_df$Timestamp <- as.POSIXct(downsampled_pp_df$Timestamp)
   
   return(downsampled_pp_df)
@@ -59,7 +59,7 @@ read_downsampled_pp <- function(nr_pp_file_name) {
 
 
 reduce_noise_and_downsample <- function(session_dir, pp_file_name) {
-  pp_df <- read.csv(file.path(session_dir, pp_file_name))
+  pp_df <- custom_read_csv(file.path(session_dir, pp_file_name))
   names(pp_df) <- c("Frame",	"Time",	"Timestamp", "PP")
   pp_df$Timestamp <- as.POSIXct(strptime(pp_df$Timestamp, format=s_interface_date_format)) 
   
@@ -78,12 +78,15 @@ add_ontologies <- function(ontologies_df, pp_df) {
     ont_start_time <- convert_s_interface_date(ontologies_df$startTimestamp)
     ont_end_time <- convert_s_interface_date(ontologies_df$EndTimestamp)
     
-    pp_df[pp_df$Timestamp >= ont_start_time & pp_df$Timestamp <= ont_end_time, ]$Ontologies <- ontologies_df$Ontologies
+    # write_log_msg(paste(ont_start_time, " - ", ont_end_time, ': ', ontologies_df$Ontologies), curation_log_file)
+    
+    
+    # pp_df[pp_df$Timestamp >= ont_start_time & pp_df$Timestamp <= ont_end_time, ]$Ontologies <- ontologies_df$Ontologies
     
     #################################################################################
     ## CHECK - DPLYR PROBLEM
-    # pp_df <- pp_df %>%
-    #   mutate(Ontologies=case_when(Timestamp >= ont_start_time & Timestamp <= ont_end_time~ontologies_df$Ontologies))
+    pp_df <- pp_df %>%
+      mutate(Ontologies=case_when(Timestamp >= ont_start_time & Timestamp <= ont_end_time~ontologies_df$Ontologies))
     #################################################################################
   }
   
@@ -124,7 +127,7 @@ get_ontologies <- function(ontologies_df, pp_df) {
 
 
 get_e4_data <- function(day_dir, e4_file_name) {
-  e4_df <- read_csv(file.path(day_dir, e4_file_name), col_names=F, col_types = cols())
+  e4_df <- custom_read_csv(file.path(day_dir, e4_file_name), col_names=F, col_types = cols())
   
   ## 1st row indicates the start time
   timestamp <- as.numeric(e4_df[1, 1]) 
@@ -183,7 +186,6 @@ get_downsampled_pp <- function(subj_name, day_serial, session_name) {
   pp_file_name <- get_matched_file_names(session_dir, pp_file_pattern)
   nr_pp_file_name <- get_matched_file_names(file.path(curated_data_dir, subj_data_dir), paste0('.*', subj_name, '.*', day_serial, '.*', session_name, nr_pp_file_pattern))
   
-  
   if(!is_empty(pp_file_name)) {
     if(is_empty(nr_pp_file_name)) {
       # write_log_msg('--- noise reduced pp file NOT found ---', curation_log_file)
@@ -194,7 +196,6 @@ get_downsampled_pp <- function(subj_name, day_serial, session_name) {
       downsampled_pp_df$Timestamp <- as.POSIXct(downsampled_pp_df$Timestamp)
     }
   }
-  
   # downsampled_pp_df <- reduce_noise_and_downsample(subj_name, day_serial, session_name)
   
   
@@ -204,15 +205,19 @@ get_downsampled_pp <- function(subj_name, day_serial, session_name) {
            Treatment=get_session_abbr(session_name),
            Ontologies=NA) %>%
     mutate_if(is.logical, as.character)
+  
   # 
   # write_log_msg(class(downsampled_pp_df$Ontologies), curation_log_file)
   
+  #################################################################
+  ## Here, from working session marker, add the timestamps at the beginning and the end (if needed)
+  #################################################################
   
   return(downsampled_pp_df)
 }
 
-curate_rb_session_data <- function(subj_name, day_serial, session_name) {
-  downsampled_pp_df <- get_downsampled_pp(subj_name, day_serial, session_name)
+curate_rb_session_data <- function(subj_name, day_serial) {
+  downsampled_pp_df <- get_downsampled_pp(subj_name, day_serial, session_list[1])
   
   ###################################################
   ##       Find out exact 4-5min session           ##
@@ -223,14 +228,13 @@ curate_rb_session_data <- function(subj_name, day_serial, session_name) {
 }
 
 
-curate_ws_session_data <- function(subj_name, day_serial, session_name, rb_df) {
-  # day_dir <- file.path(raw_data_dir, grp_dir, subj_name, day_serial)
-  # session_dir <- file.path(raw_data_dir, grp_dir, subj_name, day_serial, session_name)
-  
+curate_ws_session_data <- function(subj_name, day_serial, rb_df) {
+  session_name <- session_list[2]
+  session_dir <- file.path(raw_data_dir, grp_dir, subj_name, day_serial, session_name)
   downsampled_pp_df <- get_downsampled_pp(subj_name, day_serial, session_name)
   
   marker_file_name <- get_matched_file_names(session_dir, marker_file_pattern)
-  marker_df <- read_csv(file.path(session_dir, marker_file_name))
+  marker_df <- custom_read_csv(file.path(session_dir, marker_file_name))
   
   ###################################################
   ## Find out the ontologies
@@ -276,18 +280,18 @@ refactor_and_export_all_subj_data <- function() {
   
   
   
-  all_subj_df <<- all_subj_df %>%
-    select(Participant_ID,
-           Day,
-           Treatment,
-           Timestamp,
-           Time,
-           Ontologies,
-           PP,
-           NR_PP,
-           HR,
-           EDA
-    )
+  # all_subj_df <<- all_subj_df %>%
+  #   select(Participant_ID,
+  #          Day,
+  #          Treatment,
+  #          Timestamp,
+  #          Time,
+  #          Ontologies,
+  #          PP,
+  #          NR_PP,
+  #          HR,
+  #          EDA
+  #   )
   
   convert_to_csv(all_subj_df, file.path(curated_data_dir, physiological_data_dir, 'quantitative_df_qc0.csv'))
 }
@@ -295,10 +299,10 @@ refactor_and_export_all_subj_data <- function() {
 
 curate_data <- function() {
   # subj_list <- get_dir_list(file.path(raw_data_dir, grp_dir))
-  subj_list <- read.csv(file.path(curated_data_dir, utility_data_dir, subj_list_file_name))$Subject
+  subj_list <- custom_read_csv(file.path(curated_data_dir, utility_data_dir, subj_list_file_name))$Subject
   
-  sapply(subj_list, function(subj_name) {
-  # sapply(subj_list[1], function(subj_name) {
+  # sapply(subj_list, function(subj_name) {
+  sapply(subj_list[1], function(subj_name) {
     
     subj_dir <- file.path(raw_data_dir, grp_dir, subj_name)
     day_list <- get_dir_list(subj_dir)
@@ -310,55 +314,28 @@ curate_data <- function() {
         
         
         write_log_msg('Processing.....Resting Baseline', curation_log_file)
-        rb_df <- curate_rb_session_data(subj_name, day_serial, session_name)
+        rb_df <- curate_rb_session_data(subj_name, day_serial)
         
         write_log_msg('Processing.....Working Session', curation_log_file)
-        full_day_df <- curate_ws_session_data(subj_name, day_serial, session_name, rb_df)
-        
+        full_day_df <- curate_ws_session_data(subj_name, day_serial, rb_df)
         
         write_log_msg('Merging.....e4 data', curation_log_file)
         # full_day_df <- merge_e4_data(subj_name, day_serial, full_day_df)
         
         write_log_msg('Merging.....iwatch data', curation_log_file)
-        #full_day_df <-  merge_iwatch_date(subj_name, day_serial, full_day_df)
+        # full_day_df <-  merge_iwatch_date(subj_name, day_serial, full_day_df)
         
         write_log_msg('Merging.....all subj data', curation_log_file)
-        # all_subj_df <<- rbind(full_day_df, merged_df)
+        all_subj_df <<- rbind(all_subj_df, full_day_df)
       },
       error=function(err) {
         write_log_msg(paste0('\n', decorator_hash, '\n', subj_name, '-', day_serial, ': ERROR!'), curation_log_file)
         write_log_msg(paste0(err, decorator_hash), curation_log_file)
       })
     })
-      
-      
-      
-      # tryCatch({
-      #   write_log_msg(paste0('Processing...', subj_name, '-', day_serial), curation_log_file)
-      #   # day_dir <- file.path(raw_data_dir, grp_dir, subj_name, day_serial)
-      #   sapply(session_list, function(session_name) {
-      #     tryCatch({
-      #       curate_session_data(subj_name, day_serial, session_name)
-      #       write_log_msg(paste0(subj_name, '-', day_serial, '-', session_name, ': SUCCESSFUL'), curation_log_file)
-      #     },
-      #     error=function(err) {
-      #       write_log_msg('----------------------------------------------------------', curation_log_file)
-      #       write_log_msg(paste0(subj_name, '-', day_serial, '-', session_name, ': ERROR!'), curation_log_file)
-      #       write_log_msg(paste0(err, '\n'), curation_log_file)
-      #     })
-      #   })
-      # },
-      # error=function(err) {
-      #   write_log_msg('----------------------------------------------------------', curation_log_file)
-      #   write_log_msg(paste0(subj_name, '-', day_serial, '-', session_name, ': ERROR!'), curation_log_file)
-      #   write_log_msg(paste0(err, '\n'), curation_log_file)
-      # })
-      # })
-
   })
   
-  
-  # refactor_and_export_all_subj_data()
+  refactor_and_export_all_subj_data()
 }
 
 

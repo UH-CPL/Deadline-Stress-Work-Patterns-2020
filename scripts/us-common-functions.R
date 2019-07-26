@@ -37,6 +37,10 @@ decorator_hash <- '###########################################################'
 
 
 
+custom_read_csv <- function(file_name) {
+  return(read.csv(file_name, stringsAsFactors=F))
+}
+
 convert_to_csv <- function(df, file_path) {
   write.table(df, file = file_path, row.names=F, sep = ',')
 }
