@@ -26,8 +26,11 @@ session_list <- c('Baseline', 'WorkingSession')
 
 pp_file_pattern <- '.*_pp.csv'
 nr_pp_file_pattern <- '.*_nr.csv'
-marker_file_pattern <- '.*WorkingSession_sessionmarkers.csv'
+marker_file_pattern <- '.*sessionmarkers.csv'
+activity_file_pattern <- '.*Activity.csv'
+app_usage_file_pattern <- '.*Monitor.log'
 e4_file_pattern <- 'HR.csv|EDA.csv'
+iWatch_file_pattern <- 'iWatch.csv'
 
 s_interface_date_format <- '%a %b %d %H:%M:%S'
 
