@@ -4,11 +4,13 @@
 # library(XLConnect)
 # library(scales)
 # library(ggplot2)
-library(plyr)
+library(plyr)      ## for func rbind.fill
 library(dplyr)
 library(readr)
-library(magrittr)
-# 
+library(magrittr)  ## for func set_colnames
+library(gsubfn)    ## for func read.pattern()
+
+
 # require(xlsx)
 # library(readxl)
 # library(lubridate)
@@ -48,6 +50,8 @@ get_session_abbr <- function(session_name) {
     return('WS')
   }
 }
+
+
 
 
 
@@ -109,14 +113,18 @@ get_e4_data <- function(day_dir, e4_file_name) {
 
 
 
+
+
+
+
+
+
 read_downsampled_pp <- function(nr_pp_file_name) {
   downsampled_pp_df <- custom_read_csv(file.path(curated_data_dir, subj_data_dir, nr_pp_file_name))
   downsampled_pp_df$Timestamp <- as.POSIXct(downsampled_pp_df$Timestamp)
   
   return(downsampled_pp_df)
 }
-
-
 
 reduce_noise_and_downsample <- function(session_dir, pp_file_name) {
   pp_df <- custom_read_csv(file.path(session_dir, pp_file_name))
@@ -130,6 +138,64 @@ reduce_noise_and_downsample <- function(session_dir, pp_file_name) {
   
   return(downsampled_pp_df)
 }
+
+
+get_downsampled_pp <- function(subj_name, day_serial, session_name) {
+  session_dir <- file.path(raw_data_dir, grp_dir, subj_name, day_serial, session_name)
+  
+  pp_file_name <- get_matched_file_names(session_dir, pp_file_pattern)
+  nr_pp_file_name <- get_matched_file_names(file.path(curated_data_dir, subj_data_dir), paste0('.*', subj_name, '.*', day_serial, '.*', session_name, nr_pp_file_pattern))
+  
+  if(!is_empty(pp_file_name)) {
+    if(is_empty(nr_pp_file_name)) {
+      # write_log_msg('--- noise reduced pp file NOT found ---', curation_log_file)
+      downsampled_pp_df <- reduce_noise_and_downsample(session_dir, pp_file_name)
+    } else {
+      # write_log_msg('--- noise reduced pp file found ---', curation_log_file)
+      downsampled_pp_df <- read_downsampled_pp(nr_pp_file_name)
+      downsampled_pp_df$Timestamp <- as.POSIXct(downsampled_pp_df$Timestamp)
+    }
+  }
+  
+  ## This is when we need to update the *pp_nr.csv file
+  # downsampled_pp_df <- reduce_noise_and_downsample(session_dir, pp_file_name)
+  
+  downsampled_pp_df <- downsampled_pp_df %>% 
+    mutate(Participant_ID=subj_name,
+           Day=day_serial,
+           Ontologies=NA,
+           Treatment=get_session_abbr(session_name)) %>%
+    mutate_if(is.logical, as.character)
+  
+  # write_log_msg(class(downsampled_pp_df$Ontologies), curation_log_file)
+  
+  #################################################################
+  ## Here, from working session marker, add the timestamps at the beginning and the end (if needed)
+  #################################################################
+  
+  return(downsampled_pp_df)
+}
+
+curate_rb_session_data <- function(subj_name, day_serial) {
+  downsampled_pp_df <- get_downsampled_pp(subj_name, day_serial, 'Baseline')
+  # downsampled_pp_df$Ontologies <- NA
+  
+  
+  ###################################################
+  ##       Find out exact 4-5min session           ##
+  ###################################################
+  
+  
+  return(downsampled_pp_df)
+}
+
+
+
+
+
+
+
+
 
 
 ## Using For Loop
@@ -182,7 +248,7 @@ add_ontologies <- function(ontologies_df, pp_df) {
 # }
 
 get_session_marker_ontologies <- function(ontologies_df, pp_df) {
-  pp_df$Ontologies <- NA
+  # pp_df$Ontologies <- NA
   for(i in rownames(ontologies_df)) {
     pp_df <- add_ontologies(ontologies_df[i, ], pp_df)
   }
@@ -211,72 +277,18 @@ get_activity_tracker_ontologies <- function(activity_df, pp_df) {
                                                        format='%a %b %d %Y %H:%M:%S')))
   
   pp_df <- pp_df %>% 
-    # select(-Ontologies) %>%
-    merge(activity_df, by='Timestamp', all.x=T)
+    select(-Ontologies) %>%
+    ##############################################################################################
+    merge(activity_df, by='Timestamp', all=T)  ## CHECK!!! - all vs. all.x
+    ##############################################################################################
     
   return(pp_df)
 }
 
-get_downsampled_pp <- function(subj_name, day_serial, session_name) {
-  session_dir <- file.path(raw_data_dir, grp_dir, subj_name, day_serial, session_name)
-  
-  pp_file_name <- get_matched_file_names(session_dir, pp_file_pattern)
-  nr_pp_file_name <- get_matched_file_names(file.path(curated_data_dir, subj_data_dir), paste0('.*', subj_name, '.*', day_serial, '.*', session_name, nr_pp_file_pattern))
-  
-  if(!is_empty(pp_file_name)) {
-    if(is_empty(nr_pp_file_name)) {
-      # write_log_msg('--- noise reduced pp file NOT found ---', curation_log_file)
-      downsampled_pp_df <- reduce_noise_and_downsample(session_dir, pp_file_name)
-    } else {
-      # write_log_msg('--- noise reduced pp file found ---', curation_log_file)
-      downsampled_pp_df <- read_downsampled_pp(nr_pp_file_name)
-      downsampled_pp_df$Timestamp <- as.POSIXct(downsampled_pp_df$Timestamp)
-    }
-  }
-  
-  ## This is when we need to update the *pp_nr.csv file
-  # downsampled_pp_df <- reduce_noise_and_downsample(session_dir, pp_file_name)
-  
-  downsampled_pp_df <- downsampled_pp_df %>% 
-    mutate(Participant_ID=subj_name,
-           Day=day_serial,
-           # Ontologies=NA,
-           Treatment=get_session_abbr(session_name)) %>%
-    mutate_if(is.logical, as.character)
-  
-  # write_log_msg(class(downsampled_pp_df$Ontologies), curation_log_file)
-  
-  #################################################################
-  ## Here, from working session marker, add the timestamps at the beginning and the end (if needed)
-  #################################################################
-  
-  return(downsampled_pp_df)
-}
-
-curate_rb_session_data <- function(subj_name, day_serial) {
-  downsampled_pp_df <- get_downsampled_pp(subj_name, day_serial, 'Baseline')
-  # downsampled_pp_df$Ontologies <- NA
-  
-  
-  ###################################################
-  ##       Find out exact 4-5min session           ##
-  ###################################################
-  
-  
-  return(downsampled_pp_df)
-}
-
-
-curate_ws_session_data <- function(subj_name, day_serial, rb_df) {
-  session_name <- 'WorkingSession'
+get_ontologies <- function(subj_name, day_serial, session_name, downsampled_pp_df) {
   day_dir <- file.path(raw_data_dir, grp_dir, subj_name, day_serial)
   session_dir <- file.path(day_dir, session_name)
-  downsampled_pp_df <- get_downsampled_pp(subj_name, day_serial, session_name)
   
-  
-  ###################################################
-  ## Find out the ontologies
-  ###################################################
   activity_file_name <- get_matched_file_names_recursively(day_dir, activity_file_pattern)
   # write_log_msg(paste0('Activity File Name:', activity_file_name), curation_log_file)
   
@@ -284,12 +296,12 @@ curate_ws_session_data <- function(subj_name, day_serial, rb_df) {
   ## We will use the activity tracker ontology if the file exists
   ## Otherwise, we will use the manual session marker file
   if(!is_empty(activity_file_name)) {
-    # write_log_msg('Activity tracker file - FOUND', curation_log_file)
+    # write_log_msg('Activity Tracker File - Found', curation_log_file)
     activity_df <- custom_read_csv(file.path(day_dir, activity_file_name))
     ws_df <- get_activity_tracker_ontologies(activity_df, downsampled_pp_df)
     
   } else {
-    # write_log_msg('Activity tracker file - NOT FOUND!!!', curation_log_file)
+    # write_log_msg('Activity Tracker File - Not Found \n Looking for session marker file', curation_log_file)
     marker_file_name <- get_matched_file_names(session_dir, marker_file_pattern)
     marker_df <- custom_read_csv(file.path(session_dir, marker_file_name))
     
@@ -297,20 +309,77 @@ curate_ws_session_data <- function(subj_name, day_serial, rb_df) {
     ws_df <- get_session_marker_ontologies(marker_df, downsampled_pp_df)
   }
   
-
   
+  return(ws_df)
+}
+
+get_app_usage_data <- function(subj_name, day_serial, ws_df) {
+  day_dir <- file.path(raw_data_dir, grp_dir, subj_name, day_serial)
+  mac_activity_file_name <- get_matched_file_names_recursively(day_dir, mac_app_usage_file_pattern)
+  win_activity_file_name <- get_matched_file_names_recursively(day_dir, win_app_usage_file_pattern)
+  
+  if(!is_empty(mac_activity_file_name)) {
+    # write_log_msg('Mac app usage file - Found', curation_log_file)
+    
+    ws_df <- read.pattern(file.path(day_dir, mac_activity_file_name), pattern=mac_data_pattern) %>% 
+      set_colnames(c('Timestamp', 'Application')) %>% 
+      mutate_if(is.factor, as.character) %>%
+      mutate(Timestamp=convert_s_interface_date(strptime(Timestamp, format='%Y-%m-%d %H:%M:%S'))) %>%
+      ##############################################################################################
+      merge(ws_df, by='Timestamp', all=T)      ## CHECK!!! - all vs. all.x
+      # merge(ws_df, by='Timestamp', all.y=T)  ## CHECK!!! - all vs. all.x
+      ##############################################################################################
+    
+    
+    
+    
+    # write_log_msg(levels(factor(ws_df$Application)), curation_log_file)
+    # ws_df <- get_mac_app_usage_data(mac_activity_df, ws_df)
+    
+    
+  } else if (!is_empty(win_activity_file_name)) {
+    # write_log_msg('Windows app usage file - Found', curation_log_file)
+    # win_activity_df <- custom_read_csv(file.path(day_dir, win_activity_file_name))
+    # ws_df <- get_win_app_usage_data(win_activity_df, ws_df)
+    
+  } else {
+    # write_log_msg('Mac/Win app usage file - Not Found', curation_log_file)
+  }
+  
+  
+  
+  return(ws_df)
+}
 
 
+curate_ws_session_data <- function(subj_name, day_serial, rb_df) {
+  session_name <- 'WorkingSession'
+  
+  
+  
+  ###################################################
+  ## Get 1-fps pp signal
+  ###################################################
+  downsampled_pp_df <- get_downsampled_pp(subj_name, day_serial, session_name)
+  
+  
+  
+  ###################################################
+  ## Find out the ontologies
+  ###################################################
+  ws_df <- get_ontologies(subj_name, day_serial, session_name, downsampled_pp_df)
+  # print(str(ws_df))
   
   
   
   ###################################################
   ## Find out the app monitor log
   ###################################################
-  # ws_df <- get_app_usage_data(marker_df, ws_df)
+  ws_df <- get_app_usage_data(subj_name, day_serial, ws_df)
   
   
   
+
   ## rbind.fill bind two data frames that don't have the same set of columns
   full_day_df <- rbind.fill(rb_df, ws_df)
   
@@ -326,7 +395,9 @@ merge_e4_data <- function(subj_name, day_serial, full_day_pp_df) {
   
   for(e4_file_name in e4_file_list) {
     e4_df <- get_e4_data(day_dir, e4_file_name)
-    merged_df <- merge(full_day_pp_df, e4_df, by='Timestamp', all.x=T)
+    ##############################################################################################
+    merged_df <- merge(full_day_pp_df, e4_df, by='Timestamp', all=T)   ## CHECK!!! - all vs. all.x
+    ##############################################################################################
   }
   
   return(merged_df)
@@ -342,7 +413,7 @@ refactor_and_export_all_subj_data <- function() {
   #################################################################################
   # message(class(pp_df$Ontologies))
   
-  all_subj_df <- all_subj_df %>%
+  all_subj_df <<- all_subj_df %>%
     mutate(Ontologies=case_when(
       is.na(Ontologies) & Treatment=='WS' & Participant_ID=='T001'~'Working',
       is.na(Ontologies) & Treatment=='WS' & Participant_ID=='T003'~'C - Writing/Reading',
@@ -358,20 +429,35 @@ refactor_and_export_all_subj_data <- function() {
   
   
   
-  # all_subj_df <<- all_subj_df %>%
-  #   select(Participant_ID,
-  #          Day,
-  #          Treatment,
-  #          Timestamp,
-  #          Time,
-  #          Ontologies,
-  #          PP,
-  #          NR_PP,
-  #          HR,
-  #          EDA
-  #   )
+  all_subj_df <<- all_subj_df %>%
+    rename(Sinterface_Time=Time) %>% 
+    
+    ## Calculating relative treatment time
+    group_by(Participant_ID, Day, Treatment) %>% 
+    arrange(Timestamp) %>%
+    mutate(TreatmentTime=as.numeric(Timestamp)-as.numeric(head(Timestamp, 1))) %>% 
+    
+    select(Participant_ID,
+           Day,
+           Treatment,
+           Timestamp,
+           Sinterface_Time,
+           TreatmentTime,
+           PP,
+           NR_PP,
+           # HR,
+           # EDA,
+           Ontologies,
+           Application
+    ) %>% 
+    drop_na(Treatment) ## Removing NA Treatments - caused for merging all
+
   
-  convert_to_csv(all_subj_df, file.path(curated_data_dir, physiological_data_dir, 'quantitative_df_qc0.csv'))
+  # write_log_msg(levels(factor(all_subj_df$Application)), curation_log_file)
+  write_log_msg(paste0('Total relative time mismatch row: ', nrow(all_subj_df[all_subj_df$Sinterface_Time != all_subj_df$TreatmentTime, ])), curation_log_file)
+  
+  View(all_subj_df)
+  convert_to_csv(all_subj_df, file.path(curated_data_dir, physiological_data_dir, 'full_df_qc0.csv'))
 }
 
 
@@ -380,7 +466,7 @@ curate_data <- function() {
   subj_list <- custom_read_csv(file.path(curated_data_dir, utility_data_dir, subj_list_file_name))$Subject
   
   sapply(subj_list, function(subj_name) {
-  # sapply(subj_list[3], function(subj_name) {
+  # sapply(subj_list[2], function(subj_name) {
     
     subj_dir <- file.path(raw_data_dir, grp_dir, subj_name)
     day_list <- get_dir_list(subj_dir)
@@ -397,13 +483,13 @@ curate_data <- function() {
         write_log_msg('Processing.....Working Session', curation_log_file)
         full_day_df <- curate_ws_session_data(subj_name, day_serial, rb_df)
         
-        write_log_msg('Merging.....e4 data', curation_log_file)
+        write_log_msg('\nMerging.....e4 data', curation_log_file)
         # full_day_df <- merge_e4_data(subj_name, day_serial, full_day_df)
         
         write_log_msg('Merging.....iwatch data', curation_log_file)
         # full_day_df <-  merge_iwatch_date(subj_name, day_serial, full_day_df)
         
-        write_log_msg('Merging.....all subj data', curation_log_file)
+        write_log_msg('Merging.....all subj data\n', curation_log_file)
         all_subj_df <<- rbind.fill(all_subj_df, full_day_df)
       },
       error=function(err) {
