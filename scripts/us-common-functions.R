@@ -28,9 +28,15 @@ pp_file_pattern <- '.*_pp.csv'
 nr_pp_file_pattern <- '.*_nr.csv'
 marker_file_pattern <- '.*sessionmarkers.csv'
 activity_file_pattern <- '.*Activity.csv'
-app_usage_file_pattern <- '.*Monitor.log'
+mac_app_usage_file_pattern <- '.*Monitor.*log'
+win_app_usage_file_pattern <- '.*MonitorLog.csv'
 e4_file_pattern <- 'HR.csv|EDA.csv'
 iWatch_file_pattern <- 'iWatch.csv'
+
+
+## 1. Timestamp -->    Extract whatever inside []                 -->   \\[(.*)\\]
+## 2. Application -->  Extract whatever after the space of []     -->   (.*)
+mac_data_pattern <- '\\[(.*)\\] (.*)'
 
 s_interface_date_format <- '%a %b %d %H:%M:%S'
 
