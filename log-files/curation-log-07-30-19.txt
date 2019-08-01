@@ -1,0 +1,230 @@
+
+----------
+T001-Day1
+----------
+
+----------
+T001-Day2
+----------
+
+----------
+T001-Day3
+----------
+
+----------
+T001-Day4
+----------
+
+----------
+T003-Day1
+----------
+Console
+Finder
+Microsoft Word
+Preview
+Safari
+Terminal
+
+----------
+T003-Day2
+----------
+Console
+Finder
+Microsoft AutoUpdate
+Microsoft Word
+Preview
+Safari
+Terminal
+
+----------
+T003-Day3
+----------
+App Store
+Console
+Finder
+Microsoft PowerPoint
+Microsoft Word
+Safari
+Terminal
+
+----------
+T003-Day4
+----------
+App Store
+Console
+Finder
+Microsoft PowerPoint
+Microsoft Word
+Safari
+Terminal
+
+----------
+T005-Day1
+----------
+
+----------
+T005-Day2
+----------
+
+----------
+T005-Day3
+----------
+
+----------
+T005-Day4
+----------
+
+----------
+T005-Day5
+----------
+
+----------
+T007-Day1
+----------
+Calendar
+Console
+EndNote X7
+Finder
+Mail
+Messages
+Microsoft Excel
+Microsoft PowerPoint
+Microsoft Word
+Notes
+osascript
+Preview
+Safari
+Slack
+Terminal
+
+----------
+T007-Day2
+----------
+Calendar
+Console
+EndNote X7
+Finder
+JavaApplicationStub
+Mail
+Messages
+Microsoft Excel
+Microsoft Word
+missing value
+Notes
+Preview
+RStudio
+Safari
+Slack
+Terminal
+
+----------
+T007-Day3
+----------
+Calendar
+Console
+FaceTime
+Finder
+Mail
+Messages
+Microsoft Excel
+Microsoft Word
+Notes
+Preview
+Safari
+Skype
+Slack
+Terminal
+
+----------
+T007-Day4
+----------
+Calendar
+Console
+Finder
+iTunes
+Mail
+Messages
+Microsoft Excel
+Microsoft Word
+Notes
+Preview
+Safari
+Skype
+Slack
+Terminal
+
+----------
+T009-Day1
+----------
+Cisco AnyConnect Secure Mobility Client
+Console
+Finder
+Google Chrome
+iTunes
+Photos
+TeamViewer
+Terminal
+WeChat
+
+----------
+T009-Day2
+----------
+AdobeReader
+Cisco AnyConnect Secure Mobility Client
+Console
+Emacs-x86_64-10_9
+Finder
+Google Chrome
+Microsoft Word
+QQ
+TeamViewer
+Terminal
+WeChat
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+AdobeReader
+App Store
+Calendar
+Cisco AnyConnect Secure Mobility Client
+Console
+Emacs-x86_64-10_9
+EndNote X7
+FaceTime
+Finder
+Google Chrome
+iTunes
+JavaApplicationStub
+Mail
+Messages
+Microsoft AutoUpdate
+Microsoft Excel
+Microsoft PowerPoint
+Microsoft Word
+missing value
+Notes
+osascript
+Photos
+Preview
+QQ
+RStudio
+Safari
+Skype
+Slack
+TeamViewer
+Terminal
+WeChat
