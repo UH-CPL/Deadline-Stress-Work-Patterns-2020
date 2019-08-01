@@ -26,16 +26,29 @@ session_list <- c('Baseline', 'WorkingSession')
 
 pp_file_pattern <- '.*_pp.csv'
 nr_pp_file_pattern <- '.*_nr.csv'
-marker_file_pattern <- '.*_sessionmarkers.csv'
+marker_file_pattern <- '.*sessionmarkers.csv'
+activity_file_pattern <- '.*Activity.csv'
+mac_app_usage_file_pattern <- '.*Monitor.*log'
+win_app_usage_file_pattern <- '.*MonitorLog.csv'
 e4_file_pattern <- 'HR.csv|EDA.csv'
+iWatch_file_pattern <- 'iWatch.csv'
+
+
+## 1. Timestamp -->    Extract whatever inside []                 -->   \\[(.*)\\]
+## 2. Application -->  Extract whatever after the space of []     -->   (.*)
+mac_data_pattern <- '\\[(.*)\\] (.*)'
 
 s_interface_date_format <- '%a %b %d %H:%M:%S'
 
 
+decorator_hash <- '###########################################################'
 
 
 
 
+custom_read_csv <- function(file_name) {
+  return(read.csv(file_name, stringsAsFactors=F))
+}
 
 convert_to_csv <- function(df, file_path) {
   write.table(df, file = file_path, row.names=F, sep = ',')
@@ -103,5 +116,9 @@ get_dir_list <- function(directory) {
 
 get_matched_file_names <- function(directory, file_pattern) {
   return(list.files(path=directory, pattern=file_pattern, recursive=F))
+}
+
+get_matched_file_names_recursively <- function(directory, file_pattern) {
+  return(list.files(path=directory, pattern=file_pattern, recursive=T))
 }
 

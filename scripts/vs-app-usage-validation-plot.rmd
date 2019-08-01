@@ -1,0 +1,38 @@
+---
+author: "Shaila Zaman"
+date: "July 30, 2019"
+output: pdf_document
+---
+
+```{r echo = FALSE, warning = FALSE, message = FALSE} 
+
+#-------------------------#
+#--------LIBRARIES--------#
+#-------------------------#
+
+
+
+
+
+#-------------------------#
+#-----GLOBAL VARIABLES----#
+#-------------------------#
+data_paper_dir <- getwd()
+setwd(data_paper_dir)
+```
+
+
+
+```{r echo = FALSE, warning = FALSE, message = FALSE} 
+draw_plots <- function() {
+  
+}
+```
+
+
+
+\newpage
+<!-- DRAW PLOTS -->
+```{r echo=FALSE, warning = FALSE, message = FALSE}
+draw_plots()
+```
