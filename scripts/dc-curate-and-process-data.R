@@ -38,6 +38,7 @@ file.create(curation_log_file)
 
 
 all_subj_df <- tibble()
+win_app_usage_df <- tibble()
 
 
 #-------------------------#
@@ -320,6 +321,7 @@ get_app_usage_data <- function(subj_name, day_serial, ws_df) {
   
   if(!is_empty(mac_activity_file_name)) {
     # write_log_msg('Mac app usage file - Found', curation_log_file)
+    # ws_df <- get_mac_app_usage_data(mac_activity_df, ws_df)
     
     ws_df <- read.pattern(file.path(day_dir, mac_activity_file_name), pattern=mac_data_pattern) %>% 
       set_colnames(c('Timestamp', 'Application')) %>% 
@@ -329,18 +331,56 @@ get_app_usage_data <- function(subj_name, day_serial, ws_df) {
       merge(ws_df, by='Timestamp', all=T)      ## CHECK!!! - all vs. all.x
       # merge(ws_df, by='Timestamp', all.y=T)  ## CHECK!!! - all vs. all.x
       ##############################################################################################
-    
-    
-    
-    
+
     # write_log_msg(levels(factor(ws_df$Application)), curation_log_file)
-    # ws_df <- get_mac_app_usage_data(mac_activity_df, ws_df)
-    
     
   } else if (!is_empty(win_activity_file_name)) {
     # write_log_msg('Windows app usage file - Found', curation_log_file)
-    # win_activity_df <- custom_read_csv(file.path(day_dir, win_activity_file_name))
     # ws_df <- get_win_app_usage_data(win_activity_df, ws_df)
+    
+    
+    # print(as.numeric(ws_df$Timestamp))
+    
+    
+    ws_df <- custom_read_csv(file.path(day_dir, win_activity_file_name)) %>% 
+      filter(Activity=='Application') %>% 
+      mutate(Application=Details,
+             Timestamp=convert_s_interface_date(strptime(substr(Timestamp, 1, 19), format='%a %b %d %H:%M:%S'))) %>%
+      select(Timestamp, Application) %>%
+      ##############################################################################################
+      merge(ws_df, by='Timestamp', all=T)      ## CHECK!!! - all vs. all.x
+      # merge(ws_df, by='Timestamp', all.y=T)  ## CHECK!!! - all vs. all.x
+      ##############################################################################################
+    
+    # win_app_usage_df <<- rbind.fill(win_app_usage_df, ws_df)
+    
+  
+    
+    # temp_win_activity_df <- win_activity_df %>%
+    #   group_by(Activity, Details) %>%
+    #   summarise(TotalRows=n()) %>%
+    #   mutate(Participant_ID=subj_name,
+    #          Day=day_serial) %>%
+    #   select(Participant_ID, Day, everything())
+    # 
+    # win_app_usage_df <<- rbind.fill(win_app_usage_df, temp_win_activity_df)
+    
+
+    
+    
+    # print(str(ws_df))
+    # print(as.numeric(ws_df$Timestamp))
+    # write_log_msg(levels(factor(win_activity_df$Activity)), curation_log_file)
+    # write_log_msg(levels(factor(win_activity_df$Details)), curation_log_file)
+    
+    
+    
+    # write_log_msg(levels(factor(temp_win_activity_df$Activity)), curation_log_file)
+    # write_log_msg(levels(factor(temp_win_activity_df$Details)), curation_log_file)
+    # print(str(temp_win_activity_df))
+    # View(temp_win_activity_df)
+    
+
     
   } else {
     # write_log_msg('Mac/Win app usage file - Not Found', curation_log_file)
@@ -376,12 +416,15 @@ curate_ws_session_data <- function(subj_name, day_serial, rb_df) {
   ## Find out the app monitor log
   ###################################################
   ws_df <- get_app_usage_data(subj_name, day_serial, ws_df)
-  
+  # print(str(ws_df))
+  # print(nrow(ws_df))
+  # print(levels(factor(ws_df$Application)))
   
   
 
   ## rbind.fill bind two data frames that don't have the same set of columns
   full_day_df <- rbind.fill(rb_df, ws_df)
+  # print(levels(factor(full_day_df$Application)))
   
   return(full_day_df)
 }
@@ -404,6 +447,7 @@ merge_e4_data <- function(subj_name, day_serial, full_day_pp_df) {
 }
 
 refactor_and_export_all_subj_data <- function() {
+  # print(levels(factor(all_subj_df$Application)))
   
   ## This is for T001 & T003, for whom we only noted the break times
   # all_subj_df[is.na(all_subj_df$Ontologies) & all_subj_df$Treatment=='WS' & all_subj_df$Participant_ID=='T001', ]$Ontologies <<- 'Working'
@@ -435,8 +479,8 @@ refactor_and_export_all_subj_data <- function() {
     ## Calculating relative treatment time
     group_by(Participant_ID, Day, Treatment) %>% 
     arrange(Timestamp) %>%
-    mutate(TreatmentTime=as.numeric(Timestamp)-as.numeric(head(Timestamp, 1))) %>% 
-    
+    mutate(TreatmentTime=as.numeric(Timestamp)-as.numeric(head(Timestamp, 1))) %>%
+
     select(Participant_ID,
            Day,
            Treatment,
@@ -449,7 +493,7 @@ refactor_and_export_all_subj_data <- function() {
            # EDA,
            Ontologies,
            Application
-    ) %>% 
+    ) %>%
     drop_na(Treatment) ## Removing NA Treatments - caused for merging all
 
   
@@ -457,6 +501,7 @@ refactor_and_export_all_subj_data <- function() {
   write_log_msg(paste0('Total relative time mismatch row: ', nrow(all_subj_df[all_subj_df$Sinterface_Time != all_subj_df$TreatmentTime, ])), curation_log_file)
   
   View(all_subj_df)
+  write_log_msg(levels(factor(all_subj_df$Application)), curation_log_file)
   convert_to_csv(all_subj_df, file.path(curated_data_dir, physiological_data_dir, 'full_df_qc0.csv'))
 }
 
@@ -465,8 +510,8 @@ curate_data <- function() {
   # subj_list <- get_dir_list(file.path(raw_data_dir, grp_dir))
   subj_list <- custom_read_csv(file.path(curated_data_dir, utility_data_dir, subj_list_file_name))$Subject
   
-  sapply(subj_list, function(subj_name) {
-  # sapply(subj_list[2], function(subj_name) {
+  # sapply(subj_list, function(subj_name) {
+  sapply(subj_list[3], function(subj_name) {
     
     subj_dir <- file.path(raw_data_dir, grp_dir, subj_name)
     day_list <- get_dir_list(subj_dir)
@@ -491,6 +536,7 @@ curate_data <- function() {
         
         write_log_msg('Merging.....all subj data\n', curation_log_file)
         all_subj_df <<- rbind.fill(all_subj_df, full_day_df)
+        # print(levels(factor(all_subj_df$Application)))
       },
       error=function(err) {
         write_log_msg(paste0('\n', decorator_hash, '\n', subj_name, '-', day_serial, ': ERROR!'), curation_log_file)
@@ -498,6 +544,9 @@ curate_data <- function() {
       })
     })
   })
+  
+  # convert_to_csv(win_app_usage_df, file.path(curated_data_dir, physiological_data_dir, 'win_app_usage_df.csv'))
+  # convert_to_csv(win_app_usage_df, file.path(curated_data_dir, physiological_data_dir, 'win_app_usage_row_num_df.csv'))
   
   refactor_and_export_all_subj_data()
 }
