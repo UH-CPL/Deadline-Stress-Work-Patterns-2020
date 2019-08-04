@@ -474,7 +474,8 @@ refactor_and_export_all_subj_data <- function() {
   
   
   all_subj_df <<- all_subj_df %>%
-    rename(Sinterface_Time=Time) %>% 
+    rename(Sinterface_Time=Time,
+           Activities=Ontologies) %>% 
     
     ## Calculating relative treatment time
     group_by(Participant_ID, Day, Treatment) %>% 
@@ -491,11 +492,21 @@ refactor_and_export_all_subj_data <- function() {
            NR_PP,
            # HR,
            # EDA,
-           Ontologies,
+           Activities,
            Application
     ) %>%
-    drop_na(Treatment) ## Removing NA Treatments - caused for merging all
+    
+    ###################################################################################
+    ## Note: This is very important to understand this code
+    ## We were some missing WS data.
+    ## So, we merge all data, and based on WS start and end time we get all WS data
+    ## Here, we are removing NA Treatments - caused for merging all
+    drop_na(Treatment) 
+    ###################################################################################
 
+  
+  
+  
   
   # write_log_msg(levels(factor(all_subj_df$Application)), curation_log_file)
   write_log_msg(paste0('Total relative time mismatch row: ', nrow(all_subj_df[all_subj_df$Sinterface_Time != all_subj_df$TreatmentTime, ])), curation_log_file)
@@ -534,9 +545,15 @@ curate_data <- function() {
         write_log_msg('Merging.....iwatch data', curation_log_file)
         # full_day_df <-  merge_iwatch_date(subj_name, day_serial, full_day_df)
         
+        write_log_msg('Fixing.....missing workign session data', curation_log_file)
+        ## Here get the info from ws start and end time
+        ## Check for the in this time period which rows has NA session
+        ## Replace those treatements by ws
+        # full_day_df <-  add_missing_ws_session_data(subj_name, day_serial, full_day_df)
+        
+        
         write_log_msg('Merging.....all subj data\n', curation_log_file)
         all_subj_df <<- rbind.fill(all_subj_df, full_day_df)
-        # print(levels(factor(all_subj_df$Application)))
       },
       error=function(err) {
         write_log_msg(paste0('\n', decorator_hash, '\n', subj_name, '-', day_serial, ': ERROR!'), curation_log_file)
