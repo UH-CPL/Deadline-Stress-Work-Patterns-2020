@@ -384,9 +384,12 @@ get_app_usage_data <- function(subj_name, day_serial, ws_df) {
     
   } else {
     # write_log_msg('Mac/Win app usage file - Not Found', curation_log_file)
+    return(ws_df)
   }
   
   
+  ws_df <- ws_df %>% 
+    mutate(Application_QC1=na.locf(Application))
   
   return(ws_df)
 }
@@ -493,7 +496,8 @@ refactor_and_export_all_subj_data <- function() {
            # HR,
            # EDA,
            Activities,
-           Application
+           Application,
+           Application_QC1
     ) %>%
     
     ###################################################################################
@@ -513,7 +517,7 @@ refactor_and_export_all_subj_data <- function() {
   
   View(all_subj_df)
   write_log_msg(levels(factor(all_subj_df$Application)), curation_log_file)
-  convert_to_csv(all_subj_df, file.path(curated_data_dir, physiological_data_dir, 'full_df_qc0.csv'))
+  convert_to_csv(all_subj_df, file.path(curated_data_dir, physiological_data_dir, qc0_file_name))
 }
 
 
@@ -521,8 +525,8 @@ curate_data <- function() {
   # subj_list <- get_dir_list(file.path(raw_data_dir, grp_dir))
   subj_list <- custom_read_csv(file.path(curated_data_dir, utility_data_dir, subj_list_file_name))$Subject
   
-  # sapply(subj_list, function(subj_name) {
-  sapply(subj_list[3], function(subj_name) {
+  sapply(subj_list, function(subj_name) {
+  # sapply(subj_list[5], function(subj_name) {
     
     subj_dir <- file.path(raw_data_dir, grp_dir, subj_name)
     day_list <- get_dir_list(subj_dir)
@@ -545,7 +549,7 @@ curate_data <- function() {
         write_log_msg('Merging.....iwatch data', curation_log_file)
         # full_day_df <-  merge_iwatch_date(subj_name, day_serial, full_day_df)
         
-        write_log_msg('Fixing.....missing workign session data', curation_log_file)
+        write_log_msg('Fixing.....missing working session data', curation_log_file)
         ## Here get the info from ws start and end time
         ## Check for the in this time period which rows has NA session
         ## Replace those treatements by ws

@@ -35,9 +35,15 @@ iWatch_file_pattern <- 'iWatch.csv'
 
 
 
-qc0_file_name <- 'all_subj_df_qc0.csv'
-qc1_file_name <- 'all_subj_df_qc1.csv'
-qc2_file_name <- 'all_subj_df_qc2.csv'
+# computer_usage_pattern = '^CR$|^CW$|^Computer - Reading$|^Computer - Writing$|^C - Reading$|^C - Writing$|^C - Writing/Reading$'
+computer_usage_pattern = 'CR|CW|Computer - Reading|Computer - Writing|C - Reading|C - Writing|C - Writing/Reading'
+# computer_usage_pattern = 'CR|CW'
+
+
+
+qc0_file_name <- 'all_subj_qc0.csv'
+qc1_file_name <- 'all_subj_qc1.csv'
+qc2_file_name <- 'all_subj_qc2.csv'
 
 
 ## We don't know until now how many filtering we will do :P
