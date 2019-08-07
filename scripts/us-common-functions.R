@@ -34,6 +34,25 @@ e4_file_pattern <- 'HR.csv|EDA.csv'
 iWatch_file_pattern <- 'iWatch.csv'
 
 
+
+# computer_usage_pattern = '^CR$|^CW$|^Computer - Reading$|^Computer - Writing$|^C - Reading$|^C - Writing$|^C - Writing/Reading$'
+computer_usage_pattern = 'CR|CW|Computer - Reading|Computer - Writing|C - Reading|C - Writing|C - Writing/Reading'
+# computer_usage_pattern = 'CR|CW'
+
+
+
+qc0_file_name <- 'all_subj_qc0.csv'
+qc1_file_name <- 'all_subj_qc1.csv'
+qc2_file_name <- 'all_subj_qc2.csv'
+
+
+## We don't know until now how many filtering we will do :P
+## Hope it doesn't exixts 99 filtering
+qc99_file_name <- 'all_subj_df_qc99.csv'
+
+
+
+
 ## 1. Timestamp -->    Extract whatever inside []                 -->   \\[(.*)\\]
 ## 2. Application -->  Extract whatever after the space of []     -->   (.*)
 mac_data_pattern <- '\\[(.*)\\] (.*)'
