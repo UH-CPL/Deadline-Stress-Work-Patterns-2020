@@ -20,7 +20,9 @@ Packages are available on CRAN and can be installed using a simple call to `inst
 1. **Data Curation (dc)**
 	- dc-curate-and-process-data.R
 	- dc-format-activity-data.R
-2. **Utility Scripts (us)**
+
+
+**Utility Scripts (us)**
 	- us-common-functions.R
 	- us-down-sample-pp.R
 	- us-filter-pp.R
