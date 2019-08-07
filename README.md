@@ -22,8 +22,9 @@ Packages are available on CRAN and can be installed using a simple call to `inst
 	- dc-format-activity-data.R
 
 
-----------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------
 **Utility Scripts (us)**
+
 	- us-common-functions.R
 	- us-down-sample-pp.R
 	- us-filter-pp.R
