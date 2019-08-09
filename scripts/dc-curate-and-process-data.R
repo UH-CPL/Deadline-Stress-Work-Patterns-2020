@@ -4,11 +4,12 @@
 # library(XLConnect)
 # library(scales)
 # library(ggplot2)
-library(plyr)      ## for func rbind.fill
+library(plyr)      ## for func rbind.fill()
 library(dplyr)
 library(readr)
-library(magrittr)  ## for func set_colnames
+library(magrittr)  ## for func set_colnames()
 library(gsubfn)    ## for func read.pattern()
+library(zoo)       ## for func na.locf()
 
 
 # require(xlsx)
@@ -87,15 +88,15 @@ get_e4_data <- function(day_dir, e4_file_name) {
     
     ## list is one element too large after the loop, so we delete the final element 
     # timestamp_vector <- timestamp_vector[-length(timestamp_vector)] 
-    message(nrow(e4_df))
+    # message(nrow(e4_df))
     e4_df <- e4_df[1:round(nrow(e4_df)/rate), ] 
-    message(nrow(e4_df))
+    # message(nrow(e4_df))
   } 
   
   ## list is one element too large after the loop, so we delete the final element 
   timestamp_vector <- timestamp_vector[-length(timestamp_vector)] 
   
-  colnames(e4_df) <- c(sub('.csv', '', sub('.*/', '', e4_file_name)) )
+  colnames(e4_df) <- c(sub('.csv', '', sub('.*/', '', e4_file_name)))
   e4_df$Timestamp <- as.POSIXct(timestamp_vector, origin='1970-01-01', tz='America/Chicago') # timestamp with Houston timezone 
   e4_df <- data.frame(e4_df)
   
@@ -145,7 +146,7 @@ get_downsampled_pp <- function(subj_name, day_serial, session_name) {
   session_dir <- file.path(raw_data_dir, grp_dir, subj_name, day_serial, session_name)
   
   pp_file_name <- get_matched_file_names(session_dir, pp_file_pattern)
-  nr_pp_file_name <- get_matched_file_names(file.path(curated_data_dir, subj_data_dir), paste0('.*', subj_name, '.*', day_serial, '.*', session_name, nr_pp_file_pattern))
+  nr_pp_file_name <- get_matched_file_names(file.path(curated_data_dir, subj_data_dir), paste0('.*', subj_name, '_', day_serial, '_', session_name, nr_pp_file_pattern))
   
   if(!is_empty(pp_file_name)) {
     if(is_empty(nr_pp_file_name)) {
@@ -433,34 +434,82 @@ curate_ws_session_data <- function(subj_name, day_serial, rb_df) {
 }
 
 
-merge_e4_data <- function(subj_name, day_serial, full_day_pp_df) {
+merge_e4_data <- function(subj_name, day_serial, full_day_df) {
   day_dir <- file.path(raw_data_dir, grp_dir, subj_name, day_serial)
+
+  ## Two files for HR and EDA
+  # downsampled_e4_file_list <- get_matched_file_names(file.path(curated_data_dir, subj_data_dir), e4_file_pattern)
+  subj_day_info <- paste0('Group1_', subj_name, '_', day_serial, '_')
+  downsampled_e4_file_list <- get_matched_file_names(file.path(curated_data_dir, subj_data_dir), paste0(subj_day_info, 'HR', '|', subj_day_info, 'EDA'))
   
-  ## We want two file for HR and EDA
-  e4_file_list <- get_matched_file_names_recursively(day_dir, e4_file_pattern)
   
-  for(e4_file_name in e4_file_list) {
-    e4_df <- get_e4_data(day_dir, e4_file_name)
-    ##############################################################################################
-    merged_df <- merge(full_day_pp_df, e4_df, by='Timestamp', all=T)   ## CHECK!!! - all vs. all.x
-    ##############################################################################################
+  if(is_empty(downsampled_e4_file_list)) {
+    ## Two files for HR and EDA
+    e4_file_list <- get_matched_file_names_recursively(day_dir, e4_file_pattern)
+    
+    for(e4_file_name in e4_file_list) {
+      e4_df <- get_e4_data(day_dir, e4_file_name)
+      convert_to_csv(e4_df, file.path(curated_data_dir, subj_data_dir, paste0('Group1_', subj_name, '_', day_serial, '_', sub('.csv', '', sub('.*/', '', e4_file_name)), '.csv')))
+      
+      ##############################################################################################
+      full_day_df <- merge(full_day_df, e4_df, by='Timestamp', all=T)   ## CHECK!!! - all vs. all.x
+      ##############################################################################################
+    }
+    
+  } else {
+    for(e4_file_name in downsampled_e4_file_list) {
+      e4_df <- custom_read_csv(file.path(curated_data_dir, subj_data_dir, e4_file_name)) %>% 
+        mutate(Timestamp=as.POSIXct(Timestamp))
+      # print(str(e4_df))
+      
+      ##############################################################################################
+      full_day_df <- merge(full_day_df, e4_df, by='Timestamp', all=T)   ## CHECK!!! - all vs. all.x
+      ##############################################################################################
+    }
   }
   
-  return(merged_df)
+  return(full_day_df)
 }
 
-refactor_and_export_all_subj_data <- function() {
+
+merge_iwatch_data <- function(subj_name, day_serial, full_day_df) {
+  day_dir <- file.path(raw_data_dir, grp_dir, subj_name, day_serial)
+  iWatch_file_name <- get_matched_file_names_recursively(day_dir, iWatch_file_pattern)
+  
+  if(!is_empty(iWatch_file_name)) {
+    full_day_df <- custom_read_csv(file.path(day_dir, iWatch_file_name)) %>% 
+      rename(Timestamp=Time,
+             iWatch_HR=HeartRate) %>% 
+      mutate(Timestamp=convert_s_interface_date(strptime(Timestamp, format='%Y-%m-%d %H:%M:%S')) - 5 * one_hour_sec) %>%
+      # mutate(Timestamp=Timestamp - 5 * one_hour_sec) %>% 
+      ##############################################################################################
+      merge(full_day_df, by='Timestamp', all=T) ## CHECK!!! - all vs. all.x
+      ##############################################################################################
+    
+      
+    # print(str(full_day_df))
+    
+    ##############################################################################################
+    # full_day_df <- merge(full_day_df, iWatch_df, by='Timestamp', all=T)   ## CHECK!!! - all vs. all.x
+    ##############################################################################################
+  }
+
+  return(full_day_df)
+}
+
+
+refactor_and_export_all_subj_data <- function(all_subj_df) {
   # print(levels(factor(all_subj_df$Application)))
   
   ## This is for T001 & T003, for whom we only noted the break times
-  # all_subj_df[is.na(all_subj_df$Ontologies) & all_subj_df$Treatment=='WS' & all_subj_df$Participant_ID=='T001', ]$Ontologies <<- 'Working'
-  # all_subj_df[is.na(all_subj_df$Ontologies) & all_subj_df$Treatment=='WS' & all_subj_df$Participant_ID=='T003', ]$Ontologies <<- 'C - Writing/Reading'
+  # all_subj_df[is.na(all_subj_df$Ontologies) & all_subj_df$Treatment=='WS' & all_subj_df$Participant_ID=='T001', ]$Ontologies <- 'Working'
+  # all_subj_df[is.na(all_subj_df$Ontologies) & all_subj_df$Treatment=='WS' & all_subj_df$Participant_ID=='T003', ]$Ontologies <- 'C - Writing/Reading'
   
   #################################################################################
   #################################################################################
   # message(class(pp_df$Ontologies))
   
-  all_subj_df <<- all_subj_df %>%
+  all_subj_df <- all_subj_df %>%
     mutate(Ontologies=case_when(
       is.na(Ontologies) & Treatment=='WS' & Participant_ID=='T001'~'Working',
       is.na(Ontologies) & Treatment=='WS' & Participant_ID=='T003'~'C - Writing/Reading',
@@ -476,9 +525,11 @@ refactor_and_export_all_subj_data <- function() {
   
   
   
-  all_subj_df <<- all_subj_df %>%
+  all_subj_df <- all_subj_df %>%
     rename(Sinterface_Time=Time,
-           Activities=Ontologies) %>% 
+           Activities=Ontologies,
+           E4_HR=HR,
+           E4_EDA=EDA) %>% 
     
     ## Calculating relative treatment time
     group_by(Participant_ID, Day, Treatment) %>% 
@@ -491,10 +542,14 @@ refactor_and_export_all_subj_data <- function() {
            Timestamp,
            Sinterface_Time,
            TreatmentTime,
+           
            PP,
            NR_PP,
-           # HR,
-           # EDA,
+           
+           E4_HR,
+           E4_EDA,
+           iWatch_HR,
+           
            Activities,
            Application,
            Application_QC1
@@ -526,7 +581,7 @@ curate_data <- function() {
   subj_list <- custom_read_csv(file.path(curated_data_dir, utility_data_dir, subj_list_file_name))$Subject
   
   sapply(subj_list, function(subj_name) {
-  # sapply(subj_list[5], function(subj_name) {
+  # sapply(subj_list[1], function(subj_name) {
     
     subj_dir <- file.path(raw_data_dir, grp_dir, subj_name)
     day_list <- get_dir_list(subj_dir)
@@ -544,10 +599,10 @@ curate_data <- function() {
         full_day_df <- curate_ws_session_data(subj_name, day_serial, rb_df)
         
         write_log_msg('\nMerging.....e4 data', curation_log_file)
-        # full_day_df <- merge_e4_data(subj_name, day_serial, full_day_df)
+        full_day_df <- merge_e4_data(subj_name, day_serial, full_day_df)
         
         write_log_msg('Merging.....iwatch data', curation_log_file)
-        # full_day_df <-  merge_iwatch_date(subj_name, day_serial, full_day_df)
+        full_day_df <- merge_iwatch_data(subj_name, day_serial, full_day_df)
         
         write_log_msg('Fixing.....missing working session data', curation_log_file)
         ## Here get the info from ws start and end time
@@ -558,6 +613,7 @@ curate_data <- function() {
         
         write_log_msg('Merging.....all subj data\n', curation_log_file)
         all_subj_df <<- rbind.fill(all_subj_df, full_day_df)
+        
       },
       error=function(err) {
         write_log_msg(paste0('\n', decorator_hash, '\n', subj_name, '-', day_serial, ': ERROR!'), curation_log_file)
@@ -569,7 +625,7 @@ curate_data <- function() {
   # convert_to_csv(win_app_usage_df, file.path(curated_data_dir, physiological_data_dir, 'win_app_usage_df.csv'))
   # convert_to_csv(win_app_usage_df, file.path(curated_data_dir, physiological_data_dir, 'win_app_usage_row_num_df.csv'))
   
-  refactor_and_export_all_subj_data()
+  refactor_and_export_all_subj_data(all_subj_df)
 }
 
 

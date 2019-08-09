@@ -2,7 +2,7 @@
 #--------LIBRARIES--------#
 #-------------------------#
 library(dplyr)
-library(stringr)
+library(stringr)    ## for func str_detect()
 
 
 #-------------------------#
@@ -81,11 +81,13 @@ format_activity_data <- function() {
            Timestamp,
            Sinterface_Time,
            TreatmentTime,
+           
            PP,
            NR_PP,
            
-           # HR,
-           # EDA,
+           E4_HR,
+           E4_EDA,
+           iWatch_HR,
            
            Activities,
            Activities_QC1,
