@@ -1,0 +1,297 @@
+
+----------
+T001-Day1
+----------
+Processing.....Resting Baseline
+Processing.....Working Session
+
+Merging.....e4 data
+Merging.....iwatch data
+Fixing.....missing working session data
+Merging.....all subj data
+
+
+----------
+T001-Day2
+----------
+Processing.....Resting Baseline
+Processing.....Working Session
+
+Merging.....e4 data
+Merging.....iwatch data
+Fixing.....missing working session data
+Merging.....all subj data
+
+
+----------
+T001-Day3
+----------
+Processing.....Resting Baseline
+Processing.....Working Session
+
+Merging.....e4 data
+Merging.....iwatch data
+Fixing.....missing working session data
+Merging.....all subj data
+
+
+----------
+T001-Day4
+----------
+Processing.....Resting Baseline
+Processing.....Working Session
+
+Merging.....e4 data
+Merging.....iwatch data
+Fixing.....missing working session data
+Merging.....all subj data
+
+
+----------
+T003-Day1
+----------
+Processing.....Resting Baseline
+Processing.....Working Session
+
+Merging.....e4 data
+Merging.....iwatch data
+Fixing.....missing working session data
+Merging.....all subj data
+
+
+----------
+T003-Day2
+----------
+Processing.....Resting Baseline
+Processing.....Working Session
+
+Merging.....e4 data
+Merging.....iwatch data
+Fixing.....missing working session data
+Merging.....all subj data
+
+
+----------
+T003-Day3
+----------
+Processing.....Resting Baseline
+Processing.....Working Session
+
+Merging.....e4 data
+Merging.....iwatch data
+Fixing.....missing working session data
+Merging.....all subj data
+
+
+----------
+T003-Day4
+----------
+Processing.....Resting Baseline
+Processing.....Working Session
+
+Merging.....e4 data
+Merging.....iwatch data
+Fixing.....missing working session data
+Merging.....all subj data
+
+
+----------
+T005-Day1
+----------
+Processing.....Resting Baseline
+Processing.....Working Session
+
+Merging.....e4 data
+Merging.....iwatch data
+Fixing.....missing working session data
+Merging.....all subj data
+
+
+----------
+T005-Day2
+----------
+Processing.....Resting Baseline
+Processing.....Working Session
+
+Merging.....e4 data
+Merging.....iwatch data
+Fixing.....missing working session data
+Merging.....all subj data
+
+
+----------
+T005-Day3
+----------
+Processing.....Resting Baseline
+Processing.....Working Session
+
+Merging.....e4 data
+Merging.....iwatch data
+Fixing.....missing working session data
+Merging.....all subj data
+
+
+----------
+T005-Day4
+----------
+Processing.....Resting Baseline
+Processing.....Working Session
+
+Merging.....e4 data
+Merging.....iwatch data
+Fixing.....missing working session data
+Merging.....all subj data
+
+
+----------
+T005-Day5
+----------
+Processing.....Resting Baseline
+Processing.....Working Session
+
+Merging.....e4 data
+Merging.....iwatch data
+Fixing.....missing working session data
+Merging.....all subj data
+
+
+----------
+T007-Day1
+----------
+Processing.....Resting Baseline
+Processing.....Working Session
+
+Merging.....e4 data
+Merging.....iwatch data
+Fixing.....missing working session data
+Merging.....all subj data
+
+
+----------
+T007-Day2
+----------
+Processing.....Resting Baseline
+Processing.....Working Session
+
+Merging.....e4 data
+Merging.....iwatch data
+Fixing.....missing working session data
+Merging.....all subj data
+
+
+----------
+T007-Day3
+----------
+Processing.....Resting Baseline
+Processing.....Working Session
+
+Merging.....e4 data
+Merging.....iwatch data
+Fixing.....missing working session data
+Merging.....all subj data
+
+
+----------
+T007-Day4
+----------
+Processing.....Resting Baseline
+Processing.....Working Session
+
+Merging.....e4 data
+Merging.....iwatch data
+Fixing.....missing working session data
+Merging.....all subj data
+
+
+----------
+T009-Day1
+----------
+Processing.....Resting Baseline
+Processing.....Working Session
+
+Merging.....e4 data
+Merging.....iwatch data
+Fixing.....missing working session data
+Merging.....all subj data
+
+
+----------
+T009-Day2
+----------
+Processing.....Resting Baseline
+Processing.....Working Session
+
+Merging.....e4 data
+Merging.....iwatch data
+Fixing.....missing working session data
+Merging.....all subj data
+
+
+----------
+T009-Day3
+----------
+Processing.....Resting Baseline
+Processing.....Working Session
+
+Merging.....e4 data
+Merging.....iwatch data
+Fixing.....missing working session data
+Merging.....all subj data
+
+
+----------
+T009-Day4
+----------
+Processing.....Resting Baseline
+Processing.....Working Session
+
+Merging.....e4 data
+Merging.....iwatch data
+Fixing.....missing working session data
+Merging.....all subj data
+
+Total relative time mismatch row: 0
+Acrobat
+AdobeReader
+ApplicationFrameHost
+Calendar
+chrome
+Cisco AnyConnect Secure Mobility Client
+Console
+Emacs-x86_64-10_9
+EndNote X7
+EXCEL
+explorer
+FaceTime
+Finder
+Google Chrome
+Idle
+iTunes
+JavaApplicationStub
+LockApp
+Mail
+MendeleyDesktop
+Messages
+Microsoft AutoUpdate
+Microsoft Excel
+Microsoft PowerPoint
+Microsoft Word
+missing value
+Notes
+OpenWith
+osascript
+Photos
+POWERPNT
+Preview
+QQ
+RStudio
+S-Interface
+Safari
+SearchUI
+ShellExperienceHost
+Skype
+Slack
+TeamViewer
+Terminal
+WeChat
+WINWORD
