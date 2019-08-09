@@ -13,8 +13,10 @@ performance_data_dir <- 'performance-data'
 index_data_dir <- 'index-data'
 final_data_dir <- 'final-data'
 
-default_plot_width = 12
-default_plot_height = 10
+default_plot_width <- 12
+default_plot_height <- 10
+
+one_hour_sec <- 3600
 
 
 subj_list_file_name <- 'subj_list.csv'
@@ -31,7 +33,7 @@ activity_file_pattern <- '.*Activity.csv'
 mac_app_usage_file_pattern <- '.*Monitor.*log'
 win_app_usage_file_pattern <- '.*MonitorLog.csv'
 e4_file_pattern <- 'HR.csv|EDA.csv'
-iWatch_file_pattern <- 'iWatch.csv'
+iWatch_file_pattern <- '.*iWatch.csv'
 
 
 
