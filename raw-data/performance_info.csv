@@ -1,5 +1,6 @@
 Subject,SubmissionType,Venue,VenueImpact,Supposed Deadline,Submission Date,Performance
-T001,,,,2/18/2019,3/18/2019,-1
-T003,,,,5/15/2019,5/18/2019,0
-T005,,,,5/27/2019,,0
-T007,,,,6/13/2019,,0
+T001,Conference Paper??,,,2/18/2019,3/18/2019,-1
+T003,Journal Paper??,,,5/15/2019,5/18/2019,0
+T005,Journal Paper,,,5/27/2019,,0
+T007,Conference Paper??,,,6/13/2019,6/13/2019,0
+T009,Conference Paper??,,,7/25/2019,7/25/2019,0
