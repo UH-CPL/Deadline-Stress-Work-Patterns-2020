@@ -20,6 +20,9 @@ Packages are available on CRAN and can be installed using a simple call to `inst
 1. **Data Curation (dc)**
 	- dc-curate-and-process-data.R
 	- dc-format-activity-data.R
+	- dc-process-mean-per-session.R
+2. **Validation Scripts (vs)**
+	- vs-quality-control-plots.Rmd
 
 
 
