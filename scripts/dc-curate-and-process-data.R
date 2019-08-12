@@ -528,6 +528,8 @@ refactor_and_export_all_subj_data <- function(all_subj_df) {
   all_subj_df <- all_subj_df %>%
     rename(Sinterface_Time=Time,
            Activities=Ontologies,
+           Raw_PP=PP,
+           PP=NR_PP,
            E4_HR=HR,
            E4_EDA=EDA) %>% 
     
@@ -543,8 +545,8 @@ refactor_and_export_all_subj_data <- function(all_subj_df) {
            Sinterface_Time,
            TreatmentTime,
            
+           Raw_PP,
            PP,
-           NR_PP,
            
            E4_HR,
            E4_EDA,

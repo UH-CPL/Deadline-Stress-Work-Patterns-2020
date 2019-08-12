@@ -30,7 +30,7 @@ process_mean_data <- function() {
   
   qc0_session_mean_df <- qc0_df %>%
     select(-Timestamp, -Sinterface_Time, -TreatmentTime, 
-           -Activities, -Activities_QC1, 
+           -Activities, -Activities_QC1, -Activities_QC2, 
            -Application, -Application_QC1, 
            -Application_QC2, -Application_QC3) %>%
     group_by(Participant_ID, Day, Treatment) %>%

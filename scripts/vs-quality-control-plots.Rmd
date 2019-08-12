@@ -36,9 +36,25 @@ library(cowplot)
 #-------------------------#
 #-----GLOBAL VARIABLES----#
 #-------------------------#
+## CHANGE this path if needed
+script_dir <- getwd()
+
+project_dir <- dirname(script_dir)
+setwd(project_dir)
 
 
 
+source(file.path(script_dir, 'us-common-functions.R'))
+
+
+
+session_mean_file_name <- qc0_session_mean_file_name
+activity_mean_file_name <- qc0_activity_mean_file_name
+
+
+
+# session_mean_file_name <- qc1_session_mean_file_name
+# activity_mean_file_name <- qc1_activity_mean_file_name
 ``` 
 
 
@@ -46,7 +62,38 @@ library(cowplot)
 #-------------------------#
 #-----   FUNCTIONS    ----#
 #-------------------------#
+draw_session_based_plots <- function(session_mean_df) {
+  print_msg(str(session_mean_df))
+  for(subj in levels(factor(session_mean_df$Participant_ID))) {
+    message('')
+    message(subj)
+    message('-----------------')
+    
+    temp_session_mean_df <- session_mean_df %>% 
+      filter(Participant_ID==subj)
+    
+    for (day in levels(factor(temp_session_mean_df$Day))) {
+      message(day)
+    }
+  }
+}
 
+
+draw_activity_based_plots <- function(activity_mean_df) {
+  print_msg(str(activity_mean_df))
+  
+}
+
+
+
+draw_plots <- function() {
+  
+  session_mean_df <- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, session_mean_file_name))
+  activity_mean_df <- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, activity_mean_file_name))
+  
+  draw_session_based_plots(session_mean_df)
+  # draw_activity_based_plots(activity_mean_df)
+}
 
 
 
@@ -54,8 +101,6 @@ library(cowplot)
 
 
 
-<!-- \newpage -->
-<!-- &nbsp; -->
 \newpage
 <!-- DRAW PLOTS -->
 ```{r echo=FALSE, warning = FALSE, message = FALSE}
