@@ -1,0 +1,63 @@
+---
+title: "Quality Control Plots"
+header-includes:
+- \usepackage{booktabs}
+- \usepackage{sectsty} \sectionfont{\centering}
+output:
+  pdf_document: default
+  html_document: default
+geometry: top=3.5cm, bottom=3cm
+
+#knit: (function(inputFile, encoding) { rmarkdown::render(inputFile, encoding = encoding, output_file = file.path('plots', 'supplementary.pdf')) })
+---
+
+
+
+
+```{r echo = FALSE, warning = FALSE, message = FALSE} 
+#-------------------------#
+#--------LIBRARIES--------#
+#-------------------------#
+library(dplyr)
+library(ggplot2)
+library(cowplot)
+
+
+# library(readr)
+# library(tidyverse)
+# library(grid)
+# library(gridExtra)
+# library(ggpubr)
+# library(directlabels)
+# library(gsubfn)
+
+
+
+#-------------------------#
+#-----GLOBAL VARIABLES----#
+#-------------------------#
+
+
+
+``` 
+
+
+```{r echo=FALSE, warning = FALSE, message = FALSE}
+#-------------------------#
+#-----   FUNCTIONS    ----#
+#-------------------------#
+
+
+
+
+```
+
+
+
+<!-- \newpage -->
+<!-- &nbsp; -->
+\newpage
+<!-- DRAW PLOTS -->
+```{r echo=FALSE, warning = FALSE, message = FALSE}
+draw_plots()
+```

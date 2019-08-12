@@ -38,19 +38,28 @@ iWatch_file_pattern <- '.*iWatch.csv'
 
 
 # computer_usage_pattern = '^CR$|^CW$|^Computer - Reading$|^Computer - Writing$|^C - Reading$|^C - Writing$|^C - Writing/Reading$'
-computer_usage_pattern = 'CR|CW|Computer - Reading|Computer - Writing|C - Reading|C - Writing|C - Writing/Reading'
+computer_usage_pattern = 'CR|CW|Computer - Reading|Computer - Writing|C - Reading|C - Writing|C - Writing/Reading|Working'
 # computer_usage_pattern = 'CR|CW'
 
 
 
-qc0_file_name <- 'all_subj_qc0.csv'
-qc1_file_name <- 'all_subj_qc1.csv'
-qc2_file_name <- 'all_subj_qc2.csv'
+qc0_file_name <- 'qc0_all_subj.csv'
+qc1_file_name <- 'qc1_all_subj.csv'
+qc2_file_name <- 'qc2_all_subj.csv'
+
+
+qc0_session_mean_file_name <- 'qc0_session_mean.csv'
+qc1_session_mean_file_name <- 'qc1_session_mean.csv'
+qc2_session_mean_file_name <- 'qc2_session_mean.csv'
+
+qc0_activity_mean_file_name <- 'qc0_activity_mean.csv'
+qc1_activity_mean_file_name <- 'qc1_activity_mean.csv'
+qc2_activity_mean_file_name <- 'qc2_activity_mean.csv'
 
 
 ## We don't know until now how many filtering we will do :P
 ## Hope it doesn't exixts 99 filtering
-qc99_file_name <- 'all_subj_df_qc99.csv'
+qc99_file_name <- 'qc99_all_subj.csv'
 
 
 
