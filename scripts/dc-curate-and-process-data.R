@@ -564,15 +564,20 @@ refactor_and_export_all_subj_data <- function(all_subj_df) {
     ###################################################################################
 
   
+  # mean_df <- all_subj_df %>%
+  #   select(-Timestamp, -Sinterface_Time, -TreatmentTime, -Activities, -Application, -Application_QC1) %>%
+  #   group_by(Participant_ID, Day, Treatment) %>%
+  #   summarize_all(mean, na.rm=T) %>%
+  #   ungroup()
   
   
-  
+  View(all_subj_df)
   # write_log_msg(levels(factor(all_subj_df$Application)), curation_log_file)
   write_log_msg(paste0('Total relative time mismatch row: ', nrow(all_subj_df[all_subj_df$Sinterface_Time != all_subj_df$TreatmentTime, ])), curation_log_file)
   
-  View(all_subj_df)
-  write_log_msg(levels(factor(all_subj_df$Application)), curation_log_file)
+  
   convert_to_csv(all_subj_df, file.path(curated_data_dir, physiological_data_dir, qc0_file_name))
+  # convert_to_csv(mean_df, file.path(curated_data_dir, physiological_data_dir, qc0_mean_file_name))
 }
 
 
