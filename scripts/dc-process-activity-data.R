@@ -156,8 +156,8 @@ format_activity_data <- function() {
            Sinterface_Time,
            TreatmentTime,
            
+           Raw_PP,
            PP,
-           NR_PP,
            
            E4_HR,
            E4_EDA,
