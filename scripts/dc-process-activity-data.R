@@ -99,7 +99,8 @@ get_final_activities <- function(all_subj_df) {
     
     
     mutate(Activities_QC2=case_when(str_detect(Activities_QC1, computer_usage_pattern)~'Computer Working',
-                                    Treatment=='WS'~'Other Activities')) 
+                                    Treatment=='WS'~'Other Activities',
+                                    TRUE~'Resting Baseline')) 
   
   return(all_subj_df)
 }

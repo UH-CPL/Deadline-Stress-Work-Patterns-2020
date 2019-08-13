@@ -24,6 +24,7 @@ subj_list_file_name <- 'subj_list.csv'
 
 grp_dir <- 'Group1'
 session_list <- c('Baseline', 'WorkingSession')
+signal_list <- c('PP', 'E4_HR', 'E4_EDA', 'iWatch_HR')
 
 
 pp_file_pattern <- '.*_pp.csv'
