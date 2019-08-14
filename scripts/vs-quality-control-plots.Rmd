@@ -14,7 +14,7 @@ geometry: top=3.5cm, bottom=3cm
 
 
 
-```{r echo = FALSE, warning = FALSE, message = FALSE} 
+```{r echo = FALSE, warning = FALSE, message = FALSE, results='hide'} 
 #-------------------------#
 #--------LIBRARIES--------#
 #-------------------------#
@@ -55,10 +55,13 @@ session_mean_file_name <- qc0_session_mean_file_name
 activity_mean_file_name <- qc0_activity_mean_file_name
 
 
-
 # all_subj_data_file_name <- qc1_file_name
 # session_mean_file_name <- qc1_session_mean_file_name
 # activity_mean_file_name <- qc1_activity_mean_file_name
+
+
+# signal_list <- c('PP', 'E4_HR', 'E4_EDA', 'iWatch_HR')
+# signal_list <- c('iWatch_HR')
 ``` 
 
 
@@ -66,7 +69,7 @@ activity_mean_file_name <- qc0_activity_mean_file_name
 #-------------------------#
 #-----   FUNCTIONS    ----#
 #-------------------------#
-# signal_list <- c('PP', 'E4_HR', 'E4_EDA', 'iWatch_HR')
+
 get_y_label <- function(signal) {
   if (signal=='PP') {
     return(bquote(paste('PP [',''^'o','C',''^2,']')))
@@ -106,7 +109,8 @@ get_activity_colors <- function(temp_session_mean_df) {
       colors <- c(colors, "#D02827")
     }
     if ("Other Activities" %in% temp_session_mean_df$Activities_QC2) {
-      colors <- c(colors, "#3CB44B")
+      colors <- c(colors, "#3388FF")
+      # colors <- c(colors, "#3CB44B")
     }
   }
   
@@ -119,11 +123,24 @@ get_y_limit <- function(col) {
            max(col, na.rm=T)))
 }
 
+get_theme <- function() {
+  return (
+    theme_bw() +
+    theme(panel.background=element_rect(fill="NA"), 
+          panel.grid.minor=element_line(colour="#E0E0E0"), 
+          legend.position='bottom',
+          plot.title=element_text(hjust=0.5,
+                                    size=14),
+          axis.title.x=element_text(size=10,
+                                    margin=margin(t=10, r=0, b=10, l=0, unit="pt")), 
+          axis.title.y=element_text(size=12))
+  )
+}
+
 
 draw_session_based_plots <- function(session_mean_df) {
-  # print_msg(str(session_mean_df))
-  for(subj in levels(factor(session_mean_df$Participant_ID))) {
-  # for(subj in levels(factor(session_mean_df$Participant_ID))[2]) {
+  # for(subj in levels(factor(session_mean_df$Participant_ID))) {
+  for(subj in levels(factor(session_mean_df$Participant_ID))[5]) {
     message('')
     message(subj)
     message('-----------------')
@@ -134,23 +151,26 @@ draw_session_based_plots <- function(session_mean_df) {
       
     for (signal in signal_list) {
       
-      message(signal)
+      message(paste0(signal, ' --->'))
       
       plot_list <- list()
       for (day in levels(factor(temp_subj_session_mean_df$Day))) {
+      # for (day in levels(factor(temp_subj_session_mean_df$Day))[1]) {
         
-        message(paste0(day, '----->'))
+        message(day)
         
         temp_session_mean_df <- temp_subj_session_mean_df %>% 
           filter(Day==day) %>% 
           select(Treatment, signal) %>% 
           na.omit()
-        # print_msg(str(temp_session_mean_df))
         
         if (nrow(temp_session_mean_df)>0) {
           
-          plot <- temp_session_mean_df %>%
-            ggplot(aes(x=1, y=temp_session_mean_df[[signal]], color=Treatment)) +
+  
+          
+          # plot <- temp_session_mean_df %>%
+          #   ggplot(aes(x=1, y=temp_session_mean_df[[signal]], color=Treatment)) +
+          #   ggplot(aes(x=1, y=temp_session_mean_df[[signal]])) +
           
           # plot <- all_subj_df %>%
           #   filter(Participant_ID==subj & Day==day) %>%
@@ -158,24 +178,27 @@ draw_session_based_plots <- function(session_mean_df) {
           #   na.omit() %>%
           #   ggplot(aes(x=all_subj_df$TreatmentTime, y=temp_session_mean_df[[signal]], color=Treatment))
             
+          plot <- ggplot(temp_session_mean_df) + 
+            geom_hline(yintercept=temp_session_mean_df[[signal]],
+                       linetype="dashed",
+            # geom_hline(aes(yintercept=temp_session_mean_df[[signal]], 
+            #            linetype=temp_session_mean_df$Treatment),
+                       color=get_session_colors(temp_session_mean_df),
+                       size=1.5,
+                       alpha=0.8) + 
             ggtitle(paste0(subj, ' - ', day)) +
-            geom_hline(yintercept=temp_session_mean_df[[signal]], 
-                       linetype="dashed", 
-                       color=get_session_colors(temp_session_mean_df), 
-                       size=1,
-                       alpha=0.5) + 
-            xlab('') +
+            xlab('Time [s]') +
             ylab(get_y_label(signal)) +
-            theme(panel.background=element_rect(fill = "NA"), 
-                  panel.grid.minor = element_line(colour = "#E0E0E0"), 
-                  legend.position="none",
-                  axis.title.x=element_text(margin = margin(t=0, r=0, b=10, l=0, unit="pt")), 
-                  axis.title.y = element_text(size=12)) +
-            ylim(get_y_limit(temp_subj_session_mean_df[[signal]]))
+            ylim(get_y_limit(temp_subj_session_mean_df[[signal]])) +
+            # scale_linetype_manual(
+            #   name = "",
+            #   values = c(2,2,2,2),
+            #   guide = guide_legend(override.aes=list(color=get_session_colors(temp_session_mean_df)))
+            #   ) +
+            get_theme()
           
           plot_list[[length(plot_list)+1]] <- plot
           
-          # print(plot)
           
         } else {
           write_log_msg(paste0('Both session data missing for: ', subj, ' - ', day, ' - ', signal), qc_log_file)
@@ -183,11 +206,7 @@ draw_session_based_plots <- function(session_mean_df) {
       }
       
       if (length(plot_list)>0) {
-        grid_plot <- plot_grid(plotlist=plot_list, 
-                              # align='v', 
-                              # rel_widths=c(1, 0.1, 1),
-                              # rel_heights=c(1.15, 1, 1, 1, 1),
-                              ncol=2)
+        grid_plot <- plot_grid(plotlist=plot_list, ncol=2)
         print(grid_plot)
       }
     }
@@ -196,10 +215,9 @@ draw_session_based_plots <- function(session_mean_df) {
 
 
 draw_activity_based_plots <- function(activity_mean_df) {
-  # print_msg(str(activity_mean_df))
   
   for(subj in levels(factor(activity_mean_df$Participant_ID))) {
-  # for(subj in levels(factor(activity_mean_df$Participant_ID))[2]) {
+  # for(subj in levels(factor(activity_mean_df$Participant_ID))[5]) {
     message('')
     message(subj)
     message('-----------------')
@@ -210,23 +228,23 @@ draw_activity_based_plots <- function(activity_mean_df) {
       
     for (signal in signal_list) {
       
-      message(signal)
+      message(paste0(signal, ' --->'))
       
       plot_list <- list()
       for (day in levels(factor(temp_subj_activity_mean_df$Day))) {
+      # for (day in levels(factor(temp_subj_activity_mean_df$Day))[1]) {
         
-        message(paste0(day, '----->'))
+        message(day)
         
         temp_activity_mean_df <- temp_subj_activity_mean_df %>% 
           filter(Day==day) %>% 
           select(Treatment, Activities_QC2, signal) %>% 
           na.omit()
-        # print_msg(str(temp_session_mean_df))
         
         if (nrow(temp_activity_mean_df)>0) {
           
-          plot <- temp_activity_mean_df %>%
-            ggplot(aes(x=1, y=temp_activity_mean_df[[signal]], color=Activities_QC2)) +
+          # plot <- temp_activity_mean_df %>%
+          #   ggplot(aes(x=1, y=temp_activity_mean_df[[signal]], color=Activities_QC2)) +
           
           # plot <- all_subj_df %>%
           #   filter(Participant_ID==subj & Day==day) %>%
@@ -234,24 +252,26 @@ draw_activity_based_plots <- function(activity_mean_df) {
           #   na.omit() %>%
           #   ggplot(aes(x=all_subj_df$TreatmentTime, y=temp_session_mean_df[[signal]], color=Treatment))
             
+          plot <- ggplot(temp_activity_mean_df) +
             ggtitle(paste0(subj, ' - ', day)) +
-            geom_hline(yintercept=temp_activity_mean_df[[signal]], 
-                       linetype="dashed", 
+            geom_hline(yintercept=temp_activity_mean_df[[signal]],
+                       linetype="dashed",
+           # geom_hline(aes(yintercept=temp_activity_mean_df[[signal]], 
+           #             linetype=temp_activity_mean_df$Treatment),
                        color=get_activity_colors(temp_activity_mean_df), 
-                       size=1,
-                       alpha=0.5) + 
-            xlab('') +
+                       size=1.5,
+                       alpha=0.8) + 
+            xlab('Time [s]') +
             ylab(get_y_label(signal)) +
-            theme(panel.background=element_rect(fill = "NA"), 
-                  panel.grid.minor = element_line(colour = "#E0E0E0"), 
-                  legend.position="none",
-                  axis.title.x=element_text(margin = margin(t=0, r=0, b=10, l=0, unit="pt")), 
-                  axis.title.y = element_text(size=12)) +
-            ylim(get_y_limit(temp_subj_activity_mean_df[[signal]]))
+            ylim(get_y_limit(temp_subj_activity_mean_df[[signal]])) +
+            # scale_linetype_manual(
+            #   name = "",
+            #   values = c(2,2,2,2),
+            #   guide = guide_legend(override.aes=list(color=get_activity_colors(temp_activity_mean_df)))
+            #   ) +
+            get_theme()
           
           plot_list[[length(plot_list)+1]] <- plot
-          
-          # print(plot)
           
         } else {
           # write_log_msg(paste0('Both session data missing for: ', subj, ' - ', day, ' - ', signal), qc_log_file)
@@ -259,11 +279,7 @@ draw_activity_based_plots <- function(activity_mean_df) {
       }
       
       if (length(plot_list)>0) {
-        grid_plot <- plot_grid(plotlist=plot_list, 
-                              # align='v', 
-                              # rel_widths=c(1, 0.1, 1),
-                              # rel_heights=c(1.15, 1, 1, 1, 1),
-                              ncol=2)
+        grid_plot <- plot_grid(plotlist=plot_list, ncol=2)
         print(grid_plot)
       }
     }
@@ -296,4 +312,27 @@ draw_plots <- function() {
 <!-- DRAW PLOTS -->
 ```{r echo=FALSE, warning = FALSE, message = FALSE, fig.height=10, fig.width=12}
 draw_plots()
+```
+
+
+
+
+
+
+```{r echo=FALSE, warning = FALSE, message = FALSE}
+# mean_line_day1<-function(df, name){
+#    plot<-ggplot(df)+
+#    geom_hline(aes(yintercept=df$x[1],linetype="Baseline"),size=1, color="black" )+
+#    geom_hline(aes(yintercept=df$x[2],linetype="WorkingSession"),size=1, color="orange" )+
+#
+#    scale_linetype_manual(name = "",
+#                          values = c(2,2,2,2),
+#                          guide = guide_legend(override.aes = list(color = c("black", "orange"))))+
+#      theme_bw()+
+#      theme(legend.position = "bottom")+theme(legend.title = element_blank())+
+#      labs(title=name , x="Time", y=bquote(paste('Perinasal Perspiration [',''^'o','C',''^2,']')))+
+#      theme(plot.title = element_text(hjust = 0.5))+
+#      ylim(0.0030,0.0070)
+#    return (plot)
+# }
 ```

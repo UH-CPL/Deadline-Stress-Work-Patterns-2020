@@ -29,7 +29,8 @@ signal_list <- c('PP', 'E4_HR', 'E4_EDA', 'iWatch_HR')
 
 pp_file_pattern <- '.*_pp.csv'
 nr_pp_file_pattern <- '.*_nr.csv'
-marker_file_pattern <- '.*sessionmarkers.csv'
+rb_marker_file_pattern <- '.*Baseline_sessionmarkers.csv'
+ws_marker_file_pattern <- '.*WorkingSession_sessionmarkers.csv'
 activity_file_pattern <- '.*Activity.csv'
 mac_app_usage_file_pattern <- '.*Monitor.*log'
 win_app_usage_file_pattern <- '.*MonitorLog.csv'
