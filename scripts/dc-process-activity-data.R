@@ -3,7 +3,8 @@
 #-------------------------#
 library(dplyr)
 library(stringr)    ## for func str_detect()
-
+library(reshape2)
+library(tidyr)
 
 #-------------------------#
 #-----GLOBAL VARIABLES----#
@@ -24,8 +25,79 @@ setwd(current_dir)
 #---FUNCTION DEFINITION---#
 #-------------------------#
 get_final_activities <- function(all_subj_df) {
-  all_subj_df <- all_subj_df %>% 
-    mutate(Activities_QC1=Activities) %>% ## @TANIM - CHANGE HERE!!!
+  #all_subj_df <- all_subj_df %>% mutate(Activities_QC1=Activities) %>% ## @TANIM - CHANGE HERE!!!
+    
+    all_subj_df$Activities1<-all_subj_df$Activities
+    all_subj_df<-all_subj_df %>%separate(Activities1, c("A", "B", "C"), ",")
+    all_subj_df$A<-trimws(all_subj_df$A)
+    all_subj_df$B<-trimws(all_subj_df$B)
+    
+    
+    if (is.na(all_subj_df$C)!=TRUE) {
+      all_subj_df$C<-trimws(all_subj_df$c)
+    }
+    
+    
+    #unique(all_subj_df$A)
+    all_subj_df$A<-gsub("\\(|\\)", "", all_subj_df$A)
+    all_subj_df$B<-gsub("\\(|\\)", "", all_subj_df$B)
+    all_subj_df$C<-gsub("\\(|\\)", "", all_subj_df$C)
+    
+    all_subj_df$A<-case_when(str_detect(all_subj_df$A, Out)~"Out",
+                    str_detect(all_subj_df$A, PW)~"PW",
+                    str_detect(all_subj_df$A, PR)~"PR",
+                    str_detect(all_subj_df$A, CW)~"CW",
+                    str_detect(all_subj_df$A, CR)~"CR",
+                    str_detect(all_subj_df$A, EiP)~"EiP",
+                    str_detect(all_subj_df$A, OB)~"OB",
+                    str_detect(all_subj_df$A, Working)~"Working",
+                    str_detect(all_subj_df$A, Thinking)~"T",
+                    str_detect(all_subj_df$A, SP)~"SP",
+                    str_detect(all_subj_df$A, ELD)~"ELD",
+                    str_detect(all_subj_df$A, PI)~"PI", 
+                    str_detect(all_subj_df$A, VI)~"VI"
+                    
+    )
+    all_subj_df$B<-case_when(str_detect(all_subj_df$B, Out)~"Out",
+                    str_detect(all_subj_df$B, PW)~"PW",
+                    str_detect(all_subj_df$B, PR)~"PR",
+                    str_detect(all_subj_df$B, CW)~"CW",
+                    str_detect(all_subj_df$B, CR)~"CR",
+                    str_detect(all_subj_df$B, EiP)~"EiP",
+                    str_detect(all_subj_df$B, OB)~"OB",
+                    str_detect(all_subj_df$B, Working)~"Working",
+                    str_detect(all_subj_df$B, Thinking)~"T",
+                    str_detect(all_subj_df$B, SP)~"SP",
+                    str_detect(all_subj_df$B, ELD)~"ELD",
+                    str_detect(all_subj_df$B, PI)~"PI",
+                    str_detect(all_subj_df$B, VI)~"VI"
+    )
+    all_subj_df$C<-case_when(str_detect(all_subj_df$C, Out)~"Out",
+                    str_detect(all_subj_df$C, PW)~"PW",
+                    str_detect(all_subj_df$C, PR)~"PR",
+                    str_detect(all_subj_df$C, CW)~"CW",
+                    str_detect(all_subj_df$C, CR)~"CR",
+                    str_detect(all_subj_df$C, EiP)~"EiP",
+                    str_detect(all_subj_df$C, OB)~"OB",
+                    str_detect(all_subj_df$C, Working)~"Working",
+                    str_detect(all_subj_df$C, Thinking)~"T",
+                    str_detect(all_subj_df$C, SP)~"SP",
+                    str_detect(all_subj_df$C, ELD)~"ELD",
+                    str_detect(all_subj_df$C, PI)~"PI",
+                    str_detect(all_subj_df$C, VI)~"VI"
+    )
+    all_subj_df$C[is.na(all_subj_df$C)] <- ""
+    all_subj_df$B[is.na(all_subj_df$B)] <- ""
+    all_subj_df$D<-paste(all_subj_df$A,all_subj_df$B,all_subj_df$C, sep="+")
+    all_subj_df<-all_subj_df%>%
+      mutate(D1=gsub("(\\+)*$", "", D))
+    
+    # unique(all_subj_df$Activities)
+    # unique(all_subj_df$D1)
+    all_subj_df$Activities_QC1<-all_subj_df$D1
+    
+    
+    
     mutate(Activities_QC2=case_when(str_detect(Activities_QC1, computer_usage_pattern)~'Computer Working',
                                     Treatment=='WS'~'Other Activities')) 
   
