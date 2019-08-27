@@ -511,26 +511,22 @@ merge_iwatch_data <- function(subj_name, day_serial, full_day_df) {
 
 
 refactor_and_export_all_subj_data <- function(all_subj_df) {
-  # print(levels(factor(all_subj_df$Application)))
-  
-  ## This is for T001 & T003, for whom we only noted the break times
-  # all_subj_df[is.na(all_subj_df$Ontologies) & all_subj_df$Treatment=='WS' & all_subj_df$Participant_ID=='T001', ]$Ontologies <- 'Working'
-  # all_subj_df[is.na(all_subj_df$Ontologies) & all_subj_df$Treatment=='WS' & all_subj_df$Participant_ID=='T003', ]$Ontologies <- 'C - Writing/Reading'
-  
   #################################################################################
   #################################################################################
-  # message(class(pp_df$Ontologies))
-  
-  all_subj_df <- all_subj_df %>%
-    mutate(Ontologies=case_when(
-      is.na(Ontologies) & Treatment=='WS' & Participant_ID=='T001'~'Working',
-      is.na(Ontologies) & Treatment=='WS' & Participant_ID=='T003'~'C - Writing/Reading',
-      TRUE~Ontologies))
-  
   # all_subj_df <- all_subj_df %>%
   #   mutate(Ontologies=case_when(
-  #     Ontologies==NA & Treatment=='WS' & Participant_ID=='T001'~'Working',
-  #     Ontologies==NA & Treatment=='WS' & Participant_ID=='T003'~'C - Writing/Reading'))
+  #     is.na(Ontologies) & Treatment=='WS' & Participant_ID=='T001'~'Working',
+  #     is.na(Ontologies) & Treatment=='WS' & Participant_ID=='T003'~'C - Writing/Reading',
+  #     TRUE~Ontologies))
+
+  # # # all_subj_df <- all_subj_df %>%
+  # # #   mutate(Ontologies=case_when(
+  # # #     Ontologies==NA & Treatment=='WS' & Participant_ID=='T001'~'Working',
+  # # #     Ontologies==NA & Treatment=='WS' & Participant_ID=='T003'~'C - Writing/Reading'))
+
+  # # # # This is for T001 & T003, for whom we only noted the break times
+  # # # all_subj_df[is.na(all_subj_df$Ontologies) & all_subj_df$Treatment=='WS' & all_subj_df$Participant_ID=='T001', ]$Ontologies <- 'Working'
+  # # # all_subj_df[is.na(all_subj_df$Ontologies) & all_subj_df$Treatment=='WS' & all_subj_df$Participant_ID=='T003', ]$Ontologies <- 'C - Writing/Reading'
   #################################################################################
   
   
