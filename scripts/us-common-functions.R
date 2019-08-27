@@ -24,11 +24,13 @@ subj_list_file_name <- 'subj_list.csv'
 
 grp_dir <- 'Group1'
 session_list <- c('Baseline', 'WorkingSession')
+signal_list <- c('PP', 'E4_HR', 'E4_EDA', 'iWatch_HR')
 
 
 pp_file_pattern <- '.*_pp.csv'
 nr_pp_file_pattern <- '.*_nr.csv'
-marker_file_pattern <- '.*sessionmarkers.csv'
+rb_marker_file_pattern <- '.*Baseline_sessionmarkers.csv'
+ws_marker_file_pattern <- '.*WorkingSession_sessionmarkers.csv'
 activity_file_pattern <- '.*Activity.csv'
 mac_app_usage_file_pattern <- '.*Monitor.*log'
 win_app_usage_file_pattern <- '.*MonitorLog.csv'
@@ -133,6 +135,24 @@ replace_to_space <- function(str) {
   gsubfn('.', list('_' = ' ', '-' = ' '), str)
 }
 
+trim <- function( x ) {
+  gsub("(^[[:space:]]+|[[:space:]]+$)", "", x)
+}
+
+is_null <- function(cell_val) {
+  print(cell_val)
+  if (is.na(cell_val)) {
+    return(T)
+  } else if (length(trim(cell_val))==0) {
+    return(T)
+  } 
+  
+  # else if (cell_val=="") {
+  #   return(T)
+  # }
+  
+  return(F)
+}
 
 #---------------------------------#
 #-------   Date and Time   -------#
