@@ -179,13 +179,25 @@ get_downsampled_pp <- function(subj_name, day_serial, session_name) {
 }
 
 curate_rb_session_data <- function(subj_name, day_serial) {
-  downsampled_pp_df <- get_downsampled_pp(subj_name, day_serial, 'Baseline')
-  # downsampled_pp_df$Ontologies <- NA
-  
+  session_name <- 'Baseline'
+  session_dir <- file.path(raw_data_dir, grp_dir, subj_name, day_serial, session_name)
   
   ###################################################
   ##       Find out exact 4-5min session           ##
   ###################################################
+  rb_marker_file_name <- get_matched_file_names(session_dir, rb_marker_file_pattern)
+  rb_marker_df <- custom_read_csv(file.path(session_dir, rb_marker_file_name))
+  
+  rb_start_time <- convert_s_interface_date(rb_marker_df$startTimestamp[1])
+  rb_end_time <- convert_s_interface_date(rb_marker_df$EndTimestamp[1])
+  
+  write_log_msg(paste0('Baseline start time: ', rb_start_time), curation_log_file)
+  write_log_msg(paste0('Baseline end time: ', rb_end_time), curation_log_file)
+  
+  downsampled_pp_df <- get_downsampled_pp(subj_name, day_serial, session_name) %>% 
+    filter(rb_start_time <= Timestamp & Timestamp <= rb_end_time)
+  # downsampled_pp_df$Ontologies <- NA
+  
   
   
   return(downsampled_pp_df)
@@ -304,11 +316,11 @@ get_ontologies <- function(subj_name, day_serial, session_name, downsampled_pp_d
     
   } else {
     # write_log_msg('Activity Tracker File - Not Found \n Looking for session marker file', curation_log_file)
-    marker_file_name <- get_matched_file_names(session_dir, marker_file_pattern)
-    marker_df <- custom_read_csv(file.path(session_dir, marker_file_name))
+    ws_marker_file_name <- get_matched_file_names(session_dir, ws_marker_file_pattern)
+    ws_marker_df <- custom_read_csv(file.path(session_dir, ws_marker_file_name))
     
     # downsampled_pp_df$Ontologies <- NA
-    ws_df <- get_session_marker_ontologies(marker_df, downsampled_pp_df)
+    ws_df <- get_session_marker_ontologies(ws_marker_df, downsampled_pp_df)
   }
   
   
@@ -499,26 +511,22 @@ merge_iwatch_data <- function(subj_name, day_serial, full_day_df) {
 
 
 refactor_and_export_all_subj_data <- function(all_subj_df) {
-  # print(levels(factor(all_subj_df$Application)))
-  
-  ## This is for T001 & T003, for whom we only noted the break times
-  # all_subj_df[is.na(all_subj_df$Ontologies) & all_subj_df$Treatment=='WS' & all_subj_df$Participant_ID=='T001', ]$Ontologies <- 'Working'
-  # all_subj_df[is.na(all_subj_df$Ontologies) & all_subj_df$Treatment=='WS' & all_subj_df$Participant_ID=='T003', ]$Ontologies <- 'C - Writing/Reading'
-  
   #################################################################################
   #################################################################################
-  # message(class(pp_df$Ontologies))
-  
-  all_subj_df <- all_subj_df %>%
-    mutate(Ontologies=case_when(
-      is.na(Ontologies) & Treatment=='WS' & Participant_ID=='T001'~'Working',
-      is.na(Ontologies) & Treatment=='WS' & Participant_ID=='T003'~'C - Writing/Reading',
-      TRUE~Ontologies))
-  
   # all_subj_df <- all_subj_df %>%
   #   mutate(Ontologies=case_when(
-  #     Ontologies==NA & Treatment=='WS' & Participant_ID=='T001'~'Working',
-  #     Ontologies==NA & Treatment=='WS' & Participant_ID=='T003'~'C - Writing/Reading'))
+  #     is.na(Ontologies) & Treatment=='WS' & Participant_ID=='T001'~'Working',
+  #     is.na(Ontologies) & Treatment=='WS' & Participant_ID=='T003'~'C - Writing/Reading',
+  #     TRUE~Ontologies))
+
+  # # # all_subj_df <- all_subj_df %>%
+  # # #   mutate(Ontologies=case_when(
+  # # #     Ontologies==NA & Treatment=='WS' & Participant_ID=='T001'~'Working',
+  # # #     Ontologies==NA & Treatment=='WS' & Participant_ID=='T003'~'C - Writing/Reading'))
+
+  # # # # This is for T001 & T003, for whom we only noted the break times
+  # # # all_subj_df[is.na(all_subj_df$Ontologies) & all_subj_df$Treatment=='WS' & all_subj_df$Participant_ID=='T001', ]$Ontologies <- 'Working'
+  # # # all_subj_df[is.na(all_subj_df$Ontologies) & all_subj_df$Treatment=='WS' & all_subj_df$Participant_ID=='T003', ]$Ontologies <- 'C - Writing/Reading'
   #################################################################################
   
   
@@ -528,6 +536,8 @@ refactor_and_export_all_subj_data <- function(all_subj_df) {
   all_subj_df <- all_subj_df %>%
     rename(Sinterface_Time=Time,
            Activities=Ontologies,
+           Raw_PP=PP,
+           PP=NR_PP,
            E4_HR=HR,
            E4_EDA=EDA) %>% 
     
@@ -543,8 +553,8 @@ refactor_and_export_all_subj_data <- function(all_subj_df) {
            Sinterface_Time,
            TreatmentTime,
            
+           Raw_PP,
            PP,
-           NR_PP,
            
            E4_HR,
            E4_EDA,
@@ -586,7 +596,7 @@ curate_data <- function() {
   subj_list <- custom_read_csv(file.path(curated_data_dir, utility_data_dir, subj_list_file_name))$Subject
   
   sapply(subj_list, function(subj_name) {
-  # sapply(subj_list[1], function(subj_name) {
+  # sapply(subj_list[5], function(subj_name) {
     
     subj_dir <- file.path(raw_data_dir, grp_dir, subj_name)
     day_list <- get_dir_list(subj_dir)

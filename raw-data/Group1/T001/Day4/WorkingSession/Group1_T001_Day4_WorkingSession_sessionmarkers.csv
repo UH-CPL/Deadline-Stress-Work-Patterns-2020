@@ -1,3 +1,9 @@
 Session,StartTime,startTimestamp,EndTime,EndTimestamp,Ontologies
-Break 1,,Thu Feb 28 14:44:20.309 2019,,Thu Feb 28 14:58:00.071 2019,Break Out - Other
-Break 2,,Thu Feb 28 15:31:02.309 2019,,Thu Feb 28 16:43:20.071 2019,"SP - Talking, Break Out - Other, H-H Interaction"
+Activities 1,,Thu Feb 28 13:53:27.309 2019,,Thu Feb 28 13:57:40.071 2019,Computer Writing (CW)
+Activities 2,,Thu Feb 28 13:57:41.309 2019,,Thu Feb 28 13:59:57.071 2019,Thinking (T)
+Activities 3,,Thu Feb 28 13:59:58.309 2019,,Thu Feb 28 14:04:05.071 2019,Board Writing (BW)
+Activities 4,,Thu Feb 28 14:04:06.309 2019,,Thu Feb 28 14:44:20.071 2019,Computer Writing (CW)
+Activities 5,,Thu Feb 28 14:44:21.071 2019,,Thu Feb 28 14:57:00.071 2019,Out
+Activities 6,,Thu Feb 28 14:57:01.071 2019,,Thu Feb 28 15:27:37.071 2019,Computer Writing (CW)
+Activities 7,,Thu Feb 28 16:24:54.071 2019,,Thu Feb 28 16:42:32.071 2019,"Physical Interaction (PI), Computer Reading (CR)"
+Activities 8,,Thu Feb 28 16:42:33.071 2019,,Thu Feb 28 16:48:00.071 2019,Computer Reading (CR)
