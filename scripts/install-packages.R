@@ -16,3 +16,18 @@ if (length(new.pkg)) {
 
 
 
+# check installed packages
+installed.packages()
+
+# list all packages where an update is available
+old.packages()
+
+# update all available packages
+# update.packages()
+
+# update, without prompts for permission/clarification
+# update.packages(ask = FALSE)
+
+# update only a specific package use install.packages()
+# install.packages("plotly")
+

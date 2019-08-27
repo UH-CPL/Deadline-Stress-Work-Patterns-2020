@@ -135,6 +135,24 @@ replace_to_space <- function(str) {
   gsubfn('.', list('_' = ' ', '-' = ' '), str)
 }
 
+trim <- function( x ) {
+  gsub("(^[[:space:]]+|[[:space:]]+$)", "", x)
+}
+
+is_null <- function(cell_val) {
+  print(cell_val)
+  if (is.na(cell_val)) {
+    return(T)
+  } else if (length(trim(cell_val))==0) {
+    return(T)
+  } 
+  
+  # else if (cell_val=="") {
+  #   return(T)
+  # }
+  
+  return(F)
+}
 
 #---------------------------------#
 #-------   Date and Time   -------#
