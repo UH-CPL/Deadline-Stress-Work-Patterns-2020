@@ -1,13 +1,21 @@
 Session,StartTime,startTimestamp,EndTime,EndTimestamp,Ontologies
-Session 1,1.686489,Wed May 29 11:20:40.531 2019,21574.53,Wed May 29 11:21:10.531 2019,SP - Looking 
-Session 3,1.686489,Wed May 29 11:21:10.531 2019,21574.53,Wed May 29 11:24:35.531 2019,C - Reading
-Session 4,1.686489,Wed May 29 11:24:35.531 2019,21574.53,Wed May 29 11:26:38.531 2019,HC - Writing
-Session 5,1.686489,Wed May 29 11:26:38.531 2019,21574.53,Wed May 29 11:37:11.531 2019,SP - Looking 
-Session 6,1.686489,Wed May 29 11:37:24.531 2019,21574.53,Wed May 29 11:59:50.531 2019,C - Reading
-Session 7,1.686489,Wed May 29 11:59:55.531 2019,21574.53,Wed May 29 12:13:50.531 2019,Break Out - Other
-Session 8,1.686489,Wed May 29 12:29:45.531 2019,21574.53,Wed May 29 12:32:05.531 2019,"SP - Looking, Listening on Headphone"
-Session 9,1.686489,Wed May 29 13:02:56.531 2019,21574.53,Wed May 29 13:12:31.531 2019,C - Reading
-Session 10,1.686489,Wed May 29 13:12:33.531 2019,21574.53,Wed May 29 14:44:30.531 2019,Break Out - Other
-Session 11,1.686489,Wed May 29 16:11:50.531 2019,21574.53,Wed May 29 16:30:30.531 2019,Break Out - - Tea/Coffee
-Session 12,1.686489,Wed May 29 16:31:30.531 2019,21574.53,Wed May 29 16:33:30.531 2019,SP - Looking 
-Session 13,1.686489,Wed May 29 17:03:10.531 2019,21574.53,Wed May 29 17:17:00.531 2019,SP - Looking 
+Session 1,1.686489,Wed May 29 11:18:20.531 2019,21574.53,Wed May 29 11:20:35.531 2019,C - Reading
+Session 1,1.686489,Wed May 29 11:20:36.531 2019,21574.53,Wed May 29 11:21:10.531 2019,SP - Looking 
+Session 3,1.686489,Wed May 29 11:21:11.531 2019,21574.53,Wed May 29 11:24:35.531 2019,C - Reading
+Session 4,1.686489,Wed May 29 11:24:36.531 2019,21574.53,Wed May 29 11:26:38.531 2019,HC - Writing
+Session 5,1.686489,Wed May 29 11:26:39.531 2019,21574.53,Wed May 29 11:37:10.531 2019,SP - Looking 
+Session 6,1.686489,Wed May 29 11:37:11.531 2019,21574.53,Wed May 29 11:59:40.531 2019,C - Reading
+Session 7,1.686489,Wed May 29 11:59:41.531 2019,21574.53,Wed May 29 12:13:55.531 2019,Break Out - Other
+Session 7,1.686489,Wed May 29 12:13:56.531 2019,21574.53,Wed May 29 12:29:25.531 2019,C - Reading
+Session 8,1.686489,Wed May 29 12:29:26.531 2019,21574.53,Wed May 29 13:01:55.531 2019,"C - Reading, Listening on Headphone"
+Session 9,1.686489,Wed May 29 13:01:56.531 2019,21574.53,Wed May 29 13:12:40.531 2019,"C - Reading, Listening on Headphone, HC - Writing"
+Session 10,1.686489,Wed May 29 13:12:41.531 2019,21574.53,Wed May 29 14:46:00.531 2019,Break Out - Other
+Session 10,1.686489,Wed May 29 14:46:01.531 2019,21574.53,Wed May 29 15:04:05.531 2019,C - Reading
+Session 10,1.686489,Wed May 29 15:04:06.531 2019,21574.53,Wed May 29 15:35:36.531 2019,"C - Reading, HC - Reading, Listening on Headphone"
+Session 10,1.686489,Wed May 29 15:35:37.531 2019,21574.53,Wed May 29 15:38:45.531 2019,"SP - Looking, Listening on Headphone"
+Session 10,1.686489,Wed May 29 15:38:46.531 2019,21574.53,Wed May 29 16:11:50.531 2019,"C - Reading, HC - Reading, Listening on Headphone"
+Session 11,1.686489,Wed May 29 16:11:51.531 2019,21574.53,Wed May 29 16:29:35.531 2019,Break Out - - Tea/Coffee
+Session 12,1.686489,Wed May 29 16:29:36.531 2019,21574.53,Wed May 29 16:32:25.531 2019,SP - Looking 
+Session 12,1.686489,Wed May 29 16:32:26.531 2019,21574.53,Wed May 29 17:02:35.531 2019,"C - Reading, HC - Reading, Listening on Headphone"
+Session 13,1.686489,Wed May 29 17:02:36.531 2019,21574.53,Wed May 29 17:17:05.531 2019,SP - Looking 
+Session 13,1.686489,Wed May 29 17:17:06.531 2019,21574.53,Wed May 29 17:17:55.531 2019,C - Reading
