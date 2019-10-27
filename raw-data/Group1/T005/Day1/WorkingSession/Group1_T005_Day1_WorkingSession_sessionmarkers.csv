@@ -1,15 +1,27 @@
 Session,StartTime,startTimestamp,EndTime,EndTimestamp,Ontologies
-Session 2,16923.16,Sat May 25 10:48:00.127 2019,16923.47,Sat May 25 10:50:50.436 2019,C - Reading 
-Session 3,16923.16,Sat May 25 10:50:55.127 2019,16923.47,Sat May 25 11:15:55.436 2019,C - Reading 
-Session 4,16925.19,Sat May 25 11:15:55.127 2019,16923.47,Sat May 25 11:45:05.436 2019,Break Out - Tea/Coffee
-Session 5,16925.19,Sat May 25 11:45:45.127 2019,16923.47,Sat May 25 11:50:40.436 2019,"Listening on Headphone, HC - Writing"
-Session 6,16925.19,Sat May 25 12:11:30.127 2019,16923.47,Sat May 25 12:20:40.436 2019,SP - Talking
-Session 7,16925.19,Sat May 25 12:31:50.127 2019,16923.47,Sat May 25 12:36:25.436 2019,SP - Looking 
-Session 8,16925.19,Sat May 25 12:36:25.127 2019,16923.47,Sat May 25 12:38:30.436 2019,SP - Talking
-Session 9,16925.19,Sat May 25 12:59:10.127 2019,16923.47,Sat May 25 13:47:00.436 2019,Break Out -Other
-Session 10,16925.19,Sat May 25 14:14:15.127 2019,16923.47,Sat May 25 14:20:20.127 2019,SP - Talking
-Session 11,16925.19,Sat May 25 14:20:20.127 2019,16923.47,Sat May 25 14:25:10.127 2019,SP - Looking 
-Session 12,16925.19,Sat May 25 14:25:10.127 2019,16923.47,Sat May 25 14:31:40.127 2019,C - Reading 
-Session 13,16925.19,Sat May 25 14:31:40.127 2019,16923.47,Sat May 25 14:33:07.127 2019,"C - Reading, HC - Writing"
-Session 14,16925.19,Sat May 25 14:53:00.127 2019,16923.47,Sat May 25 15:02:50.127 2019,SP - Talking
-Session 15,16925.19,Sat May 25 17:12:25.127 2019,16923.47,Sat May 25 17:20:10.127 2019,Break Out - Tea/Coffee
+Session1,16923.16,Sat May 25 10:46:25.127 2019,16923.47,Sat May 25 11:15:55.436 2019,C - Reading 
+Session2,16925.19,Sat May 25 11:15:56.127 2019,16923.47,Sat May 25 11:45:20.436 2019,Break Out - Tea/Coffee
+Session3,16925.19,Sat May 25 11:45:21.127 2019,16923.47,Sat May 25 11:48:50.436 2019,"C - Reading, Listening on Headphone"
+Session4,16925.19,Sat May 25 11:48:51.436 2019,16923.47,Sat May 25 11:50:15.436 2019,"Listening on Headphone, HC - Writing"
+Session5,16925.19,Sat May 25 11:50:16.436 2019,16923.47,Sat May 25 12:11:30.436 2019,"C - Reading, Listening on Headphone"
+Session6,16925.19,Sat May 25 12:11:31.436 2019,16923.47,Sat May 25 12:11:57.436 2019,SP - Talking
+Session7,16925.19,Sat May 25 12:11:58.436 2019,16923.47,Sat May 25 12:20:10.436 2019,Break Out -Other
+Session8,16925.19,Sat May 25 12:20:11.436 2019,16923.47,Sat May 25 12:31:50.436 2019,C - Reading 
+Session9,16925.19,Sat May 25 12:31:51.436 2019,16923.47,Sat May 25 12:39:20.436 2019,SP - Looking 
+Session10,16925.19,Sat May 25 12:39:21.436 2019,16923.47,Sat May 25 12:59:09.127 2019,C - Reading 
+Session11,16925.19,Sat May 25 12:59:10.127 2019,16923.47,Sat May 25 13:47:25.436 2019,Break Out -Other
+Session12,16925.19,Sat May 25 13:47:26.436 2019,16923.47,Sat May 25 13:52:25.436 2019,"C - Reading, Listening on Headphone"
+Session13,16925.19,Sat May 25 13:52:26.436 2019,16923.47,Sat May 25 13:54:15.436 2019,SP - Talking
+Session14,16925.19,Sat May 25 13:54:16.436 2019,16923.47,Sat May 25 14:14:40.127 2019,"C - Reading, Listening on Headphone"
+Session15,16925.19,Sat May 25 14:14:41.127 2019,16923.47,Sat May 25 14:20:20.127 2019,Break Out -Other
+Session16,16925.19,Sat May 25 14:20:21.127 2019,16923.47,Sat May 25 14:25:25.127 2019,SP - Looking 
+Session17,16925.19,Sat May 25 14:25:26.127 2019,16923.47,Sat May 25 14:33:35.127 2019,"C - Reading, Listening on Headphone"
+Session18,16925.19,Sat May 25 14:33:36.127 2019,16923.47,Sat May 25 14:43:35.127 2019,"Listening on Headphone, HC - Writing"
+Session19,16925.19,Sat May 25 14:43:36.127 2019,16923.47,Sat May 25 14:52:00.127 2019,"C - Reading, Listening on Headphone"
+Session20,16925.19,Sat May 25 14:52:01.127 2019,16923.47,Sat May 25 15:03:50.127 2019,SP - Talking
+Session21,16925.19,Sat May 25 15:03:51.127 2019,16923.47,Sat May 25 15:39:40.127 2019,C - Reading 
+Session22,16925.19,Sat May 25 15:39:41.127 2019,16923.47,Sat May 25 16:14:22.127 2019,Break Out - Tea/Coffee
+Session23,16925.19,Sat May 25 16:14:23.127 2019,16923.47,Sat May 25 17:11:05.127 2019,"C - Reading, Listening on Headphone"
+Session24,16925.19,Sat May 25 17:11:06.127 2019,16923.47,Sat May 25 17:12:20.127 2019,"SP - Looking, Listening on Headphone"
+Session24,16925.19,Sat May 25 17:12:21.127 2019,16923.47,Sat May 25 17:20:15.127 2019,Out
+Session24,16925.19,Sat May 25 17:20:16.127 2019,16923.47,Sat May 25 17:31:15.127 2019,C - Writing
