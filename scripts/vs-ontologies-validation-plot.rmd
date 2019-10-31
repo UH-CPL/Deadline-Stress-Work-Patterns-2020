@@ -48,16 +48,16 @@ DF$Day[DF$Day=="Day5"] <- "Day4"
 
 
 
-Subject_id<-factor(DF$Participant_ID)
-Number_of_subjects=nlevels(Subject_id)
-for (i in 1:Number_of_subjects) {
-  DF_T001<-subset(DF, Participant_ID==levels(Subject_id)[i])
-  Sub_file_name<-paste0(levels(Subject_id)[i],".csv")
-  convert_to_csv(DF_T001, file.path(root_dir,curated_data_dir, physiological_data_dir, Sub_file_name))
-}
-
-
-convert_to_csv(DF, file.path(root_dir,curated_data_dir, physiological_data_dir, file_name))
+# Subject_id<-factor(DF$Participant_ID)
+# Number_of_subjects=nlevels(Subject_id)
+# for (i in 1:Number_of_subjects) {
+#   DF_T001<-subset(DF, Participant_ID==levels(Subject_id)[i])
+#   Sub_file_name<-paste0(levels(Subject_id)[i],".csv")
+#   convert_to_csv(DF_T001, file.path(root_dir,curated_data_dir, physiological_data_dir, Sub_file_name))
+# }
+# 
+# 
+# convert_to_csv(DF, file.path(root_dir,curated_data_dir, physiological_data_dir, file_name))
 ```
 
 

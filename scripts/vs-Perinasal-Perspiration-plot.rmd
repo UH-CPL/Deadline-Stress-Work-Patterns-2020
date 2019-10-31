@@ -1,0 +1,145 @@
+---
+title: "Perinasal Data"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(grid)
+library(gridExtra)
+library(dplyr)
+library(ggpubr)
+#install.packages('DataCombine')
+library(DataCombine)
+library(dplyr)
+library(reshape2)
+library(tidyr)
+library(stringr)
+library(plyr)
+library(ggplot2)
+library(dplyr)
+library(miceadds)
+library(gtools)
+library(ggpubr)
+library(gvlma)
+library(MASS)
+library(reshape2)
+library(ggcorrplot)
+library(GGally)
+library(ggnewscale)
+library(scales)
+current_dir <- getwd()
+setwd('..')
+root_dir <- getwd()
+data_dir <- file.path(root_dir, 'curated-data/physiological-data')
+data_file_name<-'Quantitive_All_subject.csv'
+DF_PP<-read.csv(file.path(data_dir,data_file_name),stringsAsFactors = FALSE)
+```
+
+```{r, echo=FALSE}
+BaseLine<-function(fun.data, fun.x, fun.y, session, name, y_max, Day){
+  t<-ggplot(data = fun.data) + 
+    geom_line(aes(x = fun.x, y = fun.y, colour = interaction(session, Day), group = interaction(session, Day)))+
+    theme_bw()+
+    theme(plot.margin=unit(c(1,1,1,1),"cm"),plot.title = element_text(hjust = 0.5), panel.border = element_blank(), panel.grid.major = element_blank(),panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))+
+    labs(title=name ,fun.data, x="Time", y=bquote(paste('Perinasal Perspiration [',''^'o','C',''^2,']')))+
+    theme(legend.position = "bottom")+theme(legend.title = element_blank())+
+    ylim(0.0015, 0.008)+
+    scale_color_manual(labels = c("Day1", "Day2","Day3", "Day4"), values = c("RB.Day1"="orange", "RB.Day2"="red", "RB.Day3"="green", "RB.Day4"="blue"))
+  return(t)
+}
+```
+
+```{r, echo=FALSE}
+
+WorkingSession<-function(fun.data, fun.x, fun.y, session, name, y_max, Day){
+  t<-ggplot(data = fun.data) + 
+    geom_line(aes(x = fun.x, y = fun.y, colour = interaction(session, Day), group = interaction(session, Day)))+
+    theme_bw()+
+    theme(plot.margin=unit(c(1,1,1,1),"cm"),plot.title = element_text(hjust = 0.5), panel.border = element_blank(), panel.grid.major = element_blank(),panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))+
+    labs(title=name ,fun.data, x="Time", y=bquote(paste('Perinasal Perspiration [',''^'o','C',''^2,']')))+
+    theme(legend.position = "bottom")+theme(legend.title = element_blank())+
+    #scale_color_manual(values = cols)+
+    ylim(0.0025, 0.007)+
+    scale_color_manual(labels = c("Day1", 
+                                   "Day2", 
+                                   "Day3", 
+                                   "Day4"), 
+                        values = c("WS.Day1"="orange", 
+                                   "WS.Day2"="red", 
+                                   "WS.Day3"="green", 
+                                   "WS.Day4"="blue"))
+    return(t)
+}
+```
+
+```{r, echo=FALSE}
+ mean_line<-function(df, name){
+   plot<-ggplot(df)+
+   geom_hline(aes(yintercept=df$x[1],linetype="Day1"),size=1, color="orange" )+
+   geom_hline(aes(yintercept=df$x[2],linetype="Day2"),size=1, color="red" )+
+   geom_hline(aes(yintercept=df$x[3],linetype="Day3"),size=1, color="green" )+
+   geom_hline(aes(yintercept=df$x[4],linetype="Day4"),size=1, color="blue" )+
+   scale_linetype_manual(name = "",values = c(2, 2,2,2),guide = guide_legend(override.aes = list(color = c("orange", "red", "green", "blue"))))+theme_bw()+
+   theme(text = element_text(size=12 ,color = "black"),legend.position = "bottom")+theme(legend.title = element_blank())+
+   labs(title=name, y=bquote(paste('Mean Perinasal Perspiration [',''^'o','C',''^2,']')))+
+   theme(plot.title = element_text(hjust = 0.5))
+   return (plot) 
+} 
+```
+
+```{r, echo=FALSE}
+mean_of_session<-function(DataFrame){
+  DataFrame<-DataFrame %>% filter(PP != 'NA')
+  mean_session<-aggregate(DataFrame[,8], list(DataFrame$Day), mean)
+  return(mean_session)
+}
+```
+
+
+```{r, echo=FALSE}
+
+plot_list<-list()
+sid<-factor(DF_PP$Participant_ID)
+n=nlevels(sid)
+  # DF_RB<-subset(DF_PP, Participant_ID=="T003" & Treatment=="RB")
+  # y_max=max(DF_RB$PP)
+  # figure<-BaseLine(DF_RB, DF_RB$TreatmentTime, DF_RB$PP, DF_RB$Treatment,title_baseline, y_max, DF_RB$Day)
+  # print(figure)
+for (i in 1:n) {
+  DF_RB<-subset(DF_PP, Participant_ID==levels(sid)[i] & Treatment=="RB")
+  title_baseline <- paste0(levels(sid)[i], " Baseline")
+  y_max=max(DF_RB$PP)
+  figure<-BaseLine(DF_RB, DF_RB$TreatmentTime, DF_RB$PP, DF_RB$Treatment,title_baseline, y_max, DF_RB$Day)
+  print(figure)
+  plot_list[[length(plot_list) + 1]] <- figure
+  
+  mean_baseline <- mean_of_session(DF_RB)
+  title="Mean lines of Baseline"
+  mean_baseline=mean_line(mean_baseline, title)
+  print(mean_baseline)
+  plot_list[[length(plot_list) + 1]] <- mean_baseline
+  
+  DF_WS<-subset(DF_PP, Participant_ID==levels(sid)[i] & Treatment=="WS")
+  title_ws <- paste0(levels(sid)[i], " WorkingSession")
+  y_max=max(DF_WS$PP)
+  figure<-WorkingSession(DF_WS, DF_WS$TreatmentTime, DF_WS$PP, DF_WS$Treatment,title_ws, y_max, DF_WS$Day)
+  print(figure)
+  plot_list[[length(plot_list) + 1]] <- figure
+  
+  
+  mean_baseline <- mean_of_session(DF_WS)
+  title="Mean lines of WorkingSession"
+  mean_ws=mean_line(mean_baseline, title)
+  print(mean_ws)
+  plot_list[[length(plot_list) + 1]] <- mean_ws
+
+  
+  
+}
+#ggarrange(plotlist = plot_list, nrow = 2, ncol = 2,heights= c(3,3), align = c("hv"))
+
+```
+
