@@ -32,6 +32,7 @@ library(ggcorrplot)
 library(GGally)
 library(ggnewscale)
 library(scales)
+library(cowplot)
 current_dir <- getwd()
 setwd('..')
 root_dir <- getwd()
@@ -646,11 +647,11 @@ mat <- melt(mytable_mat,na.rm = TRUE)
     plot1 = ggplot(mat, aes(x=Var2, y=Var1))+
     geom_tile(aes(fill=percent_in_num))+
     geom_text(aes(label=percent_in_num, fontface=2), show.legend = FALSE,col="black",size=3, )+
-    scale_fill_gradientn(colours = c("lightgray","dimgray"), name = "Time [s%]")+
+    scale_fill_gradientn(colours = c("lightgray","dimgray"), name = "Time [s%]", limits=c(0,100))+
     new_scale("fill") +
     geom_tile(aes(fill=percent_in_num), data = subset(mat, value1 > -1))+
     geom_text(aes(label=percent_in_num), show.legend = FALSE, col="black", size=2.5, data = subset(mat, value1 > 0))+
-    scale_fill_gradientn(colours = c("white", "yellow", "red"), name = "")+
+    scale_fill_gradientn(colours = c("white", "yellow", "red"), name = "", limits=c(0,100))+
     new_scale("fill") +
     geom_tile(aes(fill=value1), data = subset(mat, value1 < -1 ), show.legend = FALSE)+
     scale_fill_gradientn(colours = c("white"))+
@@ -768,13 +769,13 @@ for (i in 1:n) {
     plot1 = ggplot(mat, aes(x=Var2, y=Var1))+
     #geom_tile(aes(fill=value2))+
     geom_tile(aes(fill=percent_in_num))+
-    geom_text(aes(label=percent_in_num), show.legend = FALSE,col="black",size=2.5)+
-    scale_fill_gradientn(colours = c("lightgray","dimgray"), name = "% Time [s]")+
+    geom_text(aes(label=percent_in_num), show.legend = FALSE,col="black",size=3, face = "bold")+
+    scale_fill_gradientn(colours = c("lightgray","dimgray"), name = "Time [s] %", limits=c(0,100))+
     new_scale("fill") +
     geom_tile(aes(fill=percent_in_num), data = subset(mat, value1 > -1))+
-    geom_text(aes(label=percent_in_num), show.legend = FALSE, col="black", size=2.5, data = subset(mat, value1 > 0))+
+    geom_text(aes(label=percent_in_num), show.legend = FALSE, col="black", size=3, data = subset(mat, value1 > 0))+
     #scale_fill_gradientn(colours = c("white", "yellow", "red"), name = "Time [s]*1000")+
-    scale_fill_gradientn(colours = c("yellow","white", "red"), name = "% Time [s]")+
+    scale_fill_gradientn(colours = c("yellow","white", "red"), name = "")+
     new_scale("fill") +
     geom_tile(aes(fill=value1), data = subset(mat, value1 < -1 ), show.legend = FALSE)+
     scale_fill_gradientn(colours = c("white"))+
@@ -790,14 +791,14 @@ for (i in 1:n) {
   else{
     plot1 = ggplot(mat, aes(x=Var2, y=Var1))+
     geom_tile(aes(fill=percent_in_num))+
-    geom_text(aes(label=percent_in_num), show.legend = FALSE,col="black",size=2.5)+
+    geom_text(aes(label=percent_in_num), show.legend = FALSE,col="black",size=3, face="bold")+
     #scale_fill_gradientn(colours = c("lightgray","dimgray"), name = "Time [s]*1000")+
-    scale_fill_gradientn(colours = c("lightgray","dimgray"), name = "Time [s] %")+
+    scale_fill_gradientn(colours = c("lightgray","dimgray"), name = "Time [s] %", limits=c(0,100))+
     new_scale("fill") +
     geom_tile(aes(fill=percent_in_num), data = subset(mat, value1 > -1))+
-    geom_text(aes(label=percent_in_num), show.legend = FALSE, col="black", size=2.5, data = subset(mat, value1 > 0))+
+    geom_text(aes(label=percent_in_num), show.legend = FALSE, col="black", size=3, data = subset(mat, value1 > 0))+
     #scale_fill_gradientn(colours = c("white", "yellow", "red"), name = "Time [s]*1000")+
-    scale_fill_gradientn(colours = c("white", "yellow", "red"), name = "Time [s] %")+
+    scale_fill_gradientn(colours = c("white", "yellow", "red"), name = "", limits=c(0,40))+
     new_scale("fill") +
     geom_tile(aes(fill=value1), data = subset(mat, value1 < -1 ), show.legend = FALSE)+
     scale_fill_gradientn(colours = c("white"))+
@@ -833,7 +834,12 @@ for (i in 1:n) {
       
     }
   }
-#ggarrange(plotlist = plot_list_heatmap, nrow = 2, ncol = 2, align = c("hv"))
+#ggarrange(plotlist = plot_list_heatmap, nrow = 2, ncol = 2, align = c("hv"), common.legend = TRUE, legend="right")
+
+heatmap_list=list()
+heatmap_list=ggarrange(plotlist = plot_list_heatmap, nrow = 2, ncol = 2, align = c("hv"), common.legend = TRUE, legend="right")
+heatmap_list
+
 ```
 
 ```{r, echo=FALSE}
@@ -860,10 +866,10 @@ Draw_Timeline<-function(Data_Frame, Title, Color){
   scale_y_discrete(breaks=c("1", "2", "3", "4"),labels=c("Day1", "Day2","Day3", "Day4"))+
   theme(text = element_text(face = "bold",size=12 ,color = "black"),plot.title = element_text(hjust = 0.5), panel.border = element_blank(), panel.grid.major = element_blank(),panel.grid.minor = element_blank())+
   labs(title = Title , x="Time [s]", y="")+
-  theme(legend.position = "right")+theme(legend.title = element_blank(), legend.text=element_text(size=10), legend.background = element_blank())+
+  theme(legend.position = "bottom")+theme(legend.title = element_blank(), legend.text=element_text(size=10), legend.background = element_blank())+
   theme(plot.title = element_text(size=20))+
   scale_color_manual(values = Color, limits = c("CR", "PR", "CW", "PW", "PI", "VI", "Out", "SP", "Out", "ELD", "EiP", "T"))+
-  guides(color = guide_legend(override.aes = list(size = 4)))+
+  guides(color = guide_legend(nrow = 1,override.aes = list(size = 4)))+
   scale_x_continuous(breaks = seq(0,24000, by=2000))
   print(timeline)
 }
@@ -892,24 +898,25 @@ for (i in 1:numberSid) {
 ```
 
 
+
 ```{r, echo=FALSE}
 
 ##Timeline for a single subject
 
-pal <- c( "CR" = "green",  "PR" = "lightgreen", "CW" = "blue", "PW" = "cyan", "PI" = "lightskyblue","VI" = "yellow","Out" = "white","SP" = "red","ELD" = "orange","EiP" = "magenta", "T" = "brown", "nil"="gray92")
+pal <- c( "CR" = "green4",  "PR" = "lightgreen", "CW" = "blue", "PW" = "cyan", "PI" = "black","VI" = "yellow","Out" = "white","SP" = "red","ELD" = "orange","EiP" = "magenta", "T" = "brown", "nil"="gray92")
 
-DF_Sub<-subset(DF, Participant_ID=="T005" &Treatment=="WS")
+DF_Sub<-subset(DF, Participant_ID=="T013" & Treatment=="WS" & Day=="Day4")
 #write.csv(DF_Sub, 'T009_Day2.csv')
-      tab <- table(DF_Sub$Activities_QC1)
-      DF_Sub<-DF_Sub[DF_Sub$Activities_QC1 %in% names(tab)[tab>60],]
+      # tab <- table(DF_Sub$Activities_QC1)
+      # DF_Sub<-DF_Sub[DF_Sub$Activities_QC1 %in% names(tab)[tab>60],]
       
-      DF_Sub$B[DF_Sub$B==""]<-"nil"
-      DF_Sub$C[DF_Sub$C==""]<-"nil"
+      DF_Sub$B[DF_Sub$Ontology_Two==""]<-"nil"
+      DF_Sub$C[DF_Sub$Ontology_Three==""]<-"nil"
       
 timeline<-ggplot(DF_Sub,aes(x=Sinterface_Time, y=Day)) +
-  geom_point(data = DF_Sub[which(DF_Sub$Day=="Day1"),], aes(y=factor(1), colour=A), shape=15)+
-  geom_point(data = DF_Sub[which(DF_Sub$Day=="Day1"),], aes(y=1.05, colour=B), shape=15)+
-  geom_point(data = DF_Sub[which(DF_Sub$Day=="Day1"),], aes(y=1.10, colour=C), shape=15)+
+  geom_point(data = DF_Sub[which(DF_Sub$Day=="Day4"),], aes(y=factor(1), colour=Ontology_One), shape=15, size=10)+
+  geom_point(data = DF_Sub[which(DF_Sub$Day=="Day4"),], aes(y=1.12, colour=Ontology_Two), shape=15, size=10)+
+  geom_point(data = DF_Sub[which(DF_Sub$Day=="Day4"),], aes(y=1.24, colour=Ontology_Three), shape=15, size=10)+
   scale_y_discrete(breaks=c("1", "2", "3", "4"),labels=c("Day1", "Day2","Day3", "Day4"))+
   
   #theme_classic()+
@@ -925,4 +932,233 @@ print(timeline)
 ```
 
 
+
+```{r}
+legend_heatmap<-NULL
+legend_timeline<-NULL
+plot_location<-"C:/Users/soton/Documents/R/DeadlineProject/Plots/Combined/Version2/"
+subject_name_list<-levels(factor(DF$Participant_ID))
+
+#Timeline_Heatmap_list<-list()
+final_list<-list()
+
+SubjectID<-factor(DF$Participant_ID)
+numberSid=nlevels(SubjectID)
+for (i in 1:numberSid) {
+  Timeline_Heatmap_list<-list()
+  DF_Sub<-subset(DF, Participant_ID==levels(SubjectID)[i] & DF$Treatment=="WS")
+  subject_title=levels(SubjectID)[i]
+
+      
+      Day_No<-factor(DF_Sub$Day)
+      numberOfDay=nlevels(Day_No)
+      
+      for (j in 1:numberOfDay) {
+        Title=levels(Day_No)[j]
+        Day_DF<-subset(DF_Sub, Day==levels(Day_No)[j])
+        Draw_Timeline_Heatmap(Day_DF, Title)
+      
+      }
+
+
+
+    #final_list=ggarrange(plotlist = Timeline_Heatmap_list, nrow = 4, ncol = 2, align = c("hv"), common.legend = FALSE, legend="right")
+    plots=ggarrange(plotlist = Timeline_Heatmap_list, nrow = 4, ncol = 2)
+    #final_list
+    legend_merge<-plot_grid(legend_timeline, legend_heatmap, ncol = 2, nrow = 1)
+    legends_of_plots<-plot_grid(plots,legend_merge, ncol = 1, rel_heights = c(1, .05))
+    title <- ggdraw() + draw_label(subject_title, fontface='bold')
+    final_plot<-plot_grid(title,legends_of_plots, ncol = 1, rel_heights = c(.03, 1))
+    final_plot
+    final_list[[length(final_list) + 1]] <- final_plot
+    
+  full_path<-paste(plot_location,subject_name_list[i],".pdf",sep="")
+  ggsave(full_path, final_plot, width = 8.5, height = 11, units = "in")
+}
+
+```
+
+
+```{r}
+Draw_Timeline_Heatmap<-function(Data_Frame, Title){
+  Timeline=Draw_Timeline_Day(Data_Frame, Title)
+  #print(Timeline)
+  Heatmap=Draw_HeatMap_Day(Data_Frame, Title)
+  #print(Heatmap)
+}
+```
+
+
+```{r}
+Draw_Timeline_Day<-function(Data_Frame, Title){
+      tab_Timeline <- table(Data_Frame$Activities_QC1)
+      Data_Frame<-Data_Frame[Data_Frame$Activities_QC1 %in% names(tab_Timeline)[tab_Timeline>60],]
+      Data_Frame$Ontology_Two[Data_Frame$Ontology_Two==""]<-"nil"
+      Data_Frame$Ontology_Three[Data_Frame$Ontology_Three==""]<-"nil"
+      
+      Ontology_Color <- c( "CR" = "green4",  "PR" = "lightgreen", "CW" = "blue", "PW" = "cyan", "PI" = "black","VI" = "yellow","Out" = "white","SP" = "red","ELD" = "orange","EiP" = "magenta", "T" = "brown", "nil"="gray92")
+      
+      
+      if (Title!="Day4"){
+        timeline<-ggplot(Data_Frame,aes(x=Sinterface_Time, y=Day)) +
+        geom_point(aes(y=factor(1), colour=Ontology_One), shape=15, size=10)+
+        geom_point(aes(y=1.12, colour=Ontology_Two), shape=15, size=10)+
+        geom_point(aes(y=1.24, colour=Ontology_Three), shape=15, size=10)+
+        scale_y_discrete(breaks=c("1", "2", "3", "4"),labels=c("", "","", ""))+
+        theme(text = element_text(size=12 ,color = "black"),plot.title = element_text(hjust = 0.5), panel.border = element_blank(), 
+        panel.grid.major = element_blank(),panel.grid.minor = element_blank())+
+        labs(x="",y=Title)+
+        theme(legend.position = "none")+theme(legend.title = element_blank(), legend.text=element_text(size=8), legend.background = element_blank())+
+        theme(plot.title = element_text(size=12))+
+        scale_color_manual(values = Ontology_Color, limits = c("CR", "PR", "CW", "PW", "PI", "VI", "Out", "SP", "Out", "ELD", "EiP", "T"))+
+        guides(color = guide_legend(nrow = 2,override.aes = list(size = 4)))+
+        scale_x_continuous(breaks = seq(0,24000, by=2000), labels = c("0"="0","2000"="2", "4000"="4","6000"="6", "8000"="8", "10000"="10","12000"="12","14000"="14", "16000"="16", "18000"="18", "20000"="20","22000"="22" ,"24000"="24"))
+        print(timeline)
+        Timeline_Heatmap_list[[length(Timeline_Heatmap_list) + 1]] <<- timeline
+        
+      }
+
+      if (Title=="Day4"){
+        timeline<-ggplot(Data_Frame,aes(x=Sinterface_Time, y=Day)) +
+        geom_point(aes(y=factor(1), colour=Ontology_One), shape=15, size=10)+
+        geom_point(aes(y=1.12, colour=Ontology_Two), shape=15, size=10)+
+        geom_point(aes(y=1.24, colour=Ontology_Three), shape=15, size=10)+
+        scale_y_discrete(breaks=c("1", "2", "3", "4"),labels=c("", "","", ""))+
+        theme(text = element_text(size=12 ,color = "black"),plot.title = element_text(hjust = 0.5), panel.border = element_blank(), 
+        panel.grid.major = element_blank(),panel.grid.minor = element_blank())+
+        labs(x="Time[s] * 1000",y=Title)+
+        theme(legend.position = "none")+theme(legend.title = element_blank(), legend.text=element_text(size=8), legend.background = element_blank())+
+        theme(plot.title = element_text(size=12))+
+        scale_color_manual(values = Ontology_Color, limits = c("CR", "PR", "CW", "PW", "PI", "VI", "Out", "SP", "Out", "ELD", "EiP", "T"))+
+        guides(color = guide_legend(nrow = 2,override.aes = list(size = 4)))+
+        scale_x_continuous(breaks = seq(0,24000, by=2000), labels = c("0"="0","2000"="2", "4000"="4","6000"="6", "8000"="8", "10000"="10","12000"="12","14000"="14", "16000"="16", "18000"="18", "20000"="20","22000"="22" ,"24000"="24"))
+        print(timeline)
+        Timeline_Heatmap_list[[length(Timeline_Heatmap_list) + 1]] <<- timeline
+      }
+      legend_timeline<<-get_legend(timeline + add_bottom_legend())
+}
+```
+
+```{r}
+Draw_HeatMap_Day<-function(DF_Sub_Day, Title){
+    tab_heatmap <- table(DF_Sub_Day$Activities_QC1)
+    DF_Sub_Day<-DF_Sub_Day[DF_Sub_Day$Activities_QC1 %in% names(tab_heatmap)[tab_heatmap>60],]
+    title=paste(levels(sid)[i],levels(D_id)[j])
+    
+    title=Title
+    DF_Sub_Day$Onto_sep<-DF_Sub_Day$Activities_QC1
+    DF_Sub_Day<-DF_Sub_Day %>% separate(Onto_sep, c("A", "B"))
+    
+    for (k in 1:nrow(DF_Sub_Day)){
+      if(is.na(DF_Sub_Day$B[k])){
+        DF_Sub_Day$B[k]<-DF_Sub_Day$A[k]
+      }
+    }
+      mytable<-as.data.frame(table(DF_Sub_Day$A, DF_Sub_Day$B))
+      colnames(mytable)<-c("A", "B", "Time")
+      mytable<-subset(mytable, Time>0)
+      
+      mytable$A<-as.character(mytable$A)
+      mytable$B<-as.character(mytable$B)
+      mytable<-mytable[!(mytable$A=="NA" | mytable$A=="Working"),]
+      
+      mytable_Sym <- data.frame(A = c(mytable[,"A"], mytable[,"B"]),
+                                B = c(mytable[,"B"], mytable[,"A"]),
+                                Time = c(mytable[,"Time"], mytable[,"Time"]))
+      mytable_Sym$A<-as.factor(mytable_Sym$A)
+      mytable_Sym$B<-as.factor(mytable_Sym$B)
+      
+      
+      rest_of_ontologies<-data.frame(A=setdiff(levels(factor(X)),levels(factor(mytable_Sym$A))),
+                       B=setdiff(levels(factor(X)),levels(factor(mytable_Sym$A))),
+                       Time=0) 
+
+        mytable_Sym<-rbind(mytable_Sym, rest_of_ontologies)
+        mytable_Sym<-mytable_Sym[!(mytable_Sym$A=="OB"),]
+        mytable_mat<-acast(mytable_Sym, A~B, value.var='Time', fun.aggregate=mean)
+        mytable_mat <- mytable_mat[, order(colnames(mytable_mat))]
+        mytable_mat <- mytable_mat[order(rownames(mytable_mat)),]
+
+        
+        
+        mytable_mat[lower.tri(mytable_mat)] <- NA
+        mytable_mat[is.nan(mytable_mat)] <- 0
+        mat <- melt(mytable_mat,na.rm = TRUE)
+
+  mat$percent<-percent(mat$value/sum(mat$value))
+  mat$percent<-percent(mat$value/sum(mat$value))
+  mat$percent_in_num<-(mat$value/sum(mat$value))*100
+  mat$percent_in_num<-round(mat$percent_in_num, 2)
+
+  
+  mat$Var1 = as.factor(mat$Var1)
+  mat$Var2 = as.factor(mat$Var2)
+  mat = mat %>% mutate(value2 = ifelse(Var1==Var2, value, NA))
+  mat = mat %>% mutate(value1 = ifelse(Var1==Var2, -1, value))
+  mat$value1[is.na(mat$value1)] <- -2
+
+  if(str_detect(title, "T003")){
+    plot1 = ggplot(mat, aes(x=Var2, y=Var1))+
+    #geom_tile(aes(fill=value2))+
+    geom_tile(aes(fill=percent_in_num))+
+    geom_text(aes(label=percent_in_num), show.legend = FALSE,col="black",size=2, face = "bold")+
+    #scale_fill_gradientn(colours = c("lightgray","dimgray"), name = "Time [s] %", limits=c(0,100))+
+    scale_fill_gradientn(colours = c("gray","yellow", "red"), name = "Time [s] %", limits=c(0,100))+
+    new_scale("fill") +
+    geom_tile(aes(fill=percent_in_num), data = subset(mat, value1 > -1))+
+    geom_text(aes(label=percent_in_num), show.legend = FALSE, col="black", size=2, data = subset(mat, value1 > 0))+
+    #scale_fill_gradientn(colours = c("white", "yellow", "red"), name = "Time [s]*1000")+
+    #scale_fill_gradientn(colours = c("yellow","white", "red"), name = "")+
+    scale_fill_gradientn(colours = c("white","dimgray"), name = "", limits=c(0,40))+
+    new_scale("fill") +
+    geom_tile(aes(fill=value1), data = subset(mat, value1 < -1 ), show.legend = FALSE)+
+    scale_fill_gradientn(colours = c("white"))+
+    xlab("")+
+    ylab("")+
+    #labs(title=title)+
+    theme(plot.title = element_text(size=10))+
+    theme(plot.title = element_text(hjust = 0.5),text = element_text(size=10),panel.background = element_blank(),panel.grid = element_blank(), plot.margin = unit(c(0.5,.05,1.5,0.5), "cm")) +
+    scale_x_discrete(position = "top")+
+    scale_y_discrete(limits = rev(levels(factor(X))))
+    print(plot1)
+  Timeline_Heatmap_list[[length(Timeline_Heatmap_list) + 1]] <<- plot1
+  legend_heatmap<<-get_legend(plot1 + add_bottom_legend())
+  }
+  else{
+    plot1 = ggplot(mat, aes(x=Var2, y=Var1))+
+    geom_tile(aes(fill=percent_in_num))+
+    geom_text(aes(label=percent_in_num), show.legend = FALSE,col="black",size=2, face="bold")+
+    #scale_fill_gradientn(colours = c("lightgray","dimgray"), name = "Time [s]*1000")+
+    #scale_fill_gradientn(colours = c("lightgray","dimgray"), name = "Time [s] %", limits=c(0,100))+
+    scale_fill_gradientn(colours = c("gray","yellow", "red"), name = "Time [s] %", limits=c(0,100))+
+    new_scale("fill") +
+    geom_tile(aes(fill=percent_in_num), data = subset(mat, value1 > -1))+
+    geom_text(aes(label=percent_in_num), show.legend = FALSE, col="black", size=2, data = subset(mat, value1 > 0))+
+    #scale_fill_gradientn(colours = c("white", "yellow", "red"), name = "Time [s]*1000")+
+    #scale_fill_gradientn(colours = c("white", "yellow", "red"), name = "", limits=c(0,40))+
+    scale_fill_gradientn(colours = c("white","dimgray"), name = "", limits=c(0,40))+
+    new_scale("fill") +
+    geom_tile(aes(fill=value1), data = subset(mat, value1 < -1 ), show.legend = FALSE)+
+    scale_fill_gradientn(colours = c("white"))+
+    xlab("")+
+    ylab("")+
+    #labs(title=title)+
+    theme(plot.title = element_text(size=10))+
+    theme(plot.title = element_text(hjust = 0.5),text = element_text(size=10),panel.background = element_blank(),panel.grid = element_blank(), plot.margin = unit(c(0.5,.05,1.5,0.5), "cm")) +
+    labs(fill=" X 1000")+
+    scale_x_discrete(position = "top")+
+    scale_y_discrete(limits = rev(levels(factor(X))))+
+    theme(legend.position = "none")
+    print(plot1)
+    Timeline_Heatmap_list[[length(Timeline_Heatmap_list) + 1]] <<- plot1
+    legend_heatmap<<-get_legend(plot1 + add_bottom_legend())
+  }
+}
+```
+
+```{r}
+add_bottom_legend <- function() {
+  theme(legend.position="bottom")
+}
+```
 
