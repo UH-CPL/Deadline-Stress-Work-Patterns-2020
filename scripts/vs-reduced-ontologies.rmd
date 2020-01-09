@@ -1,0 +1,484 @@
+---
+title: "Ontologies"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(grid)
+library(gridExtra)
+library(dplyr)
+library(ggpubr)
+#install.packages('DataCombine')
+library(DataCombine)
+library(dplyr)
+library(reshape2)
+library(tidyr)
+library(stringr)
+library(plyr)
+library(ggplot2)
+library(dplyr)
+library(miceadds)
+library(gtools)
+library(ggpubr)
+library(gvlma)
+library(MASS)
+library(reshape2)
+library(ggcorrplot)
+library(GGally)
+library(ggnewscale)
+library(scales)
+library(cowplot)
+current_dir <- getwd()
+setwd('..')
+root_dir <- getwd()
+data_dir <- file.path(root_dir, 'curated-data/physiological-data')
+data_file_name<-'qc99_all_subj.csv'
+```
+
+```{r}
+DF<-read.csv(file.path(data_dir,data_file_name),stringsAsFactors = FALSE)
+file_name <- 'Quantitive_All_subject.csv'
+DF<-DF[!(DF$Participant_ID=="T005" & DF$Day=="Day4"),]
+DF$Day[DF$Day=="Day5"] <- "Day4"
+#write.csv(DF, 'All.csv')
+```
+
+
+```{r}
+DF$Reduced_Ontology_One<- DF$Ontology_One
+DF$Reduced_Ontology_Two<- DF$Ontology_Two
+DF$Reduced_Ontology_Three<- DF$Ontology_Three
+```
+
+```{r}
+R= '^CR$|^PR$'
+W = '^CW$|^PW$'
+I = '^PI|^VI'
+Out = '^Out$'
+SP = '^SP$'
+SA = '^ELD$|^EiP$'
+Thinking = '^T$'
+```
+
+```{r}
+  DF$Reduced_Ontology_One<-case_when(
+                          str_detect(DF$Ontology_One, Out)~"Out",
+                           str_detect(DF$Ontology_One, W)~"W",
+                           str_detect(DF$Ontology_One, R)~"R",
+                           str_detect(DF$Ontology_One, Thinking)~"T",
+                           str_detect(DF$Ontology_One, SP)~"SP",
+                           str_detect(DF$Ontology_One, SA)~"SA",
+                           str_detect(DF$Ontology_One, I)~"I")
+
+  DF$Reduced_Ontology_Two<-case_when(
+                          str_detect(DF$Ontology_Two, Out)~"Out",
+                           str_detect(DF$Ontology_Two, W)~"W",
+                           str_detect(DF$Ontology_Two, R)~"R",
+                           str_detect(DF$Ontology_Two, Thinking)~"T",
+                           str_detect(DF$Ontology_Two, SP)~"SP",
+                           str_detect(DF$Ontology_Two, SA)~"SA",
+                           str_detect(DF$Ontology_Two, I)~"I")
+  
+    DF$Reduced_Ontology_Three<-case_when(
+                          str_detect(DF$Ontology_Three, Out)~"Out",
+                           str_detect(DF$Ontology_Three, W)~"W",
+                           str_detect(DF$Ontology_Three, R)~"R",
+                           str_detect(DF$Ontology_Three, Thinking)~"T",
+                           str_detect(DF$Ontology_Three, SP)~"SP",
+                           str_detect(DF$Ontology_Three, SA)~"SA",
+                           str_detect(DF$Ontology_Three, I)~"I")
+    
+    
+ 
+  #DF$Reduced_Ontology_One[is.na(DF$Reduced_Ontology_One)] <- ""
+  DF$Reduced_Ontology_Two[is.na(DF$Reduced_Ontology_Two)] <- ""
+  DF$Reduced_Ontology_Three[is.na(DF$Reduced_Ontology_Three)] <- ""
+
+  DF$Reduce_Activities<-paste(DF$Reduced_Ontology_One,DF$Reduced_Ontology_Two,DF$Reduced_Ontology_Three, sep="+")
+  DF<-DF%>%mutate(Reduce_Activities_QC1=gsub("(\\+)*$", "", Reduce_Activities))
+```
+
+
+```{r}
+#DF<-subset(DF, Participant_ID=="T009" & DF$Treatment=="WS")
+legend_heatmap<-NULL
+legend_timeline<-NULL
+plot_location<-"C:/Users/soton/Documents/R/DeadlineProject/Plots/Combined/Version8/"
+subject_name_list<-levels(factor(DF$Participant_ID))
+
+#Timeline_Heatmap_list<-list()
+final_list<-list()
+
+SubjectID<-factor(DF$Participant_ID)
+numberSid=nlevels(SubjectID)
+for (i in 1:numberSid) {
+  Timeline_Heatmap_list<-list()
+  DF_Sub<-subset(DF, Participant_ID==levels(SubjectID)[i] & DF$Treatment=="WS")
+  subject_title=levels(SubjectID)[i]
+
+      
+      Day_No<-factor(DF_Sub$Day)
+      numberOfDay=nlevels(Day_No)
+      
+      for (j in 1:numberOfDay) {
+        Title=levels(Day_No)[j]
+        Day_DF<-subset(DF_Sub, Day==levels(Day_No)[j])
+        Day_DF<-Day_DF[!is.na(Day_DF$Reduce_Activities_QC1),]
+        Draw_Timeline_Heatmap(Day_DF, Title)
+      
+      }
+
+
+
+    #final_list=ggarrange(plotlist = Timeline_Heatmap_list, nrow = 4, ncol = 2, align = c("hv"), common.legend = FALSE, legend="right")
+    plots=ggarrange(plotlist = Timeline_Heatmap_list, nrow = 4, ncol = 2)
+    #final_list
+    legend_merge<-plot_grid(legend_timeline, legend_heatmap, ncol = 2, nrow = 1)
+    legends_of_plots<-plot_grid(plots,legend_merge, ncol = 1, rel_heights = c(1, .05))
+    title <- ggdraw() + draw_label(subject_title, fontface='bold')
+    final_plot<-plot_grid(title,legends_of_plots, ncol = 1, rel_heights = c(.03, 1))
+    final_plot
+    final_list[[length(final_list) + 1]] <- final_plot
+    
+  full_path<-paste(plot_location,subject_name_list[i],".pdf",sep="")
+  ggsave(full_path, final_plot, width = 8.5, height = 11, units = "in")
+}
+
+```
+
+
+```{r}
+Draw_Timeline_Heatmap<-function(Data_Frame, Title){
+  Data_Frame_=Draw_Timeline_Day(Data_Frame, Title)
+  print("after timeline")
+  #print(Timeline)
+  print("Before Heatmap calling")
+  Heatmap=Draw_HeatMap_Day(Data_Frame_, Title)
+  print("after calling")
+  #print(Heatmap)
+}
+```
+
+
+```{r}
+Draw_Timeline_Day<-function(Data_Frame, Title){
+  for ( cell in 1:nrow(Data_Frame)) {
+      
+      if(Data_Frame$Reduced_Ontology_One[cell]==Data_Frame$Reduced_Ontology_Two[cell])
+          {
+          Data_Frame$Reduced_Ontology_Two[cell]= Data_Frame$Reduced_Ontology_Three[cell]
+          Data_Frame$Reduced_Ontology_Three[cell] = ""
+          Data_Frame$Reduce_Activities_QC1[cell]=paste(Data_Frame$Reduced_Ontology_One[cell],Data_Frame$Reduced_Ontology_Two[cell],Data_Frame$Reduced_Ontology_Three[cell], sep="+")
+          Data_Frame$Reduce_Activities_QC1[cell]<-gsub("(\\+)*$", "", Data_Frame$Reduce_Activities_QC1[cell])
+      }
+    
+    if ((Data_Frame$Reduced_Ontology_One[cell]=="SA" & Data_Frame$Reduced_Ontology_Two[cell]=="R") | (Data_Frame$Reduced_Ontology_One[cell]=="SA" & Data_Frame$Reduced_Ontology_Two[cell]=="W")){
+      temp=Data_Frame$Reduced_Ontology_One[cell]
+      Data_Frame$Reduced_Ontology_One[cell]=Data_Frame$Reduced_Ontology_Two[cell]
+      Data_Frame$Reduced_Ontology_Two[cell]=temp
+      
+    }
+  }
+      tab_Timeline <- table(Data_Frame$Reduce_Activities_QC1)
+      #view(tab_Timeline)
+      print(tab_Timeline)
+      Data_Frame<-Data_Frame[Data_Frame$Reduce_Activities_QC1 %in% names(tab_Timeline)[tab_Timeline>60],]
+      Data_Frame$Reduced_Ontology_Two[Data_Frame$Reduced_Ontology_Two==""]<-"nil"
+      Data_Frame$Reduced_Ontology_Three[Data_Frame$Reduced_Ontology_Three==""]<-"nil"
+      
+      Ontology_Color <- c( "R" = "green4", "W" = "blue",  "I" = "Orange", "Out" = "white", "SP" = "red", "SA" = "magenta", "nil"="gray92")
+      
+
+      if (Title!="Day4"){
+              max_num=round_any(max(Data_Frame$Sinterface_Time), 1000, f = ceiling)
+        timeline<-ggplot(Data_Frame,aes(x=Sinterface_Time, y=Day)) +
+        geom_point(aes(y=factor(1), colour=Reduced_Ontology_One), shape=15, size=10)+
+        geom_point(aes(y=1.12, colour=Reduced_Ontology_Two), shape=15, size=10)+
+        geom_point(aes(y=1.24, colour=Reduced_Ontology_Three), shape=15, size=10)+
+        scale_y_discrete(breaks=c("1", "2", "3", "4"),labels=c("", "","", ""))+
+        theme(text = element_text(size=12 ,color = "black"),plot.title = element_text(hjust = 0.5), panel.border = element_blank(), 
+        panel.grid.major = element_blank(),panel.grid.minor = element_blank())+
+        labs(x="",y=Title)+
+        theme(legend.position = "none")+theme(legend.title = element_blank(), legend.text=element_text(size=8), legend.background = element_blank())+
+        theme(plot.title = element_text(size=12))+
+        scale_color_manual(values = Ontology_Color, limits = c("R", "W", "I", "Out", "SP",  "SA"))+
+        guides(color = guide_legend(nrow = 1,override.aes = list(size = 4)))+
+        scale_x_continuous(breaks = seq(0,24000, by=2000), labels = c("0"="0","2000"="2","4000"="4","6000"="6","8000"="8",  "10000"="10","12000"="12", "14000"="14",  "16000"="16",  "18000"="18",  "20000"="20", "22000"="22",  "24000"="24"))
+        print(timeline)
+        Timeline_Heatmap_list[[length(Timeline_Heatmap_list) + 1]] <<- timeline
+        
+      }
+
+      if (Title=="Day4"){
+              max_num=round_any(max(Data_Frame$Sinterface_Time), 1000, f = ceiling)
+        timeline<-ggplot(Data_Frame,aes(x=Sinterface_Time, y=Day)) +
+        geom_point(aes(y=factor(1), colour=Reduced_Ontology_One), shape=15, size=10)+
+        geom_point(aes(y=1.12, colour=Reduced_Ontology_Two), shape=15, size=10)+
+        geom_point(aes(y=1.24, colour=Reduced_Ontology_Three), shape=15, size=10)+
+        scale_y_discrete(breaks=c("1", "2", "3", "4"),labels=c("", "","", ""))+
+        theme(text = element_text(size=12 ,color = "black"),plot.title = element_text(hjust = 0.5), panel.border = element_blank(), 
+        panel.grid.major = element_blank(),panel.grid.minor = element_blank())+
+        labs(x="Time[s] * 1000",y=Title)+
+        theme(legend.position = "none")+theme(legend.title = element_blank(), legend.text=element_text(size=8), legend.background = element_blank())+
+        theme(plot.title = element_text(size=12))+
+        scale_color_manual(values = Ontology_Color, limits = c("R", "W", "I", "Out", "SP",  "SA"))+
+        guides(color = guide_legend(nrow = 1,override.aes = list(size = 4)))+
+        scale_x_continuous(breaks = seq(0,24000, by=2000),labels = c("0"="0","2000"="2","4000"="4","6000"="6","8000"="8",  "10000"="10","12000"="12", "14000"="14",  "16000"="16",  "18000"="18",  "20000"="20", "22000"="22",  "24000"="24"))
+        print(timeline)
+        Timeline_Heatmap_list[[length(Timeline_Heatmap_list) + 1]] <<- timeline
+      }
+      legend_timeline<<-get_legend(timeline + add_bottom_legend())
+      
+      return(Data_Frame)
+      
+      # labels = c("0"="0","1000"="1", "2000"="2","3000"="3", "4000"="4", "5000"="5","6000"="6","7000"="7", "8000"="8", "9000"="9", "10000"="10","11000"="11" ,"12000"="12","13000"="13", "14000"="14", "15000"="15", "16000"="16", "17000"="17", "18000"="18", "19000"="19", "20000"="20", "21000"="21","22000"="22", "23000"="23", "24000"="24"))
+}
+```
+
+```{r}
+Draw_HeatMap_Day<-function(DF_Sub_Day, Title){
+  #X<-c("CR", "CW", "EiP", "T", "SP", "PR", "PW", "ELD", "PI", "VI","Out")
+    print("Entered")
+    X<-c("R", "W", "Out","SA", "SP","I")
+    print(X)
+    tab_heatmap <- table(DF_Sub_Day$Reduce_Activities_QC1)
+    DF_Sub_Day<-DF_Sub_Day[DF_Sub_Day$Reduce_Activities_QC1 %in% names(tab_heatmap)[tab_heatmap>60],]
+    #title=paste(levels(sid)[i],levels(D_id)[j])
+    
+    title=Title
+    DF_Sub_Day$Onto_sep<-DF_Sub_Day$Reduce_Activities_QC1
+    DF_Sub_Day<-DF_Sub_Day %>% separate(Onto_sep, c("A", "B"))
+    
+    for (k in 1:nrow(DF_Sub_Day)){
+      if(is.na(DF_Sub_Day$B[k])){
+        DF_Sub_Day$B[k]<-DF_Sub_Day$A[k]
+      }
+    }
+      mytable<-as.data.frame(table(DF_Sub_Day$A, DF_Sub_Day$B))
+      colnames(mytable)<-c("A", "B", "Time")
+      mytable<-subset(mytable, Time>0)
+      
+      mytable$A<-as.character(mytable$A)
+      mytable$B<-as.character(mytable$B)
+      mytable<-mytable[!(mytable$A=="NA" | mytable$A=="Working"),]
+      
+      mytable_Sym <- data.frame(A = c(mytable[,"A"], mytable[,"B"]),
+                                B = c(mytable[,"B"], mytable[,"A"]),
+                                Time = c(mytable[,"Time"], mytable[,"Time"]))
+      mytable_Sym$A<-as.factor(mytable_Sym$A)
+      mytable_Sym$B<-as.factor(mytable_Sym$B)
+      print("I am before rest of Ontologies")
+      
+      if (length(levels(factor(mytable_Sym$A)))<6){
+              rest_of_ontologies<-data.frame(A=setdiff(levels(factor(X)),levels(factor(mytable_Sym$A))),
+                       B=setdiff(levels(factor(X)),levels(factor(mytable_Sym$A))),
+                       Time=0)
+                      mytable_Sym<-rbind(mytable_Sym, rest_of_ontologies)
+        
+      }
+        mytable_Sym<-mytable_Sym[!(mytable_Sym$A=="OB"),]
+        mytable_mat<-acast(mytable_Sym, A~B, value.var='Time', fun.aggregate=mean)
+        mytable_mat<-mytable_mat[,c("R", "W", "Out","SA", "SP","I")]
+        mytable_mat<-mytable_mat[c("R", "W", "Out","SA", "SP","I"),]
+        # mytable_mat <- mytable_mat[, order(colnames(mytable_mat))]
+        # mytable_mat <- mytable_mat[order(rownames(mytable_mat)),]
+
+        
+        
+        mytable_mat[lower.tri(mytable_mat)] <- NA
+        mytable_mat[is.nan(mytable_mat)] <- 0
+        mat <- melt(mytable_mat,na.rm = TRUE)
+
+  mat$percent<-percent(mat$value/sum(mat$value))
+  mat$percent<-percent(mat$value/sum(mat$value))
+  mat$percent_in_num<-(mat$value/sum(mat$value))*100
+  mat$percent_in_num<-round(mat$percent_in_num, 2)
+
+  
+  mat$Var1 = as.factor(mat$Var1)
+  mat$Var2 = as.factor(mat$Var2)
+  mat = mat %>% mutate(value2 = ifelse(Var1==Var2, value, NA))
+  mat = mat %>% mutate(value1 = ifelse(Var1==Var2, -1, value))
+  mat$value1[is.na(mat$value1)] <- -2
+
+  if(str_detect(title, "T003")){
+    plot1 = ggplot(mat, aes(x=Var2, y=Var1))+
+    #geom_tile(aes(fill=value2))+
+    geom_tile(aes(fill=percent_in_num))+
+    geom_text(aes(label=percent_in_num), show.legend = FALSE,col="black",size=2, face = "bold")+
+    #scale_fill_gradientn(colours = c("lightgray","dimgray"), name = "Time [s] %", limits=c(0,100))+
+    scale_fill_gradientn(colours = c("gray98","yellow", "red"), name = "Time [s] %", limits=c(0,100))+
+    new_scale("fill") +
+    geom_tile(aes(fill=percent_in_num), data = subset(mat, value1 > -1), show.legend = FALSE)+
+    geom_text(aes(label=percent_in_num), show.legend = FALSE, col="black", size=2, data = subset(mat, value1 > 0))+
+    #scale_fill_gradientn(colours = c("white", "yellow", "red"), name = "Time [s]*1000")+
+    #scale_fill_gradientn(colours = c("yellow","white", "red"), name = "")+
+    scale_fill_gradientn(colours = c("white","dimgray"), name = "", limits=c(0,40))+
+    new_scale("fill") +
+    geom_tile(aes(fill=value1), data = subset(mat, value1 < -1 ), show.legend = FALSE)+
+    scale_fill_gradientn(colours = c("white"))+
+    xlab("")+
+    ylab("")+
+    #labs(title=title)+
+    theme(plot.title = element_text(size=10))+
+    theme(plot.title = element_text(hjust = 0.5),text = element_text(size=10),panel.background = element_blank(),panel.grid = element_blank(), plot.margin = unit(c(0.5,.05,1.5,0.5), "cm")) +
+      scale_x_discrete(position = "top")+
+      scale_y_discrete(limits = rev(c("R", "W", "Out","SA", "SP","I")))
+    print(plot1)
+  Timeline_Heatmap_list[[length(Timeline_Heatmap_list) + 1]] <<- plot1
+  legend_heatmap<<-get_legend(plot1 + add_bottom_legend())
+  }
+  else{
+    plot1 = ggplot(mat, aes(x=Var2, y=Var1))+
+    geom_tile(aes(fill=percent_in_num))+
+    geom_text(aes(label=percent_in_num), show.legend = FALSE,col="black",size=2, face="bold")+
+    #scale_fill_gradientn(colours = c("lightgray","dimgray"), name = "Time [s]*1000")+
+    #scale_fill_gradientn(colours = c("lightgray","dimgray"), name = "Time [s] %", limits=c(0,100))+
+    scale_fill_gradientn(colours = c("gray98","yellow", "red"), name = "Time [s] %", limits=c(0,100))+
+    new_scale("fill") +
+    geom_tile(aes(fill=percent_in_num), data = subset(mat, value1 > -1),show.legend = FALSE)+
+    geom_text(aes(label=percent_in_num), show.legend = FALSE, col="black", size=2, data = subset(mat, value1 > 0))+
+    #scale_fill_gradientn(colours = c("white", "yellow", "red"), name = "Time [s]*1000")+
+    #scale_fill_gradientn(colours = c("white", "yellow", "red"), name = "", limits=c(0,40))+
+    scale_fill_gradientn(colours = c("white","yellow", "red"), name = "Time [s] %", limits=c(0,100))+
+    new_scale("fill") +
+    geom_tile(aes(fill=value1), data = subset(mat, value1 < -1 ), show.legend = FALSE)+
+    scale_fill_gradientn(colours = c("white"))+
+    xlab("")+
+    ylab("")+
+    #labs(title=title)+
+    theme(plot.title = element_text(size=10))+
+    theme(plot.title = element_text(hjust = 0.5),text = element_text(size=10),panel.background = element_blank(),panel.grid = element_blank(), plot.margin = unit(c(0.5,.05,1.5,0.5), "cm")) +
+    labs(fill=" X 1000")+
+      scale_x_discrete(position = "top")+
+      scale_y_discrete(limits = rev(c("R", "W", "Out","SA", "SP","I")))+
+    theme(legend.position = "none")
+    print(plot1)
+    Timeline_Heatmap_list[[length(Timeline_Heatmap_list) + 1]] <<- plot1
+    legend_heatmap<<-get_legend(plot1 + add_bottom_legend())
+  }
+}
+```
+
+```{r}
+add_bottom_legend <- function() {
+  theme(legend.position="bottom")
+}
+```
+
+
+```{r}
+  DF_Sub1<-subset(DF, Participant_ID=="T009" & DF$Treatment=="WS" & Day=="Day3")
+```
+
+
+
+```{r, echo=FALSE}
+## Heatmap with percwntage for single subject
+DF_Sub_Day<-subset(DF, Participant_ID=="T007" & Day=="Day2" & Treatment=="WS")
+
+print("Entered")
+    X<-c("R", "W", "Out","SA", "SP","I")
+    print(X)
+    tab_heatmap <- table(DF_Sub_Day$Reduce_Activities_QC1)
+    DF_Sub_Day<-DF_Sub_Day[DF_Sub_Day$Reduce_Activities_QC1 %in% names(tab_heatmap)[tab_heatmap>60],]
+    #title=paste(levels(sid)[i],levels(D_id)[j])
+    
+    title="Day1"
+    DF_Sub_Day$Onto_sep<-DF_Sub_Day$Reduce_Activities_QC1
+    DF_Sub_Day<-DF_Sub_Day %>% separate(Onto_sep, c("A", "B"))
+    
+    for (k in 1:nrow(DF_Sub_Day)){
+      if(is.na(DF_Sub_Day$B[k])){
+        DF_Sub_Day$B[k]<-DF_Sub_Day$A[k]
+      }
+    }
+      mytable<-as.data.frame(table(DF_Sub_Day$A, DF_Sub_Day$B))
+      colnames(mytable)<-c("A", "B", "Time")
+      mytable<-subset(mytable, Time>0)
+      
+      mytable$A<-as.character(mytable$A)
+      mytable$B<-as.character(mytable$B)
+      mytable<-mytable[!(mytable$A=="NA" | mytable$A=="Working"),]
+      
+      mytable_Sym <- data.frame(A = c(mytable[,"A"], mytable[,"B"]),
+                                B = c(mytable[,"B"], mytable[,"A"]),
+                                Time = c(mytable[,"Time"], mytable[,"Time"]))
+      mytable_Sym$A<-as.factor(mytable_Sym$A)
+      mytable_Sym$B<-as.factor(mytable_Sym$B)
+      print("I am before rest of Ontologies")
+      
+      if (length(levels(factor(mytable_Sym$A)))<6){
+              rest_of_ontologies<-data.frame(A=setdiff(levels(factor(X)),levels(factor(mytable_Sym$A))),
+                       B=setdiff(levels(factor(X)),levels(factor(mytable_Sym$A))),
+                       Time=0)
+                      mytable_Sym<-rbind(mytable_Sym, rest_of_ontologies)
+        
+      }
+
+      print("After rest of ontologies")
+      #rest_of_ontologies<-data.frame(A=setdiff(levels(factor(X)),levels(factor(mytable_Sym$A))),
+                       #B=setdiff(levels(factor(X)),levels(factor(mytable_Sym$A))),
+                       #Time=0) 
+
+        #mytable_Sym<-rbind(mytable_Sym, rest_of_ontologies)
+        mytable_Sym<-mytable_Sym[!(mytable_Sym$A=="OB"),]
+        mytable_mat<-acast(mytable_Sym, A~B, value.var='Time', fun.aggregate=mean)
+        
+        mytable_mat<-mytable_mat[,c("R", "W", "Out","SA", "SP","I")]
+        mytable_mat<-mytable_mat[c("R", "W", "Out","SA", "SP","I"),]
+        
+        
+        # mytable_mat <- mytable_mat[, colnames(X)]
+        # mytable_mat <- mytable_mat[rownames(X),]
+
+        
+        
+        mytable_mat[lower.tri(mytable_mat)] <- NA
+        mytable_mat[is.nan(mytable_mat)] <- 0
+        mat <- melt(mytable_mat,na.rm = TRUE)
+
+  mat$percent<-percent(mat$value/sum(mat$value))
+  mat$percent<-percent(mat$value/sum(mat$value))
+  mat$percent_in_num<-(mat$value/sum(mat$value))*100
+  mat$percent_in_num<-round(mat$percent_in_num, 2)
+
+  
+  mat$Var1 = as.factor(mat$Var1)
+  mat$Var2 = as.factor(mat$Var2)
+  mat = mat %>% mutate(value2 = ifelse(Var1==Var2, value, NA))
+  mat = mat %>% mutate(value1 = ifelse(Var1==Var2, -1, value))
+  mat$value1[is.na(mat$value1)] <- -2
+
+
+      plot1 = ggplot(mat, aes(x=Var2, y=Var1))+
+      #geom_tile(aes(fill=value2))+
+      geom_tile(aes(fill=percent_in_num))+
+      geom_text(aes(label=percent_in_num), show.legend = FALSE,col="black",size=2, face = "bold")+
+      scale_fill_gradientn(colours = c("gray98","yellow", "red"), name = "Time [s] %", limits=c(0,100))+
+      
+      new_scale("fill")+
+      geom_tile(aes(fill=percent_in_num), data = subset(mat, value1 > -1), show.legend = FALSE)+
+      geom_text(aes(label=percent_in_num), show.legend = FALSE, col="black", size=2, data = subset(mat, value1 > 10))+
+      scale_fill_gradientn(colours = c("white","yellow", "red"), limits=c(0,100))+
+      
+      new_scale("fill") +
+      geom_tile(aes(fill=value1), data = subset(mat, value1 < -1 ), show.legend = FALSE)+
+      scale_fill_gradientn(colours = c("white"))+
+      xlab("")+
+      ylab("")+
+      #labs(title=title)+
+      theme(plot.title = element_text(size=10))+
+      theme(plot.title = element_text(hjust = 0.5),text = element_text(size=10),panel.background = element_blank(),panel.grid = element_blank(), plot.margin = unit(c(0.5,.05,1.5,0.5), "cm")) +
+      scale_x_discrete(position = "top")+
+      scale_y_discrete(limits = rev(c("R", "W", "Out","SA", "SP","I")))
+      print(plot1)
+    #Timeline_Heatmap_list[[length(Timeline_Heatmap_list) + 1]] <<- plot1
+    #legend_heatmap<<-get_legend(plot1 + add_bottom_legend())
+
+
+
+
+```

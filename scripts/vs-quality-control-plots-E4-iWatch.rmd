@@ -1,0 +1,267 @@
+---
+title: "HeartRate E4 Vs Iwatch"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(grid)
+library(gridExtra)
+library(dplyr)
+library(ggpubr)
+#install.packages('DataCombine')
+library(DataCombine)
+library(dplyr)
+library(reshape2)
+library(tidyr)
+library(stringr)
+library(plyr)
+library(ggplot2)
+library(dplyr)
+library(miceadds)
+library(gtools)
+library(ggpubr)
+library(gvlma)
+library(MASS)
+library(reshape2)
+library(ggcorrplot)
+library(GGally)
+library(ggnewscale)
+library(scales)
+library(cowplot)
+current_dir <- getwd()
+setwd('..')
+root_dir <- getwd()
+data_dir <- file.path(root_dir, 'curated-data/physiological-data')
+data_file_name<-'qc99_all_subj.csv'
+```
+
+```{r}
+DF<-read.csv(file.path(data_dir,data_file_name),stringsAsFactors = FALSE)
+file_name <- 'Quantitive_All_subject.csv'
+DF<-DF[!(DF$Participant_ID=="T005" & DF$Day=="Day4"),]
+DF$Day[DF$Day=="Day5"] <- "Day4"
+```
+
+
+```{r, echo=FALSE}
+Baseline<-function(fun.data, fun.x, fun.y, session, name, y_max, Day){
+  t<-ggplot(data = fun.data) + 
+    geom_line(aes(x = fun.x, y = fun.y, colour = interaction(session, Day), group = interaction(session, Day)))+
+    theme_bw()+
+    theme(plot.margin=unit(c(1,1,1,1),"cm"),plot.title = element_text(hjust = 0.5), panel.border = element_blank(), panel.grid.major = element_blank(),panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))+
+    labs(title=name ,fun.data, x="Time[s]", y="HR [BPM]")+
+    theme(legend.position = "bottom")+theme(legend.title = element_blank())+
+    #ylim(0.0015, 0.008)+
+    scale_color_manual(labels = c("Day1", "Day2","Day3", "Day4"), values = c("Baseline.Day1"="orange", "Baseline.Day2"="red", "Baseline.Day3"="green", "Baseline.Day4"="blue"))
+  return(t)
+}
+```
+
+```{r, echo=FALSE}
+
+WorkingSession<-function(fun.data, fun.x, fun.y, session, name, y_max, Day){
+  t<-ggplot(data = fun.data) + 
+    geom_line(aes(x = fun.x, y = fun.y, colour = interaction(session, Day), group = interaction(session, Day)))+
+    theme_bw()+
+    theme(plot.margin=unit(c(1,1,1,1),"cm"),plot.title = element_text(hjust = 0.5), panel.border = element_blank(), panel.grid.major = element_blank(),panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))+
+    labs(title=name ,fun.data, x="Time[s]", y="HR [BPM]")+
+    theme(legend.position = "bottom")+theme(legend.title = element_blank())+
+    #scale_color_manual(values = cols)+
+    #ylim(0.0025, 0.007)+
+    scale_color_manual(labels = c("Day1", 
+                                   "Day2", 
+                                   "Day3", 
+                                   "Day4"), 
+                        values = c("WorkingSession.Day1"="orange", 
+                                   "WorkingSession.Day2"="red", 
+                                   "WorkingSession.Day3"="green", 
+                                   "WorkingSession.Day4"="blue"))
+    return(t)
+}
+```
+
+```{r}
+
+ mean_line_e4_baseline<-function(df, name){
+   plot<-ggplot(df)+
+   geom_hline(aes(yintercept=df$x[1],linetype="Day1"),size=1, color="orange" )+
+   geom_hline(aes(yintercept=df$x[2],linetype="Day2"),size=1, color="red" )+
+   geom_hline(aes(yintercept=df$x[3],linetype="Day3"),size=1, color="green" )+
+   geom_hline(aes(yintercept=df$x[4],linetype="Day4"),size=1, color="blue" )+
+   scale_linetype_manual(name = "",values = c(2, 2,2,2),guide = guide_legend(override.aes = list(color = c("orange", "red", "green", "blue"))))+theme_bw()+
+   theme(text = element_text(size=12 ,color = "black"),legend.position = "bottom")+theme(legend.title = element_blank())+
+   labs(title=name, y="E4 HR [BPM]",  x="Time [s]")+
+        theme(plot.title = element_text(hjust = 0.5))+
+   scale_y_continuous(limits = c(50, 130), breaks = seq(50, 130, by = 10))
+
+   return (plot) 
+ }
+
+```
+
+
+```{r, echo=FALSE}
+ mean_line_e4<-function(df, name){
+   plot<-ggplot(df)+
+   geom_hline(aes(yintercept=df$x[1],linetype="Day1"),size=1, color="orange" )+
+   geom_hline(aes(yintercept=df$x[2],linetype="Day2"),size=1, color="red" )+
+   geom_hline(aes(yintercept=df$x[3],linetype="Day3"),size=1, color="green" )+
+   geom_hline(aes(yintercept=df$x[4],linetype="Day4"),size=1, color="blue" )+
+   scale_linetype_manual(name = "",values = c(2, 2,2,2),guide = guide_legend(override.aes = list(color = c("orange", "red", "green", "blue"))))+theme_bw()+
+   theme(text = element_text(size=12 ,color = "black"),legend.position = "bottom")+theme(legend.title = element_blank())+
+   labs(title=name, y="E4 HR [BPM]",  x="Time [s]")+
+        theme(plot.title = element_text(hjust = 0.5))+
+   scale_y_continuous(limits = c(50, 130), breaks = seq(50, 130, by = 10))
+
+   return (plot) 
+} 
+```
+
+```{r}
+color_day<-c("Day1"="orange", "Day2"="red", "Day3"= "green", "Day4"="blue")
+ mean_line_e4_new<-function(df, name){
+   plot<-ggplot(df)+
+   geom_hline(aes(yintercept=df$x[1],colour=df$Group.1[1]),size=1, linetype = "dashed")+
+   geom_hline(aes(yintercept=df$x[2],colour=df$Group.1[2]),size=1, linetype = "dashed")+
+   geom_hline(aes(yintercept=df$x[3],colour=df$Group.1[3]),size=1, linetype = "dashed")+
+   geom_hline(aes(yintercept=df$x[4],colour=df$Group.1[4]),size=1, linetype = "dashed")+
+  scale_color_manual(values = color_day, limits = c("orange", "red", "green", "blue"), labels= c("Day1", "Day2", "Day3", "Day4"))+
+     #scale_linetype_manual(name = "",values = c(2,2,2,2),guide = guide_legend(override.aes = list(color = c("orange", "red", "green", "blue"))))+
+     theme_bw()+
+   theme(text = element_text(size=12 ,color = "black"),legend.position = "bottom")+theme(legend.title = element_blank())+
+   labs(title=name, y="E4 HR [BPM]", x="Time [s]")+
+    theme(plot.title = element_text(hjust = 0.5))+
+   scale_y_continuous(limits = c(50, 130), breaks = seq(50, 130, by = 10))
+   return (plot) 
+ }
+```
+
+
+
+```{r}
+color_day<-c("Day1"="orange", "Day2"="red", "Day3"= "green", "Day4"="blue")
+ mean_line_iw<-function(df, name){
+   plot<-ggplot(df)+   
+    geom_hline(aes(yintercept=df$x[1],linetype="Day1"),size=1, color="orange" )+
+   geom_hline(aes(yintercept=df$x[2],linetype="Day2"),size=1, color="red" )+
+   geom_hline(aes(yintercept=df$x[3],linetype="Day3"),size=1, color="green" )+
+   geom_hline(aes(yintercept=df$x[4],linetype="Day4"),size=1, color="blue" )+
+   scale_linetype_manual(name = "",values = c(2,2,2,2),guide = guide_legend(override.aes = list(color = c("orange", "red", "green", "blue"))))+theme_bw()+
+   theme(text = element_text(size=12 ,color = "black"),legend.position = "bottom")+theme(legend.title = element_blank())+
+   labs(title=name, y="iWatch HR [BPM]", x="Time [s]")+
+    theme(plot.title = element_text(hjust = 0.5))+
+   scale_y_continuous(limits = c(50, 130), breaks = seq(50, 130, by = 10))
+   return (plot) 
+} 
+```
+
+```{r, echo=FALSE}
+color_day<-c("Day1"="orange", "Day2"="red", "Day3"= "green", "Day4"="blue")
+ mean_line_iw_new<-function(df, name){
+   plot<-ggplot(df)+
+   geom_hline(aes(yintercept=df$x[1],colour=df$Group.1[1]),size=1, linetype = "dashed")+
+   geom_hline(aes(yintercept=df$x[2],colour=df$Group.1[2]),size=1, linetype = "dashed")+
+   geom_hline(aes(yintercept=df$x[3],colour=df$Group.1[3]),size=1, linetype = "dashed")+
+   geom_hline(aes(yintercept=df$x[4],colour=df$Group.1[4]),size=1, linetype = "dashed")+
+  scale_color_manual(values = color_day, limits = c("orange", "red", "green", "blue"), labels= c("Day1", "Day2", "Day3", "Day4"))+
+     #scale_linetype_manual(name = "",values = c(2,2,2,2),guide = guide_legend(override.aes = list(color = c("orange", "red", "green", "blue"))))+
+     theme_bw()+
+   theme(text = element_text(size=12 ,color = "black"),legend.position = "bottom")+theme(legend.title = element_blank())+
+   labs(title=name, y="iWatch HR [BPM]", x="Time [s]")+
+    theme(plot.title = element_text(hjust = 0.5))+
+   scale_y_continuous(limits = c(50, 130), breaks = seq(50, 130, by = 10))
+   return (plot) 
+} 
+```
+
+```{r, echo=FALSE}
+mean_of_e4<-function(DataFrame){
+  #DataFrame<-DataFrame %>% filter(E4_HR != 'NA')
+  mean_session<-aggregate(DataFrame[,9], list(DataFrame$Day), mean)
+  return(mean_session)
+}
+```
+
+
+```{r, echo=FALSE}
+mean_of_iw<-function(DataFrame){
+  DataFrame<-DataFrame %>% filter(iWatch_HR != 'NA')
+  mean_session<-aggregate(DataFrame[,11], list(DataFrame$Day), mean)
+  return(mean_session)
+}
+```
+
+```{r}
+plot_list<-list()
+plot_location<-"C:/Users/soton/Documents/R/DeadlineProject/Plots/E4VSiW/Version4/Out/"
+sid<-factor(DF$Participant_ID)
+subject_name_list<-levels(factor(DF$Participant_ID))
+n=nlevels(sid)
+for (i in 1:n) {
+  
+  if (levels(sid)[i]!="T001"){
+      DF_BL<-subset(DF, Participant_ID==levels(sid)[i] & DF$Treatment=="RB")
+        title = paste(levels(sid)[i], "Baseline")
+        mean_baseline_e4 <- mean_of_e4(DF_BL)
+        mean_bs_e4=mean_line_e4_baseline(mean_baseline_e4, title)
+        print(mean_bs_e4)
+        plot_list[[length(plot_list) + 1]] <- mean_bs_e4
+        
+        mean_baseline_iw <- mean_of_iw(DF_BL)
+        mean_bs_iw=mean_line_iw_new(mean_baseline_iw, title)
+        print(mean_bs_iw)
+        plot_list[[length(plot_list) + 1]] <- mean_bs_iw
+        
+      DF_ws<-subset(DF, Participant_ID==levels(sid)[i] & DF$Treatment=="WS" & DF$Activities_QC1=="Out")
+        print(levels(factor(DF_ws$Activities_QC1)))
+        title = paste(levels(sid)[i], "WorkingSession")
+        mean_ws_e4 <- mean_of_e4(DF_ws)
+        mean_ws_e4=mean_line_e4_new(mean_ws_e4, title)
+        print(mean_ws_e4)
+        plot_list[[length(plot_list) + 1]] <- mean_ws_e4
+        
+        mean_ws_iw <- mean_of_iw(DF_ws)
+        mean_ws_iw=mean_line_iw_new(mean_ws_iw, title)
+        print(mean_ws_iw)
+        plot_list[[length(plot_list) + 1]] <- mean_ws_iw
+        
+        
+  plot<-ggarrange(plotlist = plot_list, nrow = 2, ncol = 2, common.legend = TRUE, legend="bottom")
+  plot
+
+
+  }
+
+}
+Final_plots=ggarrange(plotlist = plot_list, nrow = 2, ncol = 2, common.legend = TRUE, legend="bottom")
+  
+for (num in 1:length(Final_plots)){
+  
+  full_path<-paste(plot_location,subject_name_list[num+1],".pdf",sep="")
+  ggsave(full_path, Final_plots[[num]] , width = 11, height = 8.5, units = "in")
+  
+}
+
+
+#Final_plots
+```
+
+```{r}
+  DF_BL<-subset(DF, Participant_ID=="T011" & DF$Treatment=="RB")
+
+
+  title="T011"
+  mean_baseline_e4 <- mean_of_e4(DF_BL)
+  mean_e4=mean_line_e4(mean_baseline_e4, title)
+  print(mean_e4)
+  
+  mean_baseline_iw <- mean_of_iw(DF_BL)
+  mean_iw=mean_line_iw_new(mean_baseline_iw, title)
+  print(mean_iw)
+```
+
