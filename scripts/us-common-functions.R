@@ -83,7 +83,7 @@ qc99_file_name <- 'qc99_all_subj.csv'
 ## 2. Application -->  Extract whatever after the space of []     -->   (.*)
 mac_data_pattern <- '\\[(.*)\\] (.*)'
 
-s_interface_date_format <- '%a %b %d %H:%M:%S'
+s_interface_date_format <- '%a %b %d %H:%M:%S %Y'
 
 
 decorator_hash <- '###########################################################'
@@ -162,7 +162,7 @@ convert_date <- function(data, date_format) {
 }
 
 convert_s_interface_date <- function(data) {
-  convert_date(data, s_interface_date_format)
+  convert_date(paste0(substr(data, 1, 19), substr(data, 24, 29)), s_interface_date_format)
 }
 
 
