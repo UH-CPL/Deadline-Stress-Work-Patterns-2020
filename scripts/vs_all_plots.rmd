@@ -1,0 +1,419 @@
+---
+title: "vs_all_plots"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(grid)
+library(gridExtra)
+library(dplyr)
+library(ggpubr)
+#install.packages('DataCombine')
+library(DataCombine)
+library(dplyr)
+library(reshape2)
+library(tidyr)
+library(stringr)
+library(plyr)
+library(ggplot2)
+library(dplyr)
+library(miceadds)
+library(gtools)
+library(ggpubr)
+library(gvlma)
+library(MASS)
+library(reshape2)
+library(ggcorrplot)
+library(GGally)
+library(ggnewscale)
+library(scales)
+library(cowplot)
+current_dir <- getwd()
+setwd('..')
+root_dir <- getwd()
+data_dir <- file.path(root_dir, 'curated-data/physiological-data')
+data_file_name<-'qc99_all_subj.csv'
+```
+
+
+```{r cars, echo=FALSE}
+DF<-read.csv(file.path(data_dir,data_file_name),stringsAsFactors = FALSE)
+file_name <- 'Quantitive_All_subject.csv'
+DF<-DF[!(DF$Participant_ID=="T005" & DF$Day=="Day4"),]
+DF$Day[DF$Day=="Day5"] <- "Day4"
+```
+
+
+```{r, echo=FALSE}
+plot_BaseLine<-function(fun.data, fun.x, fun.y, session, y_min,y_max, Day, y_title, x_title){
+  t<-ggplot(data = fun.data) + 
+    geom_line(aes(x = fun.x, y = fun.y, colour = interaction(session, Day), group = interaction(session, Day)))+
+    theme_bw()+
+    theme(plot.title = element_text(hjust = 0.5), panel.border = element_blank(), panel.grid.major = element_blank(),panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))+
+    labs(x=x_title, y=y_title)+
+    theme(legend.position = "none")+
+    theme(legend.title = element_blank())+
+    ylim(y_min, y_max)+
+    scale_color_manual(labels = c("Day1", "Day2","Day3", "Day4"), values = c("RB.Day1"="orange", "RB.Day2"="red", "RB.Day3"="green", "RB.Day4"="blue"))
+  return(t)
+}
+```
+
+
+```{r}
+plot_workingsession<-function(fun.data, fun.x, fun.y, session, y_min,y_max, Day, y_title, x_title){
+  t<-ggplot(data = fun.data) + 
+    geom_line(aes(x = fun.x, y = fun.y, colour = interaction(session, Day), group = interaction(session, Day)))+
+    theme_bw()+
+    theme(plot.title = element_text(hjust = 0.5), panel.border = element_blank(), panel.grid.major = element_blank(),panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))+
+      labs(x=x_title, y=y_title)+
+    
+    theme(legend.position = "none")+
+    theme(legend.title = element_blank())+
+    ylim(y_min, y_max)+
+    scale_color_manual(labels = c("Day1", 
+                                   "Day2", 
+                                   "Day3", 
+                                   "Day4"), 
+                        values = c("WS.Day1"="orange", 
+                                   "WS.Day2"="red", 
+                                   "WS.Day3"="green", 
+                                   "WS.Day4"="blue"))
+    return(t)
+}
+```
+
+
+
+```{r, echo=FALSE}
+color_day<-c("Day1"="orange", "Day2"="red", "Day3"= "green", "Day4"="blue")
+ mean_line<-function(df, y_title, x_title, yminlim, ymaxlim){
+   plot<-ggplot(df)+
+   geom_hline(aes(yintercept=df$x[1],colour=df$Group.1[1]),size=1, linetype = "dashed")+
+   geom_hline(aes(yintercept=df$x[2],colour=df$Group.1[2]),size=1, linetype = "dashed")+
+   geom_hline(aes(yintercept=df$x[3],colour=df$Group.1[3]),size=1, linetype = "dashed")+
+   geom_hline(aes(yintercept=df$x[4],colour=df$Group.1[4]),size=1, linetype = "dashed")+
+  scale_color_manual(values = color_day, limits = c("orange", "red", "green", "blue"), labels= c("Day1", "Day2", "Day3", "Day4"))+
+     #scale_linetype_manual(name = "",values = c(2,2,2,2),guide = guide_legend(override.aes = list(color = c("orange", "red", "green", "blue"))))+
+     theme_bw()+
+   theme(text = element_text(color = "black"))+theme(legend.title = element_blank())+
+   labs(y=y_title, x=x_title)+
+     theme(legend.position = "none")+
+  theme(plot.title = element_text(hjust = 0.5))+
+     ylim(yminlim, ymaxlim)
+   return (plot) 
+} 
+```
+
+
+
+```{r, echo=FALSE}
+mean_of_session<-function(DataFrame, col_name,col_number){
+  DataFrame<-DataFrame %>% filter(PP != 'NA')
+  #print(col_name)
+  mean_session<-aggregate(DataFrame[,col_number], list(DataFrame$Day), mean)
+  return(mean_session)
+}
+
+mean_of_session_iw<-function(DataFrame, col_name,col_number){
+  DataFrame<-DataFrame %>% filter(iWatch_HR != 'NA')
+  #print(col_name)
+  mean_session<-aggregate(DataFrame[,col_number], list(DataFrame$Day), mean)
+  return(mean_session)
+}
+```
+
+
+
+```{r}
+sid<-factor(DF$Participant_ID)
+
+n=nlevels(sid)
+for (i in 1:n) {
+  DF_Participant<-subset(DF, Participant_ID==levels(sid)[i])
+
+  subject_title=levels(sid)[i]
+  Baseline_DF <- DF_Participant %>% filter(Treatment=="RB")
+
+  Baseline_Plot_Physiological(Baseline_DF,subject_title)
+
+  WS_DF <- DF_Participant %>% filter(Treatment=="WS")
+  WS_Plot_Physiological(WS_DF,subject_title)
+
+}
+
+
+# subject_title="T013"
+# DF_Sub_Day<-subset(DF, Participant_ID=="T013")
+# Baseline_DF <- DF_Sub_Day %>% filter(Treatment=="RB")
+# WS_DF <- DF_Sub_Day %>% filter(Treatment=="WS")
+# Baseline_Plot_Physiological(Baseline_DF,subject_title)
+# WS_Plot_Physiological(WS_DF,subject_title)
+
+```
+
+```{r}
+
+#Baseline_DF=Baseline_DF[!is.na(Baseline_DF$iWatch_HR),]
+#figure<-plot(Baseline_DF, Baseline_DF$TreatmentTime, Baseline_DF$E4_EDA, Baseline_DF$Treatment, mean(Baseline_DF$E4_EDA))
+#print(figure)
+
+Baseline_Plot_Physiological<-function(Baseline_DF, Title){
+plot_location<-"C:/Users/soton/Documents/R/DeadlineProject/Plots/PhysiologicalPlots/Version2/"  
+  global_legend<-NULL
+channel_list <- c("PP", "EDA", "E4HR", "iWatch")
+
+plot_list<-list()
+for(channel in channel_list){
+  
+  if(channel=="iWatch"){
+    x_title="Time [s]"
+    
+  }else{
+    x_title=""
+  }
+    
+  
+  if(channel=="PP"){
+    
+      y_min=0.0010
+      y_max=0.0070
+      
+      yaxis_title = bquote(paste('Perinasal Perspiration [',''^'o','C',''^2,']'))
+      figure<-plot_BaseLine(Baseline_DF, Baseline_DF$TreatmentTime, Baseline_DF$PP, Baseline_DF$Treatment, y_min,y_max, Baseline_DF$Day,yaxis_title, x_title)
+      print(figure)
+      
+      global_legend<-get_legend(figure + add_bottom_legend())
+      
+      plot_list[[length(plot_list) + 1]] <- figure
+      
+      counm_index=grep("^PP$", colnames(Baseline_DF))
+      mean_baseline <- mean_of_session(Baseline_DF, "PP",counm_index)
+      
+      yaxis_title=""
+      meanline_plot <-mean_line(mean_baseline, yaxis_title, x_title, y_min, y_max)
+      print(meanline_plot)
+      plot_list[[length(plot_list) + 1]] <- meanline_plot
+      
+    
+  }
+  if(channel=="EDA"){
+    
+      y_min=0.01
+      y_max=0.80
+      yaxis_title = expression(paste('EDA [', mu, 'S]'))
+      figure<-plot_BaseLine(Baseline_DF, Baseline_DF$TreatmentTime, Baseline_DF$E4_EDA, Baseline_DF$Treatment, y_min,y_max, Baseline_DF$Day,yaxis_title, x_title)
+      print(figure)
+      plot_list[[length(plot_list) + 1]] <- figure
+      
+      counm_index=grep("^E4_EDA$", colnames(Baseline_DF))
+      mean_baseline <- mean_of_session(Baseline_DF, "E4_EDA",counm_index)
+      
+      yaxis_title=""
+      meanline_plot <-mean_line(mean_baseline, yaxis_title, x_title,y_min, y_max)
+      print(meanline_plot)
+      plot_list[[length(plot_list) + 1]] <- meanline_plot
+    
+  }
+  if(channel=="E4HR"){
+    
+      y_min=60
+      y_max=130
+      yaxis_title = "E4 Heart Rate [BPM]"
+      figure<-plot_BaseLine(Baseline_DF, Baseline_DF$TreatmentTime, Baseline_DF$E4_HR, Baseline_DF$Treatment, y_min,y_max, Baseline_DF$Day,yaxis_title, x_title)
+      print(figure)
+      plot_list[[length(plot_list) + 1]] <- figure
+      
+      
+      counm_index=grep("^E4_HR$", colnames(Baseline_DF))
+      mean_baseline <- mean_of_session(Baseline_DF, "E4_HR",counm_index)
+      
+      yaxis_title=""
+      meanline_plot <-mean_line(mean_baseline, yaxis_title, x_title,y_min, y_max)
+      print(meanline_plot)
+      plot_list[[length(plot_list) + 1]] <- meanline_plot
+  }
+  
+  if(channel=="iWatch"){
+      Baseline_DF<-Baseline_DF[!is.na(Baseline_DF$iWatch_HR), ]
+      yaxis_title = "iWatch Heart Rate [BPM]"
+      figure<-plot_BaseLine(Baseline_DF, Baseline_DF$TreatmentTime, Baseline_DF$iWatch_HR, Baseline_DF$Treatment, y_min,y_max, Baseline_DF$Day,yaxis_title, x_title)
+      print(figure)
+      plot_list[[length(plot_list) + 1]] <- figure
+      
+      counm_index=grep("^iWatch_HR$", colnames(Baseline_DF))
+      
+      if (Title!="T001"){
+          mean_baseline <- mean_of_session_iw(Baseline_DF, "iWatch_HR",counm_index)
+      }
+
+      else{
+        print("I am here")
+          mean_baseline$x<-0
+          print("I am here")
+      }
+    
+      
+      yaxis_title=""
+      meanline_plot <-mean_line(mean_baseline, yaxis_title, x_title,y_min, y_max)
+      print(meanline_plot)
+      plot_list[[length(plot_list) + 1]] <- meanline_plot
+  }
+  
+  
+} 
+
+
+    plots=ggarrange(plotlist = plot_list, nrow = 4, ncol = 2)
+    #final_list
+    legend_merge<-plot_grid(global_legend, ncol = 1, nrow = 1)
+    legends_of_plots<-plot_grid(plots,legend_merge, ncol = 1, rel_heights = c(1, .05))
+    plot_title<-paste(Title, "Baseline")
+    title <- ggdraw() + draw_label(plot_title, fontface='bold')
+    final_plot<-plot_grid(title,legends_of_plots, ncol = 1, rel_heights = c(.03, 1))
+    print(final_plot)
+    
+  #final_list[[length(final_list) + 1]] <- final_plot
+  full_path<-paste(plot_location,plot_title,".pdf",sep="")
+  ggsave(full_path, final_plot, width = 8.5, height = 11, units = "in")
+
+  
+}
+
+```
+
+
+
+```{r}
+
+WS_Plot_Physiological<-function(WS_DF, Title){
+plot_location<-"C:/Users/soton/Documents/R/DeadlineProject/Plots/PhysiologicalPlots/Version2/"  
+ global_legend<-NULL
+channel_list <- c("PP", "EDA", "E4HR", "iWatch")
+
+plot_list<-list()
+for(channel in channel_list){
+  
+  if(channel=="iWatch"){
+    x_title="Time [s]"
+    
+  }else{
+    x_title=""
+  }
+    
+  
+  if(channel=="PP"){
+          
+      y_min=0.0010
+      y_max=0.0080
+      
+      yaxis_title = bquote(paste('Perinasal Perspiration [',''^'o','C',''^2,']'))
+      figure<-plot_workingsession(WS_DF, WS_DF$TreatmentTime, WS_DF$PP, WS_DF$Treatment, y_min,y_max, WS_DF$Day,yaxis_title, x_title)
+      print(figure)
+      
+      global_legend<-get_legend(figure + add_bottom_legend())
+      
+      plot_list[[length(plot_list) + 1]] <- figure
+      
+      counm_index=grep("^PP$", colnames(WS_DF))
+      mean_baseline <- mean_of_session(WS_DF, "PP",counm_index)
+      
+      
+      yaxis_title=""
+      meanline_plot <-mean_line(mean_baseline, yaxis_title, x_title, y_min, y_max)
+      print(meanline_plot)
+      plot_list[[length(plot_list) + 1]] <- meanline_plot
+      
+    
+  }
+  if(channel=="EDA"){
+    y_min=0.01
+      y_max=0.80
+      
+      yaxis_title = expression(paste('EDA [', mu, 'S]'))
+      figure<-plot_workingsession(WS_DF, WS_DF$TreatmentTime, WS_DF$E4_EDA, WS_DF$Treatment, y_min,y_max, WS_DF$Day,yaxis_title, x_title)
+      print(figure)
+      plot_list[[length(plot_list) + 1]] <- figure
+      
+      counm_index=grep("^E4_EDA$", colnames(WS_DF))
+      mean_baseline <- mean_of_session(WS_DF, "E4_EDA",counm_index)
+      
+      
+      yaxis_title=""
+      meanline_plot <-mean_line(mean_baseline, yaxis_title, x_title, y_min, y_max)
+      print(meanline_plot)
+      plot_list[[length(plot_list) + 1]] <- meanline_plot
+    
+  }
+  
+  y_min=60
+  y_max=130
+  if(channel=="E4HR"){
+      yaxis_title = "E4 Heart Rate [BPM]"
+      figure<-plot_workingsession(WS_DF, WS_DF$TreatmentTime, WS_DF$E4_HR, WS_DF$Treatment, y_min,y_max, WS_DF$Day,yaxis_title, x_title)
+      print(figure)
+      plot_list[[length(plot_list) + 1]] <- figure
+      
+      
+      counm_index=grep("^E4_HR$", colnames(WS_DF))
+      mean_baseline <- mean_of_session(WS_DF, "E4_HR",counm_index)
+      
+      yaxis_title=""
+      meanline_plot <-mean_line(mean_baseline, yaxis_title, x_title, y_min, y_max)
+      print(meanline_plot)
+      plot_list[[length(plot_list) + 1]] <- meanline_plot
+  }
+  
+  if(channel=="iWatch"){
+      WS_DF<-WS_DF[!is.na(WS_DF$iWatch_HR), ]
+      yaxis_title = "iWatch Heart Rate [BPM]"
+      figure<-plot_workingsession(WS_DF, WS_DF$TreatmentTime, WS_DF$iWatch_HR, WS_DF$Treatment, y_min,y_max, WS_DF$Day,yaxis_title, x_title)
+      print(figure)
+      plot_list[[length(plot_list) + 1]] <- figure
+      
+      counm_index=grep("^iWatch_HR$", colnames(WS_DF))
+      
+      if (Title!="T001"){
+          mean_baseline <- mean_of_session_iw(Baseline_DF, "iWatch_HR",counm_index)
+      }
+
+      else{
+          mean_baseline$x<-0
+      }
+      
+      yaxis_title=""
+      meanline_plot <-mean_line(mean_baseline, yaxis_title, x_title, y_min, y_max)
+      print(meanline_plot)
+      plot_list[[length(plot_list) + 1]] <- meanline_plot
+  }
+  
+  
+} 
+
+
+    plots=ggarrange(plotlist = plot_list, nrow = 4, ncol = 2)
+    #final_list
+    legend_merge<-plot_grid(global_legend, ncol = 1, nrow = 1)
+    legends_of_plots<-plot_grid(plots,legend_merge, ncol = 1, rel_heights = c(1, .05))
+        plot_title<-paste(Title, "Working Session")
+    title <- ggdraw() + draw_label(plot_title, fontface='bold')
+    final_plot<-plot_grid(title,legends_of_plots, ncol = 1, rel_heights = c(.03, 1))
+    print(final_plot)
+    
+    full_path<-paste(plot_location,plot_title,".pdf",sep="")
+    ggsave(full_path, final_plot, width = 8.5, height = 11, units = "in")
+   
+}
+
+
+
+```
+
+
+```{r}
+add_bottom_legend <- function() {
+  theme(legend.position="bottom")
+}
+```
