@@ -188,8 +188,8 @@ curate_rb_session_data <- function(subj_name, day_serial) {
   rb_marker_file_name <- get_matched_file_names(session_dir, rb_marker_file_pattern)
   rb_marker_df <- custom_read_csv(file.path(session_dir, rb_marker_file_name))
   
-  rb_start_time <- convert_s_interface_date(rb_marker_df$startTimestamp[1])
-  rb_end_time <- convert_s_interface_date(rb_marker_df$EndTimestamp[1])
+  rb_start_time <- convert_s_interface_date(convert_marker_date(rb_marker_df$startTimestamp[1]))
+  rb_end_time <- convert_s_interface_date(convert_marker_date(rb_marker_df$EndTimestamp[1]))
   
   write_log_msg(paste0('Baseline start time: ', rb_start_time), curation_log_file)
   write_log_msg(paste0('Baseline end time: ', rb_end_time), curation_log_file)
@@ -217,8 +217,8 @@ add_ontologies <- function(ontologies_df, pp_df) {
   # write_log_msg(paste(ontologies_df$startTimestamp, " - ", ontologies_df$EndTimestamp, ': ', ontologies_df$Ontologies), curation_log_file)
 
   if("Ontologies" %in% colnames(ontologies_df)) {
-    ont_start_time <- convert_s_interface_date(ontologies_df$startTimestamp)
-    ont_end_time <- convert_s_interface_date(ontologies_df$EndTimestamp)
+    ont_start_time <- convert_s_interface_date(convert_marker_date(ontologies_df$startTimestamp))
+    ont_end_time <- convert_s_interface_date(convert_marker_date(ontologies_df$EndTimestamp))
     
     pp_df[pp_df$Timestamp >= ont_start_time & pp_df$Timestamp <= ont_end_time, ]$Ontologies <- ontologies_df$Ontologies
     
@@ -336,6 +336,8 @@ get_app_usage_data <- function(subj_name, day_serial, ws_df) {
     # write_log_msg('Mac app usage file - Found', curation_log_file)
     # ws_df <- get_mac_app_usage_data(mac_activity_df, ws_df)
     
+    
+    
     ws_df <- read.pattern(file.path(day_dir, mac_activity_file_name), pattern=mac_data_pattern) %>% 
       set_colnames(c('Timestamp', 'Application')) %>% 
       mutate_if(is.factor, as.character) %>%
@@ -400,8 +402,8 @@ get_app_usage_data <- function(subj_name, day_serial, ws_df) {
     return(ws_df)
   }
   
-  
   ws_df <- ws_df %>% 
+    # mutate(Application_QC1=Application)
     mutate(Application_QC1=na.locf(Application))
   
   return(ws_df)
@@ -601,14 +603,14 @@ curate_data <- function() {
   # subj_list <- get_dir_list(file.path(raw_data_dir, grp_dir))
   subj_list <- custom_read_csv(file.path(curated_data_dir, utility_data_dir, subj_list_file_name))$Subject
   
-  sapply(subj_list, function(subj_name) {
-  # sapply(subj_list[1], function(subj_name) {
+  # sapply(subj_list, function(subj_name) {
+  sapply(subj_list[5], function(subj_name) {
     
     subj_dir <- file.path(raw_data_dir, grp_dir, subj_name)
     day_list <- get_dir_list(subj_dir)
     
-    sapply(day_list, function(day_serial) {
-    # sapply(day_list[1], function(day_serial) {
+    # sapply(day_list, function(day_serial) {
+    sapply(day_list[1], function(day_serial) {
       tryCatch({
         write_log_msg(paste0('\n----------\n', subj_name, '-', day_serial, "\n----------"), curation_log_file)
         

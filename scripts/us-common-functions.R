@@ -157,12 +157,17 @@ is_null <- function(cell_val) {
 #---------------------------------#
 #-------   Date and Time   -------#
 #---------------------------------#
-convert_date <- function(data, date_format) {
-  return(as.POSIXct(data, format=date_format))
+convert_date <- function(date, date_format) {
+  return(as.POSIXct(date, format=date_format))
 }
 
-convert_s_interface_date <- function(data) {
-  convert_date(paste0(substr(data, 1, 19), substr(data, 24, 29)), s_interface_date_format)
+convert_s_interface_date <- function(date) {
+  convert_date(date, s_interface_date_format)
+  # convert_date(paste0(substr(date, 1, 19), substr(date, 24, 29)), s_interface_date_format)
+}
+
+convert_marker_date <- function(date) {
+  return(paste0(substr(date, 1, 19), substr(date, 24, 29)))
 }
 
 
