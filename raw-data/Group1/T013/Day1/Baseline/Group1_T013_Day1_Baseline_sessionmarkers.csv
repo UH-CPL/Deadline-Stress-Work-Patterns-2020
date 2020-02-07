@@ -1,7 +1,2 @@
 Session,StartTime,startTimestamp,EndTime,EndTimestamp
-<<<<<<< HEAD
 Session 1,25.76599,Sun Oct 20 10:15:38.524 2019,126.6793,Sun Oct 20 10:19:38.662 2019
-=======
-Session 1,25.76599,Sun Oct 20 10:15:38.524 2019,126.6793,Sun Oct 20 10:17:19.437 2019
-Session 2,127.7261,Sun Oct 20 10:17:20.484 2019,265.9043,Sun Oct 20 10:19:38.662 2019
->>>>>>> 88956e6e4e260a03b2cd40a487cb681bca6e7db5
