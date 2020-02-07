@@ -1,0 +1,15 @@
+
+----------
+T009-Day1
+----------
+Processing.....Resting Baseline
+Baseline start time: 2019-07-24 10:24:15
+Baseline end time: 2019-07-24 10:28:15
+Processing.....Working Session
+
+Merging.....e4 data
+Merging.....iwatch data
+Fixing.....missing working session data
+Merging.....all subj data
+
+Total relative time mismatch row: 241
