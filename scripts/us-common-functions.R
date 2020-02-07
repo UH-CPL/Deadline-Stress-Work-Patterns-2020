@@ -13,8 +13,10 @@ performance_data_dir <- 'performance-data'
 index_data_dir <- 'index-data'
 final_data_dir <- 'final-data'
 
-default_plot_width = 12
-default_plot_height = 10
+default_plot_width <- 12
+default_plot_height <- 10
+
+one_hour_sec <- 3600
 
 
 subj_list_file_name <- 'subj_list.csv'
@@ -22,20 +24,76 @@ subj_list_file_name <- 'subj_list.csv'
 
 grp_dir <- 'Group1'
 session_list <- c('Baseline', 'WorkingSession')
+signal_list <- c('PP', 'E4_HR', 'E4_EDA', 'iWatch_HR')
 
 
 pp_file_pattern <- '.*_pp.csv'
 nr_pp_file_pattern <- '.*_nr.csv'
-marker_file_pattern <- '.*_sessionmarkers.csv'
+rb_marker_file_pattern <- '.*Baseline_sessionmarkers.csv'
+ws_marker_file_pattern <- '.*WorkingSession_sessionmarkers.csv'
+activity_file_pattern <- '.*Activity.csv'
+mac_app_usage_file_pattern <- '.*Monitor.*log'
+win_app_usage_file_pattern <- '.*MonitorLog.csv'
 e4_file_pattern <- 'HR.csv|EDA.csv'
-
-s_interface_date_format <- '%a %b %d %H:%M:%S'
-
+iWatch_file_pattern <- '.*iWatch.csv'
 
 
 
+# computer_usage_pattern = '^CR$|^CW$|^Computer - Reading$|^Computer - Writing$|^C - Reading$|^C - Writing$|^C - Writing/Reading$'
+computer_usage_pattern = 'CR|CW|Computer - Reading|Computer - Writing|C - Reading|C - Writing|C - Writing/Reading|Working'
+# computer_usage_pattern = 'CR|CW'
+Out='Break Out|Break Out - Other|Break - Out|Break Out - Tea/Coffee|Break Out -Other|Break Out - - Tea/Coffee|Out'
+CR='^C - Reading$|Computer - Reading|Computer Reading CR'
+CW='^C - Writing$/Reading|C - Writing|^Computer - Reading and Writing$|Computer - Writing|Computer Writing CW'
+EiP='^Break In - Meal$|Break In Place - Tea/Coffee|Break In Place - Meal|Eat in Place EiP'
+OB='^Break In - Other$|^Other Break OB$|Break In Place - Other'
+Working='Working'
+Thinking='Thinking|Thinking T'
+SP='SP - Talking|SP - Looking|SmartPhone - Looking|SmartPhone - Talking|Smart Phone SP'
+PR='^HC - Reading$|Hard Copy - Reading'
+PW='^HC - Writing$|Hard Copy - Writing'
+ELD='Listening on Headphone'
+PI='H-H Interaction|Personal Interaction PI'
+VI='C - Talking Skype & others|Virtual Interaction VI'
 
 
+
+qc0_file_name <- 'qc0_all_subj.csv'
+qc1_file_name <- 'qc1_all_subj.csv'
+qc2_file_name <- 'qc2_all_subj.csv'
+
+
+qc0_session_mean_file_name <- 'qc0_session_mean.csv'
+qc1_session_mean_file_name <- 'qc1_session_mean.csv'
+qc2_session_mean_file_name <- 'qc2_session_mean.csv'
+
+qc0_activity_mean_file_name <- 'qc0_activity_mean.csv'
+qc1_activity_mean_file_name <- 'qc1_activity_mean.csv'
+qc2_activity_mean_file_name <- 'qc2_activity_mean.csv'
+
+
+## We don't know until now how many filtering we will do :P
+## Hope it doesn't exixts 99 filtering
+qc99_file_name <- 'qc99_all_subj.csv'
+
+
+
+
+## 1. Timestamp -->    Extract whatever inside []                 -->   \\[(.*)\\]
+## 2. Application -->  Extract whatever after the space of []     -->   (.*)
+mac_data_pattern <- '\\[(.*)\\] (.*)'
+
+s_interface_date_format <- '%a %b %d %H:%M:%S %Y'
+
+
+decorator_hash <- '###########################################################'
+
+
+
+
+custom_read_csv <- function(file_name) {
+  return(read.csv(file_name, stringsAsFactors=F))
+}
 
 convert_to_csv <- function(df, file_path) {
   write.table(df, file = file_path, row.names=F, sep = ',')
@@ -77,16 +135,39 @@ replace_to_space <- function(str) {
   gsubfn('.', list('_' = ' ', '-' = ' '), str)
 }
 
+trim <- function( x ) {
+  gsub("(^[[:space:]]+|[[:space:]]+$)", "", x)
+}
+
+is_null <- function(cell_val) {
+  print(cell_val)
+  if (is.na(cell_val)) {
+    return(T)
+  } else if (length(trim(cell_val))==0) {
+    return(T)
+  } 
+  
+  # else if (cell_val=="") {
+  #   return(T)
+  # }
+  
+  return(F)
+}
 
 #---------------------------------#
 #-------   Date and Time   -------#
 #---------------------------------#
-convert_date <- function(data, date_format) {
-  return(as.POSIXct(data, format=date_format))
+convert_date <- function(date, date_format) {
+  return(as.POSIXct(date, format=date_format))
 }
 
-convert_s_interface_date <- function(data) {
-  convert_date(data, s_interface_date_format)
+convert_s_interface_date <- function(date) {
+  convert_date(date, s_interface_date_format)
+  # convert_date(paste0(substr(date, 1, 19), substr(date, 24, 29)), s_interface_date_format)
+}
+
+convert_marker_date <- function(date) {
+  return(paste0(substr(date, 1, 19), substr(date, 24, 29)))
 }
 
 
@@ -103,5 +184,9 @@ get_dir_list <- function(directory) {
 
 get_matched_file_names <- function(directory, file_pattern) {
   return(list.files(path=directory, pattern=file_pattern, recursive=F))
+}
+
+get_matched_file_names_recursively <- function(directory, file_pattern) {
+  return(list.files(path=directory, pattern=file_pattern, recursive=T))
 }
 

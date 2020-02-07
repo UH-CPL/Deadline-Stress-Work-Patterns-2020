@@ -1,5 +1,14 @@
 Session,StartTime,startTimestamp,EndTime,EndTimestamp,Ontologies
-Break1,1418.555,Fri Feb 15 13:23:30.787 2019,1418.555,Fri Feb 15 13:29:20.787 2019,Went outside
-Break2,3620.718,Fri Feb 15 13:29:30.951 2019,3620.718,Fri Feb 15 14:09:25.951 2019,Lunch
-Break3,3620.718,Fri Feb 15 14:09:30.951 2019,6517.593,Fri Feb 15 14:10:51.826 2019,Talking at phone
-Break4,9832.638,Fri Feb 15 14:51:30.870 2019,13509.58,Fri Feb 15 16:07:44.809 2019,Talking at phone
+Activity 1,1418.555,Fri Feb 15 12:22:26.233 2019,1418.555,Fri Feb 15 13:22:26.233 2019,Computer Writing (CW)
+Activity 2,3620.718,Fri Feb 15 13:22:27.233 2019,3620.718,Fri Feb 15 13:28:56.233 2019,Out
+Activity 3,3620.718,Fri Feb 15 13:28:57.233 2019,3620.718,Fri Feb 15 13:32:26.233 2019,"Eat in Place (EiP), SP - Talking"
+Activity 4,3620.718,Fri Feb 15 13:32:27.233 2019,3620.718,Fri Feb 15 13:50:26.233 2019,"Eat in Place (EiP), Computer Reading (CR)"
+Activity 5,3620.718,Fri Feb 15 13:50:27.233 2019,3620.718,Fri Feb 15 13:51:31.233 2019,"Eat in Place (EiP), SP - Talking"
+Activity 6,3620.718,Fri Feb 15 13:51:32.233 2019,3620.718,Fri Feb 15 13:56:01.233 2019,Computer Reading (CR)
+Activity 7,3620.718,Fri Feb 15 13:56:02.233 2019,3620.718,Fri Feb 15 14:08:26.233 2019,Out
+Activity 8,3620.718,Fri Feb 15 14:08:27.233 2019,3620.718,Fri Feb 15 14:10:26.233 2019,SP - Talking
+Activity 9,3620.718,Fri Feb 15 14:10:27.233 2019,3620.718,Fri Feb 15 14:56:26.233 2019,Computer Reading (CR)
+Activity 10,3620.718,Fri Feb 15 14:56:27.233 2019,3620.718,Fri Feb 15 14:57:51.233 2019,Thinking (T)
+Activity 11,3620.718,Fri Feb 15 14:57:52.233 2019,3620.718,Fri Feb 15 15:01:51.233 2019,Computer Reading (CR)
+Activity 12,3620.718,Fri Feb 15 15:01:52.233 2019,3620.718,Fri Feb 15 16:07:11.233 2019,Virtual Interaction (VI)
+Activity 13,3620.718,Fri Feb 15 16:07:12.233 2019,3620.718,Fri Feb 15 16:40:01.233 2019,Computer Reading (CR)

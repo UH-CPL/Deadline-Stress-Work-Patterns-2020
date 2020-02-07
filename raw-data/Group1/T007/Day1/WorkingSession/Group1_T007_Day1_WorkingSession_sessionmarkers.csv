@@ -1,2 +1,9 @@
-Session,StartTime,startTimestamp,EndTime,EndTimestamp
-Session 1,13.06209,Wed Jun 05 11:30:53.084 2019,2692.74,Wed Jun 05 12:15:32.761 2019
+Session,StartTime,startTimestamp,EndTime,EndTimestamp,Ontologies
+Session 1,13.06209,Wed Jun 05 12:15:37.084 2019,2692.74,Wed Jun 05 12:22:40.761 2019,Break Out - Other
+Session 2,13.06209,Wed Jun 05 13:06:20.084 2019,2692.74,Wed Jun 05 13:13:50.761 2019,SP - Looking
+Session 3,13.06209,Wed Jun 05 13:13:50.084 2019,2692.74,Wed Jun 05 13:24:00.761 2019,"Break In - Meal, SP - Looking"
+Session 4,13.06209,Wed Jun 05 13:24:01.084 2019,2692.74,Wed Jun 05 14:48:38.761 2019,C - Reading
+Session 5,13.06209,Wed Jun 05 14:48:39.084 2019,2692.74,Wed Jun 05 14:54:32.761 2019,Break Out - Other
+Session 6,13.06209,Wed Jun 05 14:54:48.084 2019,2692.74,Wed Jun 05 14:56:20.761 2019,SP - Looking
+Session 7,13.06209,Wed Jun 05 14:56:21.084 2019,2692.74,Wed Jun 05 16:03:08.761 2019,C - Reading
+Session 8,13.06209,Wed Jun 05 16:03:10.084 2019,2692.74,Wed Jun 05 16:04:10.761 2019,H-H Interaction

@@ -1,2 +1,13 @@
-Session,StartTime,startTimestamp,EndTime,EndTimestamp
-Session 1,1.686489,Wed May 29 11:18:22.531 2019,21574.53,Wed May 29 17:17:55.369 2019
+Session,StartTime,startTimestamp,EndTime,EndTimestamp,Ontologies
+Session 1,1.686489,Wed May 29 11:20:40.531 2019,21574.53,Wed May 29 11:21:10.531 2019,SP - Looking 
+Session 3,1.686489,Wed May 29 11:21:10.531 2019,21574.53,Wed May 29 11:24:35.531 2019,C - Reading
+Session 4,1.686489,Wed May 29 11:24:35.531 2019,21574.53,Wed May 29 11:26:38.531 2019,HC - Writing
+Session 5,1.686489,Wed May 29 11:26:38.531 2019,21574.53,Wed May 29 11:37:11.531 2019,SP - Looking 
+Session 6,1.686489,Wed May 29 11:37:24.531 2019,21574.53,Wed May 29 11:59:50.531 2019,C - Reading
+Session 7,1.686489,Wed May 29 11:59:55.531 2019,21574.53,Wed May 29 12:13:50.531 2019,Break Out - Other
+Session 8,1.686489,Wed May 29 12:29:45.531 2019,21574.53,Wed May 29 12:32:05.531 2019,"SP - Looking, Listening on Headphone"
+Session 9,1.686489,Wed May 29 13:02:56.531 2019,21574.53,Wed May 29 13:12:31.531 2019,C - Reading
+Session 10,1.686489,Wed May 29 13:12:33.531 2019,21574.53,Wed May 29 14:44:30.531 2019,Break Out - Other
+Session 11,1.686489,Wed May 29 16:11:50.531 2019,21574.53,Wed May 29 16:30:30.531 2019,Break Out - - Tea/Coffee
+Session 12,1.686489,Wed May 29 16:31:30.531 2019,21574.53,Wed May 29 16:33:30.531 2019,SP - Looking 
+Session 13,1.686489,Wed May 29 17:03:10.531 2019,21574.53,Wed May 29 17:17:00.531 2019,SP - Looking 
