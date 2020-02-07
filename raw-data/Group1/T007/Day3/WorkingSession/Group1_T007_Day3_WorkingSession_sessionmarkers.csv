@@ -1,2 +1,17 @@
-Session,StartTime,startTimestamp,EndTime,EndTimestamp
-Session 1,7.311442,Thu Jun 13 13:09:07.391 2019,13236.91,Thu Jun 13 16:49:36.990 2019
+Session,StartTime,startTimestamp,EndTime,EndTimestamp,Ontologies
+Session 2,7.311442,Thu Jun 13 13:08:50.391 2019,13236.91,Thu Jun 13 13:19:21.990 2019,C - Talking (Skype & others)
+Session 3,7.311442,Thu Jun 13 13:19:22.391 2019,13236.91,Thu Jun 13 13:20:06.990 2019,C - Writing/Reading
+Session 4,7.311442,Thu Jun 13 13:20:07.391 2019,13236.91,Thu Jun 13 13:22:51.990 2019,SP - Looking
+Session 5,7.311442,Thu Jun 13 13:23:14.391 2019,13236.91,Thu Jun 13 13:24:37.990 2019,C - Reading 
+Session 6,7.311442,Thu Jun 13 13:24:38.391 2019,13236.91,Thu Jun 13 13:25:27.990 2019,SP - Looking
+Session 7,7.311442,Thu Jun 13 13:25:28.391 2019,13236.91,Thu Jun 13 13:31:35.990 2019,C - Reading 
+Session 8,7.311442,Thu Jun 13 13:31:36.391 2019,13236.91,Thu Jun 13 13:37:10.990 2019,SP - Looking
+Session 9,7.311442,Thu Jun 13 13:39:00.391 2019,13236.91,Thu Jun 13 13:45:30.990 2019,C - Writing/Reading
+Session 10,7.311442,Thu Jun 13 13:45:30.391 2019,13236.91,Thu Jun 13 13:57:50.990 2019,"C - Writing/Reading, Thinking"
+Session 11,7.311442,Thu Jun 13 13:57:51.990 2019,13236.91,Thu Jun 13 14:14:20.990 2019,SP - Talking
+Session 12,7.311442,Thu Jun 13 14:14:20.990 2019,13236.91,Thu Jun 13 14:19:10.990 2019,Break Out - Other
+Session 13,7.311442,Thu Jun 13 14:19:40.990 2019,13236.91,Thu Jun 13 14:24:40.990 2019,C - Writing/Reading
+Session 14,7.311442,Thu Jun 13 14:24:40.990 2019,13236.91,Thu Jun 13 14:26:40.990 2019,SP - Looking
+Session 14,7.311442,Thu Jun 13 14:26:50.990 2019,13236.91,Thu Jun 13 14:37:35.990 2019,C - Writing/Reading
+Session 15,7.311442,Thu Jun 13 14:37:38.990 2019,13236.91,Thu Jun 13 14:43:01.990 2019,Break Out - Other
+Session 16,7.311442,Thu Jun 13 16:33:05.990 2019,13236.91,Thu Jun 13 16:35:10.990 2019,H-H Interaction
