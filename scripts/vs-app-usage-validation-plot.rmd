@@ -32,11 +32,12 @@ unique(DF$Application)
 ```
 
 ```{r}
-DF_Sub1<-subset(DF, Participant_ID=="T007" & DF$Treatment=="WS" & Day=="Day4" & DF$Activities_QC2=="Computer Working" & DF$Reduced_Ontology_One!="SA")
+DF_Sub1<-subset(DF, Participant_ID=="T007" & DF$Treatment=="WS" & Day=="Day2" & DF$Activities_QC2=="Computer Working" & DF$Reduced_Ontology_One!="SA")
+#DF_Sub1<-subset(DF, Participant_ID=="T005" & DF$Treatment=="WS" & Day=="Day4")
 unique(DF_Sub1$Application)
-tab_activities <- table(DF_Sub1$Application)
+tab_activities <- table(DF_Sub1$Application_QC1)
 tab_activities
-
+#DF_Sub1$Application_QC1
 ```
 
 ```{r}
@@ -45,23 +46,34 @@ tab_activities
 # tab_activities <- table(DF_Sub1$Application)
 # tab_activities
 
-unique(DF_Sub1$Application)
-DF=DF %>% mutate(Modified_App = ifelse(Application == "Microsoft Word" | Application == "Microsoft AutoUpdate" |Application == "Microsoft PowerPoint" | Application == "AdobeAcrobat"| 
-                                                   Application == "AdobeReader" | Application == "Emacs-x86_64-10_9" |Application == "EndNote X7"|Application == "Microsoft Excel" |Application == "zotero"|
-                                                   Application == "Evernote"| Application == "Preview"|Application == "TextEdit","Document Apps", 
-                                ifelse(Application == "Mail"| Application == "Microsoft Outlook", "Email",
-                                ifelse(Application=="Google Chrome"| Application=="firefox"|Application=="Safari", "Web Browsing Apps",
-                                ifelse(Application=="Photos"| Application=="iTunes"|Application=="Spotify" | Application=="App Store", "Entertaining Apps",
-                                ifelse(Application=="Calendar"| Application=="Finder" | Application=="Notes", "Utilities Apps",
-                                ifelse(Application=="JavaApplicationStub"| Application=="RStudio" | Application=="Osascript" | Application=="Terminal" | Application=="Console" 
-                                                 |Application=="ATLAS.ti" |Application=="TeamViewer", "Programming Apps",
-                                ifelse(Application=="QQ"| Application=="Skype" |Application=="FaceTime"| Application=="Slack" |Application=="WeChat"| Application=="Messages"  , "Virtual Communication Apps",
-                                ifelse(Application=="Cisco AnyConnect Secure Mobility Client"| Application=="NA", "NA" ,"NA")))))))))
-unique(DF$Modified_App)
+#unique(DF_Sub1$Application_QC1)
+DF=DF %>% mutate(Modified_App = ifelse(Application_QC1 == "Microsoft Word" | Application_QC1 == "Microsoft AutoUpdate" |Application_QC1 == "Microsoft PowerPoint" | Application_QC1 == "AdobeAcrobat"| 
+                                                   Application_QC1 == "AdobeReader" | Application_QC1 == "Emacs-x86_64-10_9" |Application_QC1 == "EndNote X7"|Application_QC1 == "Microsoft Excel" |Application_QC1 == "zotero"|
+                                                   Application_QC1 == "Evernote"| Application_QC1 == "Preview"|Application_QC1 == "TextEdit"|Application_QC1 == "Acrobat"|Application_QC1 == "WINWORD"|
+                                                  Application_QC1 == "POWERPNT"|Application_QC1 == "EXCEL"|Application_QC1=="MendeleyDesktop","Document Apps", 
+                                       
+                                       
+                                       
+                                ifelse(Application_QC1 == "Mail"| Application_QC1 == "Microsoft Outlook", "Email",
+                                       
+                                       
+                                ifelse(Application_QC1=="Google Chrome"| Application_QC1=="firefox"|Application_QC1=="Safari"|Application_QC1=="chrome", "Web Browsing Apps",
+                                       
+                                ifelse(Application_QC1=="Photos"| Application_QC1=="iTunes"|Application_QC1=="Spotify" | Application_QC1=="App Store", "Entertaining Apps",
+                                       
+                                ifelse(Application_QC1=="Calendar"| Application_QC1=="Finder" | Application_QC1=="Notes" | Application_QC1=="explorer", "Utilities Apps",
+                                       
+                                ifelse(Application_QC1=="JavaApplication_QC1Stub"| Application_QC1=="RStudio" | Application_QC1=="Osascript" | Application_QC1=="Terminal" | Application_QC1=="Console" 
+                                                 |Application_QC1=="ATLAS.ti" |Application_QC1=="TeamViewer" | Application_QC1 == "Idle", "Programming Apps",
+                                       
+                                ifelse(Application_QC1=="QQ"| Application_QC1=="Skype" |Application_QC1=="FaceTime"| Application_QC1=="Slack" |Application_QC1=="WeChat"| Application_QC1=="Messages"  , "Virtual Communication Apps",
+                                       
+                                ifelse(Application_QC1=="Cisco AnyConnect Secure Mobility Client"| Application_QC1=="NA", "NA" ,"NA")))))))))
+#unique(DF$Modified_App)
 # title="Day1"
 # fig<-Plot2(DF_Sub1,  DF_Sub1$Modified_App,DF_Sub1$Reduced_Ontology_One ,DF_Sub1$Day,DF_Sub1$Participant_ID, title)
-fig<-Plot4(DF_Sub1,  DF_Sub1$Modified_App, DF_Sub1$Reduced_Ontology_One, DF_Sub1$Sinterface_Time,DF_Sub1$Participant_ID, title)
-fig
+#fig<-Plot4(DF_Sub1,  DF_Sub1$Modified_App, DF_Sub1$Reduced_Ontology_One, DF_Sub1$Sinterface_Time,DF_Sub1$Participant_ID, title)
+#fig
 ```
 
 
@@ -130,44 +142,72 @@ p<-ggplot(data, aes(x=x, fill=y)) +
 
 
 ```{r, echo=FALSE}
-DF$Application<-as.character(DF$Application)
-DF$Application[is.na(DF$Application)] <- "NA"
-unique(DF$Application)
-DF=DF %>% mutate(Modified_App = ifelse(Application == "Microsoft Word" | Application == "Microsoft AutoUpdate" |Application == "Microsoft PowerPoint" | 
-                                    Application == "AdobeReader" | Application == "Emacs-x86_64-10_9" |Application == "EndNote X7"|
-                                    Application == "Microsoft Excel" |Application == "Preview","Document Apps", 
-                                ifelse(Application == "Mail", "Email",
-                                ifelse(Application=="Google Chrome"| Application=="Safari", "Web Browsing Apps",
-                                ifelse(Application=="Photos"| Application=="iTunes" | Application=="App Store", "Entertaining Apps",
-                                ifelse(Application=="Calendar"| Application=="Finder" | Application=="Notes", "Utilities Apps",
-                                ifelse(Application=="JavaApplicationStub"| Application=="RStudio" | Application=="Osascript" | Application=="Terminal" | Application=="Console" |  Application=="TeamViewer", "Programming Apps",
-                                ifelse(Application=="QQ"| Application=="Skype" |Application=="FaceTime"| Application=="Slack" |Application=="WeChat"| Application=="Messages"  , "Virtual Communication Apps",
-                                ifelse(Application=="Cisco AnyConnect Secure Mobility Client"| Application=="NA", "NA" ,"NA")))))))))
-unique(DF$Modified_App)
+# DF$Application<-as.character(DF$Application)
+# DF$Application[is.na(DF$Application)] <- "NA"
+# unique(DF$Application)
+# DF=DF %>% mutate(Modified_App = ifelse(Application == "Microsoft Word" | Application == "Microsoft AutoUpdate" |Application == "Microsoft PowerPoint" | 
+#                                     Application == "AdobeReader" | Application == "Emacs-x86_64-10_9" |Application == "EndNote X7"|
+#                                     Application == "Microsoft Excel" |Application == "Preview","Document Apps", 
+#                                 ifelse(Application == "Mail", "Email",
+#                                 ifelse(Application=="Google Chrome"| Application=="Safari", "Web Browsing Apps",
+#                                 ifelse(Application=="Photos"| Application=="iTunes" | Application=="App Store", "Entertaining Apps",
+#                                 ifelse(Application=="Calendar"| Application=="Finder" | Application=="Notes", "Utilities Apps",
+#                                 ifelse(Application=="JavaApplicationStub"| Application=="RStudio" | Application=="Osascript" | Application=="Terminal" | Application=="Console" |  Application=="TeamViewer", "Programming Apps",
+#                                 ifelse(Application=="QQ"| Application=="Skype" |Application=="FaceTime"| Application=="Slack" |Application=="WeChat"| Application=="Messages"  , "Virtual Communication Apps",
+#                                 ifelse(Application=="Cisco AnyConnect Secure Mobility Client"| Application=="NA", "NA" ,"NA")))))))))
+# unique(DF$Modified_App)
 #write.csv(DF,'Apps.csv')
 ```
 
 ```{r, echo=FALSE}
+plot_location<-"C:/Users/soton/Documents/R/DeadlineProject/Plots/AppsActivity/Version2/"
 plot_list<-list()
 sid<-factor(DF$Participant_ID)
 n=nlevels(sid)
 for (i in 1:n) {
   DF_T001<-subset(DF, Participant_ID==levels(sid)[i] & Treatment=="WS" & Activities_QC2=="Computer Working" & Reduced_Ontology_One!="SA" & Reduced_Ontology_One!="SP")
-  y_max=max(DF_T001$Sinterface_Time)+100
+  #y_max=max(DF_T001$Sinterface_Time)+100
+  y_max=15000
   
       D_id<-factor(DF_T001$Day)
       m=nlevels(D_id)
       for (j in 1:m) {
         DF_Sub_Day<-subset(DF_T001, Day==levels(D_id)[j])
-        title=paste(levels(sid)[i],levels(D_id)[j])
+        title=levels(D_id)[j]
     
         #fig<-Plot2(DF_Sub_Day,  DF_Sub_Day$Modified_App,DF_Sub_Day$Reduced_Ontology_One, DF_S_D$Day,DF_S_D$Participant_ID, title)
         fig<-Plot2(DF_Sub_Day,  DF_Sub_Day$Modified_App, DF_Sub_Day$Reduced_Ontology_One, DF_Sub_Day$Sinterface_Time,DF_Sub_Day$Participant_ID, title, y_max)
         print(fig)
         plot_list[[length(plot_list) + 1]] <- fig
 
-  }
+      }
+      
 }
 
-ggarrange(plotlist = plot_list, nrow = 2, ncol = 2,common.legend = TRUE, legend="bottom")
+plots_act=ggarrange(plotlist = plot_list, nrow = 2, ncol = 2,common.legend = TRUE, legend="bottom")
+
+for (i in 1:n) {
+      #plot=ggarrange(plotlist = plot_list, nrow = 2, ncol = 2,common.legend = TRUE, legend="bottom")
+      title <- ggdraw() + draw_label(levels(sid)[i], fontface='bold')
+      final_plot<-plot_grid(title,plots_act[[i]], ncol = 1, rel_heights = c(.03, 1))
+      print(final_plot)
+
+      full_path<-paste(plot_location,levels(sid)[i],".pdf",sep="")
+      ggsave(full_path, final_plot, width = 8.5, height = 11, units = "in")
+}
+    
+  #final_list[[length(final_list) + 1]] <- final_plot
+    #   full_path<-paste(plot_location,plot_title,".pdf",sep="")
+    #   ggsave(full_path, final_plot, width = 8.5, height = 11, units = "in")
+    # 
+    # plots=ggarrange(plotlist = plot_list, nrow = 4, ncol = 2)
+    # #final_list
+    # legend_merge<-plot_grid(global_legend, ncol = 1, nrow = 1)
+    # legends_of_plots<-plot_grid(plots,legend_merge, ncol = 1, rel_heights = c(1, .05))
+    # plot_title<-paste(Title, "Baseline")
+    
+    
+    
 ```
+
+$$\sum_{n=1}^{10} n^2$$

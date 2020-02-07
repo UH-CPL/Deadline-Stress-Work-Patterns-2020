@@ -54,7 +54,8 @@ plot_BaseLine<-function(fun.data, fun.x, fun.y, session, y_min,y_max, Day, y_tit
     theme(plot.title = element_text(hjust = 0.5), panel.border = element_blank(), panel.grid.major = element_blank(),panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))+
     labs(x=x_title, y=y_title)+
     theme(legend.position = "none")+
-    theme(legend.title = element_blank())+
+    theme(legend.title = element_blank(), legend.text=element_text(size=12))+
+    guides(color = guide_legend(nrow = 1,override.aes = list(size = 1)))+
     ylim(y_min, y_max)+
     scale_color_manual(labels = c("Day1", "Day2","Day3", "Day4"), values = c("RB.Day1"="orange", "RB.Day2"="red", "RB.Day3"="green", "RB.Day4"="blue"))
   return(t)
@@ -71,7 +72,8 @@ plot_workingsession<-function(fun.data, fun.x, fun.y, session, y_min,y_max, Day,
       labs(x=x_title, y=y_title)+
     
     theme(legend.position = "none")+
-    theme(legend.title = element_blank())+
+    theme(legend.title = element_blank(),legend.text=element_text(size=12))+
+    guides(color = guide_legend(nrow = 1,override.aes = list(size = 1)))+
     ylim(y_min, y_max)+
     scale_color_manual(labels = c("Day1", 
                                    "Day2", 
@@ -98,7 +100,7 @@ color_day<-c("Day1"="orange", "Day2"="red", "Day3"= "green", "Day4"="blue")
   scale_color_manual(values = color_day, limits = c("orange", "red", "green", "blue"), labels= c("Day1", "Day2", "Day3", "Day4"))+
      #scale_linetype_manual(name = "",values = c(2,2,2,2),guide = guide_legend(override.aes = list(color = c("orange", "red", "green", "blue"))))+
      theme_bw()+
-   theme(text = element_text(color = "black"))+theme(legend.title = element_blank())+
+   theme(text = element_text(color = "black"))+theme(legend.title = element_blank(), legend.text=element_text(size=10))+
    labs(y=y_title, x=x_title)+
      theme(legend.position = "none")+
   theme(plot.title = element_text(hjust = 0.5))+
@@ -145,12 +147,12 @@ for (i in 1:n) {
 }
 
 
-# subject_title="T013"
-# DF_Sub_Day<-subset(DF, Participant_ID=="T013")
-# Baseline_DF <- DF_Sub_Day %>% filter(Treatment=="RB")
-# WS_DF <- DF_Sub_Day %>% filter(Treatment=="WS")
-# Baseline_Plot_Physiological(Baseline_DF,subject_title)
-# WS_Plot_Physiological(WS_DF,subject_title)
+#subject_title="T013"
+#DF_Sub_Day<-subset(DF, Participant_ID=="T013")
+#Baseline_DF <- DF_Sub_Day %>% filter(Treatment=="RB")
+#WS_DF <- DF_Sub_Day %>% filter(Treatment=="WS")
+#Baseline_Plot_Physiological(Baseline_DF,subject_title)
+#WS_Plot_Physiological(WS_DF,subject_title)
 
 ```
 
@@ -161,7 +163,7 @@ for (i in 1:n) {
 #print(figure)
 
 Baseline_Plot_Physiological<-function(Baseline_DF, Title){
-plot_location<-"C:/Users/soton/Documents/R/DeadlineProject/Plots/PhysiologicalPlots/Version2/"  
+plot_location<-"C:/Users/soton/Documents/R/DeadlineProject/Plots/PhysiologicalPlots/Version3/"  
   global_legend<-NULL
 channel_list <- c("PP", "EDA", "E4HR", "iWatch")
 
@@ -202,8 +204,8 @@ for(channel in channel_list){
   if(channel=="EDA"){
     
       y_min=0.01
-      y_max=0.80
-      yaxis_title = expression(paste('EDA [', mu, 'S]'))
+      y_max=2.20
+      yaxis_title = expression(paste('E4 EDA [', mu, 'S]'))
       figure<-plot_BaseLine(Baseline_DF, Baseline_DF$TreatmentTime, Baseline_DF$E4_EDA, Baseline_DF$Treatment, y_min,y_max, Baseline_DF$Day,yaxis_title, x_title)
       print(figure)
       plot_list[[length(plot_list) + 1]] <- figure
@@ -289,7 +291,7 @@ for(channel in channel_list){
 ```{r}
 
 WS_Plot_Physiological<-function(WS_DF, Title){
-plot_location<-"C:/Users/soton/Documents/R/DeadlineProject/Plots/PhysiologicalPlots/Version2/"  
+plot_location<-"C:/Users/soton/Documents/R/DeadlineProject/Plots/PhysiologicalPlots/Version3/"  
  global_legend<-NULL
 channel_list <- c("PP", "EDA", "E4HR", "iWatch")
 
@@ -332,7 +334,7 @@ for(channel in channel_list){
     y_min=0.01
       y_max=0.80
       
-      yaxis_title = expression(paste('EDA [', mu, 'S]'))
+      yaxis_title = expression(paste('E4 EDA [', mu, 'S]'))
       figure<-plot_workingsession(WS_DF, WS_DF$TreatmentTime, WS_DF$E4_EDA, WS_DF$Treatment, y_min,y_max, WS_DF$Day,yaxis_title, x_title)
       print(figure)
       plot_list[[length(plot_list) + 1]] <- figure

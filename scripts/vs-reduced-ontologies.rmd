@@ -105,7 +105,7 @@ Thinking = '^T$'
 #DF<-subset(DF, Participant_ID=="T009" & DF$Treatment=="WS")
 legend_heatmap<-NULL
 legend_timeline<-NULL
-plot_location<-"C:/Users/soton/Documents/R/DeadlineProject/Plots/Combined/Version8/"
+plot_location<-"C:/Users/soton/Documents/R/DeadlineProject/Plots/Combined/Version10/"
 subject_name_list<-levels(factor(DF$Participant_ID))
 
 #Timeline_Heatmap_list<-list()
@@ -188,7 +188,7 @@ Draw_Timeline_Day<-function(Data_Frame, Title){
       Data_Frame$Reduced_Ontology_Two[Data_Frame$Reduced_Ontology_Two==""]<-"nil"
       Data_Frame$Reduced_Ontology_Three[Data_Frame$Reduced_Ontology_Three==""]<-"nil"
       
-      Ontology_Color <- c( "R" = "green4", "W" = "blue",  "I" = "Orange", "Out" = "white", "SP" = "red", "SA" = "magenta", "nil"="gray92")
+      Ontology_Color <- c( "R" = "springgreen", "W" = "blue",  "I" = "Orange", "Out" = "white", "SP" = "red", "SA" = "magenta", "nil"="gray92")
       
 
       if (Title!="Day4"){
@@ -203,7 +203,7 @@ Draw_Timeline_Day<-function(Data_Frame, Title){
         labs(x="",y=Title)+
         theme(legend.position = "none")+theme(legend.title = element_blank(), legend.text=element_text(size=8), legend.background = element_blank())+
         theme(plot.title = element_text(size=12))+
-        scale_color_manual(values = Ontology_Color, limits = c("R", "W", "I", "Out", "SP",  "SA"))+
+        scale_color_manual(values = Ontology_Color, limits = c("R", "W", "Out", "SA",  "SP", "I"))+
         guides(color = guide_legend(nrow = 1,override.aes = list(size = 4)))+
         scale_x_continuous(breaks = seq(0,24000, by=2000), labels = c("0"="0","2000"="2","4000"="4","6000"="6","8000"="8",  "10000"="10","12000"="12", "14000"="14",  "16000"="16",  "18000"="18",  "20000"="20", "22000"="22",  "24000"="24"))
         print(timeline)
@@ -223,7 +223,7 @@ Draw_Timeline_Day<-function(Data_Frame, Title){
         labs(x="Time[s] * 1000",y=Title)+
         theme(legend.position = "none")+theme(legend.title = element_blank(), legend.text=element_text(size=8), legend.background = element_blank())+
         theme(plot.title = element_text(size=12))+
-        scale_color_manual(values = Ontology_Color, limits = c("R", "W", "I", "Out", "SP",  "SA"))+
+        scale_color_manual(values = Ontology_Color, limits = c("R", "W", "Out", "SA",  "SP", "I"))+
         guides(color = guide_legend(nrow = 1,override.aes = list(size = 4)))+
         scale_x_continuous(breaks = seq(0,24000, by=2000),labels = c("0"="0","2000"="2","4000"="4","6000"="6","8000"="8",  "10000"="10","12000"="12", "14000"="14",  "16000"="16",  "18000"="18",  "20000"="20", "22000"="22",  "24000"="24"))
         print(timeline)
@@ -309,7 +309,7 @@ Draw_HeatMap_Day<-function(DF_Sub_Day, Title){
     geom_tile(aes(fill=percent_in_num))+
     geom_text(aes(label=percent_in_num), show.legend = FALSE,col="black",size=2, face = "bold")+
     #scale_fill_gradientn(colours = c("lightgray","dimgray"), name = "Time [s] %", limits=c(0,100))+
-    scale_fill_gradientn(colours = c("gray98","yellow", "red"), name = "Time [s] %", limits=c(0,100))+
+    scale_fill_gradientn(colours = c("gray98","yellow", "red"), name = "Time [%]", limits=c(0,100))+
     new_scale("fill") +
     geom_tile(aes(fill=percent_in_num), data = subset(mat, value1 > -1), show.legend = FALSE)+
     geom_text(aes(label=percent_in_num), show.legend = FALSE, col="black", size=2, data = subset(mat, value1 > 0))+
@@ -336,7 +336,7 @@ Draw_HeatMap_Day<-function(DF_Sub_Day, Title){
     geom_text(aes(label=percent_in_num), show.legend = FALSE,col="black",size=2, face="bold")+
     #scale_fill_gradientn(colours = c("lightgray","dimgray"), name = "Time [s]*1000")+
     #scale_fill_gradientn(colours = c("lightgray","dimgray"), name = "Time [s] %", limits=c(0,100))+
-    scale_fill_gradientn(colours = c("gray98","yellow", "red"), name = "Time [s] %", limits=c(0,100))+
+    scale_fill_gradientn(colours = c("gray98","yellow", "red"), name = "Time [%]", limits=c(0,100))+
     new_scale("fill") +
     geom_tile(aes(fill=percent_in_num), data = subset(mat, value1 > -1),show.legend = FALSE)+
     geom_text(aes(label=percent_in_num), show.legend = FALSE, col="black", size=2, data = subset(mat, value1 > 0))+
