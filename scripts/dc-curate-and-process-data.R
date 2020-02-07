@@ -360,7 +360,7 @@ get_app_usage_data <- function(subj_name, day_serial, ws_df) {
     ws_df <- custom_read_csv(file.path(day_dir, win_activity_file_name)) %>% 
       filter(Activity=='Application') %>% 
       mutate(Application=Details,
-             Timestamp=convert_s_interface_date(strptime(substr(Timestamp, 1, 19), format='%a %b %d %H:%M:%S'))) %>%
+             Timestamp=convert_s_interface_date(convert_marker_date(Timestamp))) %>%
       select(Timestamp, Application) %>%
       ##############################################################################################
       merge(ws_df, by='Timestamp', all=T)      ## CHECK!!! - all vs. all.x
@@ -604,7 +604,7 @@ curate_data <- function() {
   subj_list <- custom_read_csv(file.path(curated_data_dir, utility_data_dir, subj_list_file_name))$Subject
   
   # sapply(subj_list, function(subj_name) {
-  sapply(subj_list[5], function(subj_name) {
+  sapply(subj_list[3], function(subj_name) {
     
     subj_dir <- file.path(raw_data_dir, grp_dir, subj_name)
     day_list <- get_dir_list(subj_dir)
