@@ -529,10 +529,16 @@ refactor_and_export_all_subj_data <- function(all_subj_df) {
   #     is.na(Ontologies) & Treatment=='WS' & Participant_ID=='T003'~'C - Writing/Reading',
   #     TRUE~Ontologies))
 
-  # # # all_subj_df <- all_subj_df %>%
-  # # #   mutate(Ontologies=case_when(
-  # # #     Ontologies==NA & Treatment=='WS' & Participant_ID=='T001'~'Working',
-  # # #     Ontologies==NA & Treatment=='WS' & Participant_ID=='T003'~'C - Writing/Reading'))
+  # all_subj_df <- all_subj_df %>%
+  #   mutate(Ontologies=case_when(
+  #   Ontologies==NA & Treatment=='WS' & Participant_ID=='T001'~'Working',
+  #   Ontologies==NA & Treatment=='WS' & Participant_ID=='T003'~'C - Writing/Reading'))
+  
+  all_subj_df <- all_subj_df %>%
+    mutate(Ontologies=case_when(
+      #is.na(Ontologies) & Treatment=='WS' & Participant_ID=='T001'~'Working',
+      is.na(Ontologies) & Treatment=='WS' & Participant_ID=='T003'~'C - Writing/Reading',
+      TRUE~Ontologies))
 
   # # # # This is for T001 & T003, for whom we only noted the break times
   # # # all_subj_df[is.na(all_subj_df$Ontologies) & all_subj_df$Treatment=='WS' & all_subj_df$Participant_ID=='T001', ]$Ontologies <- 'Working'
