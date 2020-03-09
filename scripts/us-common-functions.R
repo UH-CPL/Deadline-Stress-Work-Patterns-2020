@@ -56,16 +56,20 @@ ELD='Listening on Headphone'
 PI='H-H Interaction|Personal Interaction PI|Physical Interaction PI'
 VI='C - Talking Skype & others|Virtual Interaction VI'
 
+###############################################################
+# qc0_file_name -> qc0_raw_file_name
+# qc99_file_name -> qc0_final_file_name
+###############################################################
+qc0_raw_file_name <- 'qc0_raw_data.csv'        # all raw data - generates from dc-curate-and-process-data.R file
+qc0_final_file_name <- 'qc0_final_data.csv'    # masked and manifested ontologies & activities data - generates from dc-curate-and-process-data.R file
+
+qc1_file_name <- 'qc1_data.csv'
+qc2_file_name <- 'qc2_data.csv'
 
 
-qc0_file_name <- 'qc0_all_subj.csv'
-qc1_file_name <- 'qc1_all_subj.csv'
-qc2_file_name <- 'qc2_all_subj.csv'
-
-
-qc0_session_mean_file_name <- 'qc0_session_mean.csv'
-qc1_session_mean_file_name <- 'qc1_session_mean.csv'
-qc2_session_mean_file_name <- 'qc2_session_mean.csv'
+qc0_treatment_mean_file_name <- 'qc0_treatment_mean.csv'
+qc1_treatment_mean_file_name <- 'qc1_treatment_mean.csv'
+qc2_treatment_mean_file_name <- 'qc2_treatment_mean.csv'
 
 qc0_activity_mean_file_name <- 'qc0_activity_mean.csv'
 qc1_activity_mean_file_name <- 'qc1_activity_mean.csv'
@@ -74,7 +78,7 @@ qc2_activity_mean_file_name <- 'qc2_activity_mean.csv'
 
 ## We don't know until now how many filtering we will do :P
 ## Hope it doesn't exixts 99 filtering
-qc99_file_name <- 'qc99_all_subj.csv'
+# qc99_file_name <- 'qc0_all_data.csv'
 
 
 
@@ -91,6 +95,9 @@ decorator_hash <- '###########################################################'
 
 
 
+#------------------------------------#
+#-------   Common Functions   -------#
+#------------------------------------#
 custom_read_csv <- function(file_name) {
   return(read.csv(file_name, stringsAsFactors=F))
 }

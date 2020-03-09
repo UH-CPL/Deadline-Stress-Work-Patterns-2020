@@ -100,9 +100,62 @@ get_final_activities <- function(all_subj_df) {
   # unique(all_subj_df$Activities)
   # unique(all_subj_df$D1)
   all_subj_df$Activities_QC1<-all_subj_df$D1
-  
-  
   all_subj_df <- all_subj_df %>% rename(Ontology_One=A,Ontology_Two=B,Ontology_Three=C)
+  
+  #######################################Reduced Ontoloties########################
+ 
+  all_subj_df$Reduced_Ontology_One<- all_subj_df$Ontology_One
+  all_subj_df$Reduced_Ontology_Two<- all_subj_df$Ontology_Two
+  all_subj_df$Reduced_Ontology_Three<- all_subj_df$Ontology_Three
+
+
+  R= '^CR$|^PR$|^T$'
+  W = '^CW$|^PW$'
+  I = '^PI|^VI'
+  Out = '^Out$'
+  SP = '^SP$'
+  SA = '^ELD$|^EiP$'
+  #Thinking = '^T$'
+
+
+  all_subj_df$Reduced_Ontology_One<-case_when(
+    str_detect(all_subj_df$Ontology_One, Out)~"Out",
+    str_detect(all_subj_df$Ontology_One, W)~"W",
+    str_detect(all_subj_df$Ontology_One, R)~"R",
+    #str_detect(all_subj_df$Ontology_One, Thinking)~"T",
+    str_detect(all_subj_df$Ontology_One, SP)~"SP",
+    str_detect(all_subj_df$Ontology_One, SA)~"SA",
+    str_detect(all_subj_df$Ontology_One, I)~"I")
+  
+  all_subj_df$Reduced_Ontology_Two<-case_when(
+    str_detect(all_subj_df$Ontology_Two, Out)~"Out",
+    str_detect(all_subj_df$Ontology_Two, W)~"W",
+    str_detect(all_subj_df$Ontology_Two, R)~"R",
+    #str_detect(all_subj_df$Ontology_Two, Thinking)~"T",
+    str_detect(all_subj_df$Ontology_Two, SP)~"SP",
+    str_detect(all_subj_df$Ontology_Two, SA)~"SA",
+    str_detect(all_subj_df$Ontology_Two, I)~"I")
+  
+  all_subj_df$Reduced_Ontology_Three<-case_when(
+    str_detect(all_subj_df$Ontology_Three, Out)~"Out",
+    str_detect(all_subj_df$Ontology_Three, W)~"W",
+    str_detect(all_subj_df$Ontology_Three, R)~"R",
+    #str_detect(all_subj_df$Ontology_Three, Thinking)~"T",
+    str_detect(all_subj_df$Ontology_Three, SP)~"SP",
+    str_detect(all_subj_df$Ontology_Three, SA)~"SA",
+    str_detect(all_subj_df$Ontology_Three, I)~"I")
+  
+  
+  #all_subj_df$Reduced_Ontology_One[is.na(all_subj_df$Reduced_Ontology_One)] <- ""
+  all_subj_df$Reduced_Ontology_Two[is.na(all_subj_df$Reduced_Ontology_Two)] <- ""
+  all_subj_df$Reduced_Ontology_Three[is.na(all_subj_df$Reduced_Ontology_Three)] <- ""
+  
+  all_subj_df$Reduce_Activities<-paste(all_subj_df$Reduced_Ontology_One,all_subj_df$Reduced_Ontology_Two,all_subj_df$Reduced_Ontology_Three, sep="+")
+  all_subj_df<-all_subj_df%>%mutate(Reduce_Activities_QC1=gsub("(\\+)*$", "", Reduce_Activities))
+
+  #######################################Reduced Ontoloties########################
+  
+
   
   return(all_subj_df)
 }
@@ -146,7 +199,7 @@ get_final_activities_and_app_usage <- function(all_subj_df) {
 }
 
 format_activity_data <- function() {
-  all_subj_df <- custom_read_csv(file.path(curated_data_dir, physiological_data_dir, qc0_file_name))
+  all_subj_df <- custom_read_csv(file.path(curated_data_dir, physiological_data_dir, qc0_raw_file_name))
   
   ## 1. Get final ontologies column
   ## 2. Remove app usage data except C-R & C-W
@@ -176,13 +229,18 @@ format_activity_data <- function() {
            Application_QC3,
            Ontology_One,
            Ontology_Two,
-           Ontology_Three
+           Ontology_Three,
+           
+           Reduce_Activities_QC1,
+           Reduced_Ontology_One,
+           Reduced_Ontology_Two,
+           Reduced_Ontology_Three
     )
   
   
   View(all_subj_df)
-  convert_to_csv(all_subj_df, file.path(curated_data_dir, physiological_data_dir, qc0_file_name))
-  convert_to_csv(all_subj_df, file.path(curated_data_dir, physiological_data_dir, qc99_file_name))
+  # convert_to_csv(all_subj_df, file.path(curated_data_dir, physiological_data_dir, qc0_raw_file_name))
+  convert_to_csv(all_subj_df, file.path(curated_data_dir, physiological_data_dir, qc0_masked_file_name))
 }
 
 
