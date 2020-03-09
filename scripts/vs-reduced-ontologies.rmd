@@ -98,14 +98,16 @@ Thinking = '^T$'
 
   DF$Reduce_Activities<-paste(DF$Reduced_Ontology_One,DF$Reduced_Ontology_Two,DF$Reduced_Ontology_Three, sep="+")
   DF<-DF%>%mutate(Reduce_Activities_QC1=gsub("(\\+)*$", "", Reduce_Activities))
+  
 ```
 
 
 ```{r}
-#DF<-subset(DF, Participant_ID=="T009" & DF$Treatment=="WS")
+#Day_DF<-subset(DF, Participant_ID=="T015" & DF$Treatment=="WS" & Day=="Day4")
+#Title = "Test"
 legend_heatmap<-NULL
 legend_timeline<-NULL
-plot_location<-"C:/Users/soton/Documents/R/DeadlineProject/Plots/Combined/Version10/"
+plot_location<-"C:/Users/soton/Documents/R/DeadlineProject/Plots/Combined/Version11/"
 subject_name_list<-levels(factor(DF$Participant_ID))
 
 #Timeline_Heatmap_list<-list()
@@ -126,10 +128,10 @@ for (i in 1:numberSid) {
         Title=levels(Day_No)[j]
         Day_DF<-subset(DF_Sub, Day==levels(Day_No)[j])
         Day_DF<-Day_DF[!is.na(Day_DF$Reduce_Activities_QC1),]
+        Day_DF<-Day_DF[!is.na(Day_DF$Reduced_Ontology_One),]
         Draw_Timeline_Heatmap(Day_DF, Title)
       
       }
-
 
 
     #final_list=ggarrange(plotlist = Timeline_Heatmap_list, nrow = 4, ncol = 2, align = c("hv"), common.legend = FALSE, legend="right")
@@ -151,6 +153,7 @@ for (i in 1:numberSid) {
 
 ```{r}
 Draw_Timeline_Heatmap<-function(Data_Frame, Title){
+  print("1111111111111111111")
   Data_Frame_=Draw_Timeline_Day(Data_Frame, Title)
   print("after timeline")
   #print(Timeline)
@@ -165,14 +168,14 @@ Draw_Timeline_Heatmap<-function(Data_Frame, Title){
 ```{r}
 Draw_Timeline_Day<-function(Data_Frame, Title){
   for ( cell in 1:nrow(Data_Frame)) {
-      
-      if(Data_Frame$Reduced_Ontology_One[cell]==Data_Frame$Reduced_Ontology_Two[cell])
-          {
+      if(Data_Frame$Reduced_Ontology_One[cell]==Data_Frame$Reduced_Ontology_Two[cell]){
+        #print(cell)
           Data_Frame$Reduced_Ontology_Two[cell]= Data_Frame$Reduced_Ontology_Three[cell]
           Data_Frame$Reduced_Ontology_Three[cell] = ""
           Data_Frame$Reduce_Activities_QC1[cell]=paste(Data_Frame$Reduced_Ontology_One[cell],Data_Frame$Reduced_Ontology_Two[cell],Data_Frame$Reduced_Ontology_Three[cell], sep="+")
           Data_Frame$Reduce_Activities_QC1[cell]<-gsub("(\\+)*$", "", Data_Frame$Reduce_Activities_QC1[cell])
       }
+  
     
     if ((Data_Frame$Reduced_Ontology_One[cell]=="SA" & Data_Frame$Reduced_Ontology_Two[cell]=="R") | (Data_Frame$Reduced_Ontology_One[cell]=="SA" & Data_Frame$Reduced_Ontology_Two[cell]=="W")){
       temp=Data_Frame$Reduced_Ontology_One[cell]
@@ -198,11 +201,11 @@ Draw_Timeline_Day<-function(Data_Frame, Title){
         geom_point(aes(y=1.12, colour=Reduced_Ontology_Two), shape=15, size=10)+
         geom_point(aes(y=1.24, colour=Reduced_Ontology_Three), shape=15, size=10)+
         scale_y_discrete(breaks=c("1", "2", "3", "4"),labels=c("", "","", ""))+
-        theme(text = element_text(size=12 ,color = "black"),plot.title = element_text(hjust = 0.5), panel.border = element_blank(), 
+        theme(text = element_text(size=10 ,color = "black"),plot.title = element_text(hjust = 0.5), panel.border = element_blank(), 
         panel.grid.major = element_blank(),panel.grid.minor = element_blank())+
         labs(x="",y=Title)+
         theme(legend.position = "none")+theme(legend.title = element_blank(), legend.text=element_text(size=8), legend.background = element_blank())+
-        theme(plot.title = element_text(size=12))+
+        theme(plot.title = element_text(size=10))+
         scale_color_manual(values = Ontology_Color, limits = c("R", "W", "Out", "SA",  "SP", "I"))+
         guides(color = guide_legend(nrow = 1,override.aes = list(size = 4)))+
         scale_x_continuous(breaks = seq(0,24000, by=2000), labels = c("0"="0","2000"="2","4000"="4","6000"="6","8000"="8",  "10000"="10","12000"="12", "14000"="14",  "16000"="16",  "18000"="18",  "20000"="20", "22000"="22",  "24000"="24"))
@@ -218,11 +221,11 @@ Draw_Timeline_Day<-function(Data_Frame, Title){
         geom_point(aes(y=1.12, colour=Reduced_Ontology_Two), shape=15, size=10)+
         geom_point(aes(y=1.24, colour=Reduced_Ontology_Three), shape=15, size=10)+
         scale_y_discrete(breaks=c("1", "2", "3", "4"),labels=c("", "","", ""))+
-        theme(text = element_text(size=12 ,color = "black"),plot.title = element_text(hjust = 0.5), panel.border = element_blank(), 
+        theme(text = element_text(size=10 ,color = "black"),plot.title = element_text(hjust = 0.5), panel.border = element_blank(), 
         panel.grid.major = element_blank(),panel.grid.minor = element_blank())+
-        labs(x="Time[s] * 1000",y=Title)+
+        labs(x="Time [s] * 1000",y=Title)+
         theme(legend.position = "none")+theme(legend.title = element_blank(), legend.text=element_text(size=8), legend.background = element_blank())+
-        theme(plot.title = element_text(size=12))+
+        theme(plot.title = element_text(size=10))+
         scale_color_manual(values = Ontology_Color, limits = c("R", "W", "Out", "SA",  "SP", "I"))+
         guides(color = guide_legend(nrow = 1,override.aes = list(size = 4)))+
         scale_x_continuous(breaks = seq(0,24000, by=2000),labels = c("0"="0","2000"="2","4000"="4","6000"="6","8000"="8",  "10000"="10","12000"="12", "14000"="14",  "16000"="16",  "18000"="18",  "20000"="20", "22000"="22",  "24000"="24"))
@@ -370,14 +373,14 @@ add_bottom_legend <- function() {
 
 
 ```{r}
-  DF_Sub1<-subset(DF, Participant_ID=="T009" & DF$Treatment=="WS" & Day=="Day3")
+  DF_Sub1<-subset(DF, Participant_ID=="T003" & DF$Treatment=="WS" & Day=="Day4")
 ```
 
 
 
 ```{r, echo=FALSE}
 ## Heatmap with percwntage for single subject
-DF_Sub_Day<-subset(DF, Participant_ID=="T007" & Day=="Day2" & Treatment=="WS")
+DF_Sub_Day<-subset(DF, Participant_ID=="T015" & Day=="Day3" & Treatment=="WS")
 
 print("Entered")
     X<-c("R", "W", "Out","SA", "SP","I")

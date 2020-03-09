@@ -27,8 +27,11 @@ library(zoo)       ## for func na.locf()
 #-------------------------#
 script_dir <- dirname(rstudioapi::getSourceEditorContext()$path)
 source(file.path(script_dir, 'us-common-functions.R'))
-source(file.path(script_dir, 'us-filter-pp.R'))
-source(file.path(script_dir, 'us-down-sample-pp.R'))
+# source(file.path(script_dir, 'us-filter-pp.R'))
+# source(file.path(script_dir, 'us-down-sample-pp.R'))
+
+source(file.path(script_dir, 'us-downsample-pp.R'))
+source(file.path(script_dir, 'us-denoise-pp.R'))
 
 
 current_dir <- dirname(script_dir)
@@ -128,12 +131,43 @@ read_downsampled_pp <- function(nr_pp_file_name) {
   return(downsampled_pp_df)
 }
 
-reduce_noise_and_downsample <- function(session_dir, pp_file_name) {
+reduce_noise_and_downsample_newFFT <- function(session_dir, pp_file_name, session_name) {
+  
+  print(session_name)
+  if(session_name=="Baseline"){
+    decay_f=1/6
+  }
+  if(session_name=="WorkingSession"){
+    decay_f= 1/150
+  }
+  #print(decay_f)
   pp_df <- custom_read_csv(file.path(session_dir, pp_file_name))
   names(pp_df) <- c("Frame",	"Time",	"Timestamp", "PP")
-  pp_df$Timestamp <- as.POSIXct(strptime(pp_df$Timestamp, format=s_interface_date_format)) 
+ 
+  # pp_df$Timestamp <- as.POSIXct(strptime(pp_df$Timestamp, format=s_interface_date_format)) 
+  pp_df$Timestamp <- convert_s_interface_date(convert_marker_date(pp_df$Timestamp))
+
+  #pp_df$NR_PP <- remove_noise(pp_df$PP)
+  pp_df$NR_PP <- remove_noise(pp_df$PP, removeImpluse = T, lowpassDecayFreq = decay_f, samplePerSecond = 7)
+
+  #downsampled_pp_df <- downsample_using_mean(pp_df, c('PP', 'NR_PP'))
+  downsampled_pp_df <- downsample_using_mean(pp_df, c('PP', 'NR_PP'))
+  
+  convert_to_csv(downsampled_pp_df, file.path(curated_data_dir, subj_data_dir, paste0(substr(pp_file_name, 1, nchar(pp_file_name)-7), '_pp_nr.csv')))
+  
+  return(downsampled_pp_df)
+}
+
+
+reduce_noise_and_downsample <- function(session_dir, pp_file_name) {
+
+  pp_df <- custom_read_csv(file.path(session_dir, pp_file_name))
+  names(pp_df) <- c("Frame",	"Time",	"Timestamp", "PP")
+  # pp_df$Timestamp <- as.POSIXct(strptime(pp_df$Timestamp, format=s_interface_date_format)) 
+  pp_df$Timestamp <- convert_s_interface_date(convert_marker_date(pp_df$Timestamp))
   
   pp_df$NR_PP <- remove_noise(pp_df$PP)
+  
   downsampled_pp_df <- downsample_using_mean(pp_df, c('PP', 'NR_PP'))
   
   convert_to_csv(downsampled_pp_df, file.path(curated_data_dir, subj_data_dir, paste0(substr(pp_file_name, 1, nchar(pp_file_name)-7), '_pp_nr.csv')))
@@ -148,10 +182,13 @@ get_downsampled_pp <- function(subj_name, day_serial, session_name) {
   pp_file_name <- get_matched_file_names(session_dir, pp_file_pattern)
   nr_pp_file_name <- get_matched_file_names(file.path(curated_data_dir, subj_data_dir), paste0('.*', subj_name, '_', day_serial, '_', session_name, nr_pp_file_pattern))
   
+  
+  
   if(!is_empty(pp_file_name)) {
     if(is_empty(nr_pp_file_name)) {
       # write_log_msg('--- noise reduced pp file NOT found ---', curation_log_file)
-      downsampled_pp_df <- reduce_noise_and_downsample(session_dir, pp_file_name)
+      #downsampled_pp_df <- reduce_noise_and_downsample(session_dir, pp_file_name)
+      downsampled_pp_df <- reduce_noise_and_downsample_newFFT(session_dir, pp_file_name, session_name)
     } else {
       # write_log_msg('--- noise reduced pp file found ---', curation_log_file)
       downsampled_pp_df <- read_downsampled_pp(nr_pp_file_name)
@@ -188,8 +225,8 @@ curate_rb_session_data <- function(subj_name, day_serial) {
   rb_marker_file_name <- get_matched_file_names(session_dir, rb_marker_file_pattern)
   rb_marker_df <- custom_read_csv(file.path(session_dir, rb_marker_file_name))
   
-  rb_start_time <- convert_s_interface_date(rb_marker_df$startTimestamp[1])
-  rb_end_time <- convert_s_interface_date(rb_marker_df$EndTimestamp[1])
+  rb_start_time <- convert_s_interface_date(convert_marker_date(rb_marker_df$startTimestamp[1]))
+  rb_end_time <- convert_s_interface_date(convert_marker_date(rb_marker_df$EndTimestamp[1]))
   
   write_log_msg(paste0('Baseline start time: ', rb_start_time), curation_log_file)
   write_log_msg(paste0('Baseline end time: ', rb_end_time), curation_log_file)
@@ -215,16 +252,16 @@ curate_rb_session_data <- function(subj_name, day_serial) {
 ## Using For Loop
 add_ontologies <- function(ontologies_df, pp_df) {
   # write_log_msg(paste(ontologies_df$startTimestamp, " - ", ontologies_df$EndTimestamp, ': ', ontologies_df$Ontologies), curation_log_file)
-
+  
   if("Ontologies" %in% colnames(ontologies_df)) {
-    ont_start_time <- convert_s_interface_date(ontologies_df$startTimestamp)
-    ont_end_time <- convert_s_interface_date(ontologies_df$EndTimestamp)
+    ont_start_time <- convert_s_interface_date(convert_marker_date(ontologies_df$startTimestamp))
+    ont_end_time <- convert_s_interface_date(convert_marker_date(ontologies_df$EndTimestamp))
     
     pp_df[pp_df$Timestamp >= ont_start_time & pp_df$Timestamp <= ont_end_time, ]$Ontologies <- ontologies_df$Ontologies
     
     # write_log_msg(paste(ont_start_time, " - ", ont_end_time, ': ', ontologies_df$Ontologies), curation_log_file)
     # write_log_msg(paste('nrow: ', nrow(pp_df)), curation_log_file)
-
+    
     #################################################################################
     ## CHECK - PROBLEM OF LOGICAL/CHAR VECTOR
     # pp_df <- pp_df %>%
@@ -232,7 +269,7 @@ add_ontologies <- function(ontologies_df, pp_df) {
     #                               TRUE~Ontologies))
     #################################################################################
   }
-
+  
   return(pp_df)
 }
 
@@ -293,9 +330,9 @@ get_activity_tracker_ontologies <- function(activity_df, pp_df) {
   pp_df <- pp_df %>% 
     select(-Ontologies) %>%
     ##############################################################################################
-    merge(activity_df, by='Timestamp', all=T)  ## CHECK!!! - all vs. all.x
+    merge(activity_df, by='Timestamp', all.x=T)  ## CHECK!!! - all vs. all.x
     ##############################################################################################
-    
+  
   return(pp_df)
 }
 
@@ -336,17 +373,18 @@ get_app_usage_data <- function(subj_name, day_serial, ws_df) {
     # write_log_msg('Mac app usage file - Found', curation_log_file)
     # ws_df <- get_mac_app_usage_data(mac_activity_df, ws_df)
     
+    
+    
     ws_df <- read.pattern(file.path(day_dir, mac_activity_file_name), pattern=mac_data_pattern) %>% 
       set_colnames(c('Timestamp', 'Application')) %>% 
       mutate_if(is.factor, as.character) %>%
       mutate(Timestamp=convert_s_interface_date(strptime(Timestamp, format='%Y-%m-%d %H:%M:%S'))) %>%
       ##############################################################################################
-      merge(ws_df, by='Timestamp', all=T)      ## CHECK!!! - all vs. all.x
-      # merge(ws_df, by='Timestamp', all.y=T)  ## CHECK!!! - all vs. all.x
-      ##############################################################################################
-
+    merge(ws_df, by='Timestamp', all=T)      ## CHECK!!! - all vs. all.x
+    # merge(ws_df, by='Timestamp', all.y=T)  ## CHECK!!! - all vs. all.x
+    ##############################################################################################
+    
     # write_log_msg(levels(factor(ws_df$Application)), curation_log_file)
-    view(ws_df)
     
   } else if (!is_empty(win_activity_file_name)) {
     # write_log_msg('Windows app usage file - Found', curation_log_file)
@@ -359,16 +397,18 @@ get_app_usage_data <- function(subj_name, day_serial, ws_df) {
     ws_df <- custom_read_csv(file.path(day_dir, win_activity_file_name)) %>% 
       filter(Activity=='Application') %>% 
       mutate(Application=Details,
-             Timestamp=convert_s_interface_date(strptime(substr(Timestamp, 1, 19), format='%a %b %d %H:%M:%S'))) %>%
+             Timestamp=convert_s_interface_date(convert_marker_date(Timestamp))) %>%
       select(Timestamp, Application) %>%
       ##############################################################################################
       merge(ws_df, by='Timestamp', all=T)      ## CHECK!!! - all vs. all.x
-      # merge(ws_df, by='Timestamp', all.y=T)  ## CHECK!!! - all vs. all.x
-      ##############################################################################################
+    
+    #print(head(ws_df))
+    # merge(ws_df, by='Timestamp', all.y=T)  ## CHECK!!! - all vs. all.x
+    ##############################################################################################
     
     # win_app_usage_df <<- rbind.fill(win_app_usage_df, ws_df)
     
-  
+    
     
     # temp_win_activity_df <- win_activity_df %>%
     #   group_by(Activity, Details) %>%
@@ -379,7 +419,7 @@ get_app_usage_data <- function(subj_name, day_serial, ws_df) {
     # 
     # win_app_usage_df <<- rbind.fill(win_app_usage_df, temp_win_activity_df)
     
-
+    
     
     
     # print(str(ws_df))
@@ -394,15 +434,15 @@ get_app_usage_data <- function(subj_name, day_serial, ws_df) {
     # print(str(temp_win_activity_df))
     # View(temp_win_activity_df)
     
-
+    
     
   } else {
     # write_log_msg('Mac/Win app usage file - Not Found', curation_log_file)
     return(ws_df)
   }
   
-  
   ws_df <- ws_df %>% 
+    # mutate(Application_QC1=Application)
     mutate(Application_QC1=na.locf(Application))
   
   return(ws_df)
@@ -438,7 +478,7 @@ curate_ws_session_data <- function(subj_name, day_serial, rb_df) {
   # print(levels(factor(ws_df$Application)))
   
   
-
+  
   ## rbind.fill bind two data frames that don't have the same set of columns
   full_day_df <- rbind.fill(rb_df, ws_df)
   # print(levels(factor(full_day_df$Application)))
@@ -449,7 +489,7 @@ curate_ws_session_data <- function(subj_name, day_serial, rb_df) {
 
 merge_e4_data <- function(subj_name, day_serial, full_day_df) {
   day_dir <- file.path(raw_data_dir, grp_dir, subj_name, day_serial)
-
+  
   ## Two files for HR and EDA
   # downsampled_e4_file_list <- get_matched_file_names(file.path(curated_data_dir, subj_data_dir), e4_file_pattern)
   subj_day_info <- paste0('Group1_', subj_name, '_', day_serial, '_')
@@ -489,7 +529,8 @@ merge_iwatch_data <- function(subj_name, day_serial, full_day_df) {
   day_dir <- file.path(raw_data_dir, grp_dir, subj_name, day_serial)
   iWatch_file_name <- get_matched_file_names_recursively(day_dir, iWatch_file_pattern)
   
-  if(!is_empty(iWatch_file_name)) {
+  if(!is_empty(iWatch_file_name) & (subj_name != "T015") & (subj_name != "T017")) {
+    print(paste("All",subj_name))
     full_day_df <- custom_read_csv(file.path(day_dir, iWatch_file_name)) %>% 
       rename(Timestamp=Time,
              iWatch_HR=HeartRate) %>% 
@@ -497,16 +538,34 @@ merge_iwatch_data <- function(subj_name, day_serial, full_day_df) {
       # mutate(Timestamp=Timestamp - 5 * one_hour_sec) %>% 
       ##############################################################################################
       merge(full_day_df, by='Timestamp', all=T) ## CHECK!!! - all vs. all.x
-      ##############################################################################################
+    ##############################################################################################
     
-      
+    
     # print(str(full_day_df))
     
     ##############################################################################################
     # full_day_df <- merge(full_day_df, iWatch_df, by='Timestamp', all=T)   ## CHECK!!! - all vs. all.x
     ##############################################################################################
   }
-
+  if(!is_empty(iWatch_file_name) & (subj_name == "T015" | subj_name == "T017")) {
+    print(paste("Daylight",subj_name))
+    full_day_df <- custom_read_csv(file.path(day_dir, iWatch_file_name)) %>% 
+      rename(Timestamp=Time,
+             iWatch_HR=HeartRate) %>% 
+      mutate(Timestamp=convert_s_interface_date(strptime(Timestamp, format='%Y-%m-%d %H:%M:%S')) - 6 * one_hour_sec) %>%
+      # mutate(Timestamp=Timestamp - 5 * one_hour_sec) %>% 
+      ##############################################################################################
+    merge(full_day_df, by='Timestamp', all=T) ## CHECK!!! - all vs. all.x
+    ##############################################################################################
+    
+    
+    # print(str(full_day_df))
+    
+    ##############################################################################################
+    # full_day_df <- merge(full_day_df, iWatch_df, by='Timestamp', all=T)   ## CHECK!!! - all vs. all.x
+    ##############################################################################################
+  }
+  
   return(full_day_df)
 }
 
@@ -519,7 +578,7 @@ refactor_and_export_all_subj_data <- function(all_subj_df) {
   #     is.na(Ontologies) & Treatment=='WS' & Participant_ID=='T001'~'Working',
   #     is.na(Ontologies) & Treatment=='WS' & Participant_ID=='T003'~'C - Writing/Reading',
   #     TRUE~Ontologies))
-
+  
   # all_subj_df <- all_subj_df %>%
   #   mutate(Ontologies=case_when(
   #   Ontologies==NA & Treatment=='WS' & Participant_ID=='T001'~'Working',
@@ -530,7 +589,7 @@ refactor_and_export_all_subj_data <- function(all_subj_df) {
       #is.na(Ontologies) & Treatment=='WS' & Participant_ID=='T001'~'Working',
       is.na(Ontologies) & Treatment=='WS' & Participant_ID=='T003'~'C - Writing/Reading',
       TRUE~Ontologies))
-
+  
   # # # # This is for T001 & T003, for whom we only noted the break times
   # # # all_subj_df[is.na(all_subj_df$Ontologies) & all_subj_df$Treatment=='WS' & all_subj_df$Participant_ID=='T001', ]$Ontologies <- 'Working'
   # # # all_subj_df[is.na(all_subj_df$Ontologies) & all_subj_df$Treatment=='WS' & all_subj_df$Participant_ID=='T003', ]$Ontologies <- 'C - Writing/Reading'
@@ -552,7 +611,7 @@ refactor_and_export_all_subj_data <- function(all_subj_df) {
     group_by(Participant_ID, Day, Treatment) %>% 
     arrange(Timestamp) %>%
     mutate(TreatmentTime=as.numeric(Timestamp)-as.numeric(head(Timestamp, 1))) %>%
-
+    
     select(Participant_ID,
            Day,
            Treatment,
@@ -573,13 +632,13 @@ refactor_and_export_all_subj_data <- function(all_subj_df) {
     ) %>%
     
     ###################################################################################
-    ## Note: This is very important to understand this code
-    ## We were some missing WS data.
-    ## So, we merge all data, and based on WS start and end time we get all WS data
-    ## Here, we are removing NA Treatments - caused for merging all
-    drop_na(Treatment) 
-    ###################################################################################
-
+  ## Note: This is very important to understand this code
+  ## We were some missing WS data.
+  ## So, we merge all data, and based on WS start and end time we get all WS data
+  ## Here, we are removing NA Treatments - caused for merging all
+  drop_na(Treatment) 
+  ###################################################################################
+  
   
   # mean_df <- all_subj_df %>%
   #   select(-Timestamp, -Sinterface_Time, -TreatmentTime, -Activities, -Application, -Application_QC1) %>%
@@ -602,14 +661,14 @@ curate_data <- function() {
   # subj_list <- get_dir_list(file.path(raw_data_dir, grp_dir))
   subj_list <- custom_read_csv(file.path(curated_data_dir, utility_data_dir, subj_list_file_name))$Subject
   
-  #sapply(subj_list, function(subj_name) {
-   sapply(subj_list[2], function(subj_name) {
+  sapply(subj_list, function(subj_name) {
+  #sapply(subj_list[1], function(subj_name) {
     
     subj_dir <- file.path(raw_data_dir, grp_dir, subj_name)
     day_list <- get_dir_list(subj_dir)
     
     sapply(day_list, function(day_serial) {
-    # sapply(day_list[1], function(day_serial) {
+    #sapply(day_list[1], function(day_serial) {
       tryCatch({
         write_log_msg(paste0('\n----------\n', subj_name, '-', day_serial, "\n----------"), curation_log_file)
         
@@ -659,4 +718,3 @@ curate_data <- function() {
 #-------Main Program------#
 #-------------------------#
 curate_data()
-

@@ -138,7 +138,6 @@ for (i in 1:n) {
 
   subject_title=levels(sid)[i]
   Baseline_DF <- DF_Participant %>% filter(Treatment=="RB")
-
   Baseline_Plot_Physiological(Baseline_DF,subject_title)
 
   WS_DF <- DF_Participant %>% filter(Treatment=="WS")
@@ -146,13 +145,13 @@ for (i in 1:n) {
 
 }
 
+# subject_title="T017"
+# DF_Sub_Day<-subset(DF, Participant_ID=="T017")
+# Baseline_DF <- DF_Sub_Day %>% filter(Treatment=="RB")
+# WS_DF <- DF_Sub_Day %>% filter(Treatment=="WS")
+# Baseline_Plot_Physiological(Baseline_DF,subject_title)
+# WS_Plot_Physiological(WS_DF,subject_title)
 
-#subject_title="T013"
-#DF_Sub_Day<-subset(DF, Participant_ID=="T013")
-#Baseline_DF <- DF_Sub_Day %>% filter(Treatment=="RB")
-#WS_DF <- DF_Sub_Day %>% filter(Treatment=="WS")
-#Baseline_Plot_Physiological(Baseline_DF,subject_title)
-#WS_Plot_Physiological(WS_DF,subject_title)
 
 ```
 
@@ -163,7 +162,7 @@ for (i in 1:n) {
 #print(figure)
 
 Baseline_Plot_Physiological<-function(Baseline_DF, Title){
-plot_location<-"C:/Users/soton/Documents/R/DeadlineProject/Plots/PhysiologicalPlots/Version3/"  
+plot_location<-"C:/Users/soton/Documents/R/DeadlineProject/Plots/PhysiologicalPlots/Version6/"  
   global_legend<-NULL
 channel_list <- c("PP", "EDA", "E4HR", "iWatch")
 
@@ -291,7 +290,7 @@ for(channel in channel_list){
 ```{r}
 
 WS_Plot_Physiological<-function(WS_DF, Title){
-plot_location<-"C:/Users/soton/Documents/R/DeadlineProject/Plots/PhysiologicalPlots/Version3/"  
+plot_location<-"C:/Users/soton/Documents/R/DeadlineProject/Plots/PhysiologicalPlots/Version6/"  
  global_legend<-NULL
 channel_list <- c("PP", "EDA", "E4HR", "iWatch")
 
