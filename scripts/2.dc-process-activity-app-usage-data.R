@@ -187,7 +187,8 @@ get_final_app_usage <- function(all_subj_df) {
 
 get_masked_data <- function(all_subj_df) {
   all_subj_df <- all_subj_df %>% 
-    mutate(Application_QC3=Application_QC2) ## @TANIM - CHANGE HERE!!!
+    mutate(Mask=case_when(Reduced_Activities_QC1=='Out'~0, 
+                          TRUE~1))
   
   return(all_subj_df)
 }
@@ -256,7 +257,7 @@ format_activity_data <- function() {
            Application_QC2,
            Application_QC3,
            
-           # Mask
+           Mask
     )
   
   
