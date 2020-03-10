@@ -6,6 +6,8 @@ library(stringr)    ## for func str_detect()
 library(reshape2)
 library(tidyr)
 
+
+
 #-------------------------#
 #-----GLOBAL VARIABLES----#
 #-------------------------#
@@ -18,6 +20,8 @@ setwd(current_dir)
 
 # activity_log_file <- file.path(log_dir, paste0('activity-log-', format(Sys.Date(), format='%m-%d-%y'), '.txt'))
 # file.create(activity_log_file)
+
+
 
 
 
@@ -100,13 +104,13 @@ get_final_activities <- function(all_subj_df) {
   # unique(all_subj_df$Activities)
   # unique(all_subj_df$D1)
   all_subj_df$Activities_QC1<-all_subj_df$D1
-  all_subj_df <- all_subj_df %>% rename(Ontology_One=A,Ontology_Two=B,Ontology_Three=C)
+  all_subj_df <- all_subj_df %>% rename(Activity_One=A,Activity_Two=B,Activity_Three=C)
   
   #######################################Reduced Ontoloties########################
  
-  all_subj_df$Reduced_Ontology_One<- all_subj_df$Ontology_One
-  all_subj_df$Reduced_Ontology_Two<- all_subj_df$Ontology_Two
-  all_subj_df$Reduced_Ontology_Three<- all_subj_df$Ontology_Three
+  all_subj_df$Reduced_Activity_One<- all_subj_df$Activity_One
+  all_subj_df$Reduced_Activity_Two<- all_subj_df$Activity_Two
+  all_subj_df$Reduced_Activity_Three<- all_subj_df$Activity_Three
 
 
   R= '^CR$|^PR$|^T$'
@@ -118,40 +122,40 @@ get_final_activities <- function(all_subj_df) {
   #Thinking = '^T$'
 
 
-  all_subj_df$Reduced_Ontology_One<-case_when(
-    str_detect(all_subj_df$Ontology_One, Out)~"Out",
-    str_detect(all_subj_df$Ontology_One, W)~"W",
-    str_detect(all_subj_df$Ontology_One, R)~"R",
-    #str_detect(all_subj_df$Ontology_One, Thinking)~"T",
-    str_detect(all_subj_df$Ontology_One, SP)~"SP",
-    str_detect(all_subj_df$Ontology_One, SA)~"SA",
-    str_detect(all_subj_df$Ontology_One, I)~"I")
+  all_subj_df$Reduced_Activity_One<-case_when(
+    str_detect(all_subj_df$Activity_One, Out)~"Out",
+    str_detect(all_subj_df$Activity_One, W)~"W",
+    str_detect(all_subj_df$Activity_One, R)~"R",
+    #str_detect(all_subj_df$Activity_One, Thinking)~"T",
+    str_detect(all_subj_df$Activity_One, SP)~"SP",
+    str_detect(all_subj_df$Activity_One, SA)~"SA",
+    str_detect(all_subj_df$Activity_One, I)~"I")
   
-  all_subj_df$Reduced_Ontology_Two<-case_when(
-    str_detect(all_subj_df$Ontology_Two, Out)~"Out",
-    str_detect(all_subj_df$Ontology_Two, W)~"W",
-    str_detect(all_subj_df$Ontology_Two, R)~"R",
-    #str_detect(all_subj_df$Ontology_Two, Thinking)~"T",
-    str_detect(all_subj_df$Ontology_Two, SP)~"SP",
-    str_detect(all_subj_df$Ontology_Two, SA)~"SA",
-    str_detect(all_subj_df$Ontology_Two, I)~"I")
+  all_subj_df$Reduced_Activity_Two<-case_when(
+    str_detect(all_subj_df$Activity_Two, Out)~"Out",
+    str_detect(all_subj_df$Activity_Two, W)~"W",
+    str_detect(all_subj_df$Activity_Two, R)~"R",
+    #str_detect(all_subj_df$Activity_Two, Thinking)~"T",
+    str_detect(all_subj_df$Activity_Two, SP)~"SP",
+    str_detect(all_subj_df$Activity_Two, SA)~"SA",
+    str_detect(all_subj_df$Activity_Two, I)~"I")
   
-  all_subj_df$Reduced_Ontology_Three<-case_when(
-    str_detect(all_subj_df$Ontology_Three, Out)~"Out",
-    str_detect(all_subj_df$Ontology_Three, W)~"W",
-    str_detect(all_subj_df$Ontology_Three, R)~"R",
-    #str_detect(all_subj_df$Ontology_Three, Thinking)~"T",
-    str_detect(all_subj_df$Ontology_Three, SP)~"SP",
-    str_detect(all_subj_df$Ontology_Three, SA)~"SA",
-    str_detect(all_subj_df$Ontology_Three, I)~"I")
+  all_subj_df$Reduced_Activity_Three<-case_when(
+    str_detect(all_subj_df$Activity_Three, Out)~"Out",
+    str_detect(all_subj_df$Activity_Three, W)~"W",
+    str_detect(all_subj_df$Activity_Three, R)~"R",
+    #str_detect(all_subj_df$Activity_Three, Thinking)~"T",
+    str_detect(all_subj_df$Activity_Three, SP)~"SP",
+    str_detect(all_subj_df$Activity_Three, SA)~"SA",
+    str_detect(all_subj_df$Activity_Three, I)~"I")
   
   
-  #all_subj_df$Reduced_Ontology_One[is.na(all_subj_df$Reduced_Ontology_One)] <- ""
-  all_subj_df$Reduced_Ontology_Two[is.na(all_subj_df$Reduced_Ontology_Two)] <- ""
-  all_subj_df$Reduced_Ontology_Three[is.na(all_subj_df$Reduced_Ontology_Three)] <- ""
+  #all_subj_df$Reduced_Activity_One[is.na(all_subj_df$Reduced_Activity_One)] <- ""
+  all_subj_df$Reduced_Activity_Two[is.na(all_subj_df$Reduced_Activity_Two)] <- ""
+  all_subj_df$Reduced_Activity_Three[is.na(all_subj_df$Reduced_Activity_Three)] <- ""
   
-  all_subj_df$Reduce_Activities<-paste(all_subj_df$Reduced_Ontology_One,all_subj_df$Reduced_Ontology_Two,all_subj_df$Reduced_Ontology_Three, sep="+")
-  all_subj_df<-all_subj_df%>%mutate(Reduce_Activities_QC1=gsub("(\\+)*$", "", Reduce_Activities))
+  all_subj_df$Reduce_Activities<-paste(all_subj_df$Reduced_Activity_One,all_subj_df$Reduced_Activity_Two,all_subj_df$Reduced_Activity_Three, sep="+")
+  all_subj_df<-all_subj_df%>%mutate(Reduced_Activities_QC1=gsub("(\\+)*$", "", Reduce_Activities))
 
   #######################################Reduced Ontoloties########################
   
@@ -231,22 +235,28 @@ format_activity_data <- function() {
            E4_EDA,
            iWatch_HR,
            
+           
+           
            Activities,
            Activities_QC1,
            Activities_QC2,
+           
+           Activity_One,
+           Activity_Two,
+           Activity_Three,
+           
+           Reduced_Activities_QC1,
+           Reduced_Activity_One,
+           Reduced_Activity_Two,
+           Reduced_Activity_Three,
+           
            
            Application,
            Application_QC1,
            Application_QC2,
            Application_QC3,
-           Ontology_One,
-           Ontology_Two,
-           Ontology_Three,
            
-           Reduce_Activities_QC1,
-           Reduced_Ontology_One,
-           Reduced_Ontology_Two,
-           Reduced_Ontology_Three
+           # Mask
     )
   
   
