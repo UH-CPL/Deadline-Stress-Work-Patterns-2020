@@ -73,7 +73,7 @@ generate_mean_df <- function(df) {
     # select(-Timestamp, -Sinterface_Time, -TreatmentTime) %>%
     select(Participant_ID,	Day, Treatment, Mask, PP, E4_HR, E4_EDA, iWatch_HR) %>%
     group_by(Participant_ID,	Day, Treatment) %>%
-    filter(Mask==1) %>% 
+    filter(Mask==1) %>%
     summarize_all(mean, na.rm=T) %>%
     ungroup()
   
@@ -136,7 +136,6 @@ generate_daywise_mean_data <- function() {
     
     temp_qc1_mean_subj_df <- qc1_mean_subj_df %>%
       filter(Day %in% c('Day1', 'Day2')) 
-    # %>% 
     
     # mutate(!!signal_name:=0)
     # mutate(qc1_mean_subj_df[[signal_name]]=qc1_mean_subj_df[[signal_name]]-vanilla_day_mean_val)

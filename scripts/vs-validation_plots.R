@@ -114,7 +114,7 @@ conduct_test <- function(df, day, signal_name, test_type) {
   # We find the sign of our results (this is the '*' thing we put in our two plots way up above)
   sign <- get_significance_sign(p_val)
   # print(paste(p_val, sign))
-  print(paste('----------------------', sign))
+  # print(paste('----------------------', sign))
 
   # Then we add EVERYTHING to that tibble we made earlier to hold it for us
   significance_df <<- rbind.fill(significance_df, tibble(Signal = signal_name,
@@ -169,11 +169,11 @@ get_significance <- function(signal_name) {
     days <- levels(factor(temp_mean_df$Day))
     
     for (day in days) {
-      print(paste(signal_name, day, test_type))
+      # print(paste(signal_name, day, test_type))
       conduct_test(temp_mean_df[temp_mean_df$Day==day,], day, signal_name, test_type)
     }
     
-    print(significance_df)
+    # print(significance_df)
     convert_to_csv(significance_df, file.path(curated_data_dir, physiological_data_dir, significance_file_name))
     
   }
@@ -197,6 +197,7 @@ draw_plots <- function() {
       # select(Day, !!signal_name) %>%
       drop_na()
     
+    sign <- significance_df$Significance 
     label <- get_label(signal_name) 
     # title <- get_title(signal_name) 
     
