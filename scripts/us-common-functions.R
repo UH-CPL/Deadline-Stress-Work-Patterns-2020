@@ -82,8 +82,6 @@ qc1_deadline_mean_file_name <- 'qc1_deadline_mean.csv'
 qc2_deadline_mean_file_name <- 'qc2_deadline_mean.csv'
 
 
-
-
 qc0_activity_mean_file_name <- 'qc0_activity_mean.csv'
 qc1_activity_mean_file_name <- 'qc1_activity_mean.csv'
 qc2_activity_mean_file_name <- 'qc2_activity_mean.csv'
@@ -95,6 +93,9 @@ qc2_deadline_mean_file_name <- 'qc2_deadline_mean.csv'
 ## We don't know until now how many filtering we will do :P
 ## Hope it doesn't exixts 99 filtering
 # qc99_file_name <- 'qc0_all_data.csv'
+
+
+significance_file_name <- 'significance.csv'
 
 
 
@@ -211,5 +212,26 @@ get_matched_file_names <- function(directory, file_pattern) {
 
 get_matched_file_names_recursively <- function(directory, file_pattern) {
   return(list.files(path=directory, pattern=file_pattern, recursive=T))
+}
+
+
+
+#-----------------------------#
+#--- Plot Helper Functions ---#
+#-----------------------------#
+get_n <- function(x) { 
+  return(c(y=-Inf, vjust = -1, label=length(x))) 
+} 
+
+get_significance_sign <- function(p_value) { 
+  if (p_value > 0.05) { 
+    return(" ") 
+  } else if (p_value <= 0.001) { 
+    return("***") 
+  } else if (p_value <= 0.01) { 
+    return("**") 
+  } else if (p_value <= 0.05) { 
+    return("*") 
+  } 
 }
 
