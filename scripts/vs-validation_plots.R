@@ -215,8 +215,8 @@ draw_plots <- function() {
       # scale_x_discrete(labels=labels_vec) + 
       stat_summary(fun.y = mean, color = "darkred", geom = "point", shape = 3, size = 4, show_guide = FALSE) +
       stat_summary(fun.data = get_n, geom = "text", size = 6) +
-      # annotate("text", x=1, y=Inf, label= sign[1], vjust = 1.2, size = 10) +
-      # annotate("text", x=2, y=Inf, label= sign[2], vjust = 1.2, size = 10) +
+      annotate("text", x=1, y=Inf, label= sign[1], vjust = 1.2, size = 10) +
+      annotate("text", x=2, y=Inf, label= sign[2], vjust = 1.2, size = 10) +
       scale_y_continuous(expand = c(0.15, 0, 0.15, 0))
     
     print(plot)

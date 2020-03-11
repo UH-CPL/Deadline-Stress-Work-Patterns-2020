@@ -71,8 +71,9 @@ signal_name_list <- c('PP', 'E4_HR', 'E4_EDA', 'iWatch_HR')
 generate_mean_df <- function(df) {
   mean_df <- df %>%
     # select(-Timestamp, -Sinterface_Time, -TreatmentTime) %>%
-    select(Participant_ID,	Day, Treatment, PP, E4_HR, E4_EDA, iWatch_HR) %>%
+    select(Participant_ID,	Day, Treatment, Mask, PP, E4_HR, E4_EDA, iWatch_HR) %>%
     group_by(Participant_ID,	Day, Treatment) %>%
+    filter(Mask==1) %>% 
     summarize_all(mean, na.rm=T) %>%
     ungroup()
   
@@ -95,11 +96,11 @@ generate_treatment_mean_data <- function() {
 
 
 
-# read_treatment_mean_files <- function() {
-#   qc1_mean_df <<- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, qc1_treatment_mean_file_name))
-#   # print_msg(colnames(qC1_df))  # "Participant_ID" "Day" "Treatment" "Timestamp" "Sinterface_Time" "TreatmentTime" "Raw_PP" "PP" "E4_HR" "E4_EDA" "iWatch_HR"
-#   # print_msg(head(qc1_df, 2))
-# }
+read_treatment_mean_files <- function() {
+  qc1_mean_df <<- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, qc1_treatment_mean_file_name))
+  # print_msg(colnames(qC1_df))  # "Participant_ID" "Day" "Treatment" "Timestamp" "Sinterface_Time" "TreatmentTime" "Raw_PP" "PP" "E4_HR" "E4_EDA" "iWatch_HR"
+  # print_msg(head(qc1_df, 2))
+}
 
 get_signal_val <- function(df, day, signal_name) {
   # print(df[df$Day==day, signal_name])
@@ -166,7 +167,7 @@ generate_daywise_mean_data <- function() {
 
 
 generate_treatment_mean_data()
-read_treatment_mean_files()
+# read_treatment_mean_files()
 
 generate_daywise_mean_data()
 
