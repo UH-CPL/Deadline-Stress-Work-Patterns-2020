@@ -67,14 +67,26 @@ qc1_file_name <- 'qc1_data.csv'
 qc2_file_name <- 'qc2_data.csv'
 
 
+
+
 qc0_treatment_mean_file_name <- 'qc0_treatment_mean.csv'
 qc1_treatment_mean_file_name <- 'qc1_treatment_mean.csv'
 qc2_treatment_mean_file_name <- 'qc2_treatment_mean.csv'
 
+qc0_ws_mean_file_name <- 'qc0_ws_mean.csv'
+qc1_ws_mean_file_name <- 'qc1_ws_mean.csv'
+qc2_ws_mean_file_name <- 'qc2_ws_mean.csv'
+
+qc0_deadline_mean_file_name <- 'qc0_deadline_mean.csv'
+qc1_deadline_mean_file_name <- 'qc1_deadline_mean.csv'
+qc2_deadline_mean_file_name <- 'qc2_deadline_mean.csv'
+
+
+
+
 qc0_activity_mean_file_name <- 'qc0_activity_mean.csv'
 qc1_activity_mean_file_name <- 'qc1_activity_mean.csv'
 qc2_activity_mean_file_name <- 'qc2_activity_mean.csv'
-
 
 qc1_deadline_mean_file_name <- 'qc1_deadline_mean.csv'
 qc2_deadline_mean_file_name <- 'qc2_deadline_mean.csv'
@@ -151,12 +163,12 @@ trim <- function( x ) {
 }
 
 is_null <- function(cell_val) {
-  print(cell_val)
-  if (is.na(cell_val)) {
+  # print(cell_val)
+  if (length(trim(cell_val))==0) {
     return(T)
-  } else if (length(trim(cell_val))==0) {
+  } else if (is.na(cell_val)) {
     return(T)
-  } 
+  }
   
   # else if (cell_val=="") {
   #   return(T)
