@@ -66,7 +66,8 @@ qc0_final_file_name <- 'qc0_final_data.csv'    # masked and manifested ontologie
 qc1_file_name <- 'qc1_data.csv'
 qc2_file_name <- 'qc2_data.csv'
 
-
+qc1_filtered_file_name <- 'qc1_filtered_data.csv'
+qc2_filtered_file_name <- 'qc2_filtered_data.csv'
 
 
 qc0_treatment_mean_file_name <- 'qc0_treatment_mean.csv'
@@ -168,6 +169,8 @@ is_null <- function(cell_val) {
   if (length(trim(cell_val))==0) {
     return(T)
   } else if (is.na(cell_val)) {
+    return(T)
+  } else if (cell_val=='NA') {
     return(T)
   }
   

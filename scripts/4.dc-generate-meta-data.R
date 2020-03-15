@@ -92,6 +92,7 @@ generate_mean_data <- function(input_file_name, output_file_name) {
 
 generate_treatment_mean_data <- function() {
   qc1_mean_df <<- generate_mean_data(qc1_file_name, qc1_treatment_mean_file_name)
+  qc1_mean_df <<- generate_mean_data(qc0_final_file_name, qc0_treatment_mean_file_name)
 }
 
 
