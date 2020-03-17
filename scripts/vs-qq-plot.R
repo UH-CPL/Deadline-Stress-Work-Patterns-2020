@@ -8,7 +8,7 @@ library(plyr)
 # library(gridExtra)
 # library(ggpubr) 
 # library(kableExtra) 
-# library(cowplot) 
+library(cowplot)
 # library(gsubfn)
 
 
@@ -25,33 +25,101 @@ source(file.path(script_dir, 'us-common-functions.R'))
 
 
 
-qc0_df <- tibble()
 qc1_df <- tibble()
+qc1_log_transformed_df <- tibble()
 
 
-# signal_name_list <- c('PP')
-signal_name_list <- c('PP', 'E4_HR', 'E4_EDA', 'iWatch_HR')
+qq_plot_list <- list()
+distribution_plot_list <- list()
+
+# signal_list <- c('PP')
+signal_list <- c('PP', 'E4_HR', 'E4_EDA', 'iWatch_HR')
+
+
+test <- FALSE # TRUE FALSE
+sample_size <- 100
 
 
 #-------------------------#
 #---FUNCTION DEFINITION---#
 #-------------------------#
 read_data <- function() {
-  qc0_df <<- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, qc0_final_file_name)) %>% 
-    select(Participant_ID, Day, Treatment, TreatmentTime, PP, E4_HR, E4_EDA, iWatch_HR)
-  
   qc1_df <<- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, qc1_file_name))
+  qc1_log_transformed_df <<- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, qc1_log_transformed_file_name))
 }
 
-generate_qq_plot <- function(signal) {
-  
-}
-
-
-draw_plots <- function() {
-  for (signal in signal_list) {
-    generate_qq_plot(signal)
+get_shapiro_result <- function(data) {
+  test_val = shapiro.test(data)
+  if (test_val > 0.05) {
+    print('Distribution is normal')
+  } else {
+    print('Distribution is not normal')
   }
+}
+
+generate_qq_plot <- function(df, signal, log=FALSE) {
+  if (test==TRUE) {
+    df <- df %>%
+      select(!!signal) %>% 
+      na.omit() %>% 
+      slice(1:1000)
+  }
+  
+
+  plot <- ggplot(df, aes(sample = .data[[signal]])) +
+    stat_qq() +
+    stat_qq_line() +
+    ggtitle(signal) +
+    theme(axis.title.x=element_blank(),
+          axis.title.y=element_blank(),
+          plot.title = element_text(hjust = 0.5))
+
+  # print(plot)
+  qq_plot_list[[length(qq_plot_list)+1]] <<- plot
+}
+
+
+generate_distribution_plot <- function(df, signal, log=FALSE) {
+  if (test==TRUE) {
+    df <- df %>%
+      select(!!signal) %>% 
+      na.omit() %>% 
+      slice(1:1000)
+  }
+  
+  plot <- ggplot(df, aes(x=.data[[signal]])) +
+    geom_density(color="darkblue", fill="lightblue") +
+    geom_vline(aes(xintercept=mean(.data[[signal]], na.rm=TRUE)),
+               color="blue", linetype="dashed", size=1) +
+    ggtitle(signal) +
+    theme(axis.title.x=element_blank(),
+          axis.title.y=element_blank(),
+          plot.title = element_text(hjust = 0.5))
+  
+  # print(plot)
+  distribution_plot_list[[length(distribution_plot_list)+1]] <<- plot
+}
+
+draw_plots <- function(df, dir) {
+  
+  qq_plot_list <<- list()
+  distribution_plot_list <<- list()
+  
+  for (signal in signal_list) {
+    generate_qq_plot(df, signal)
+    generate_distribution_plot(df, signal)
+    
+    # generate_treatment_qq_plot(signal)
+  }
+  
+  
+  qq_grid_plot <<- plot_grid(plotlist=qq_plot_list, align='v', ncol=2)
+  distribution_grid_plot <<- plot_grid(plotlist=distribution_plot_list, align='v', ncol=2)
+  
+  
+  save_plot(paste0(dir, '_qq_plot'), qq_grid_plot)
+  save_plot(paste0(dir, '_distribution_plot'), distribution_grid_plot)
+
 }
 
 
@@ -59,7 +127,9 @@ draw_plots <- function() {
 #-------Main Program------#
 #-------------------------#
 read_data()
-draw_plots()
+
+draw_plots(qc1_df, non_log_tansformed_dir)
+draw_plots(qc1_log_transformed_df, log_tansformed_dir)
 
 
 

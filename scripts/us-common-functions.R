@@ -13,6 +13,12 @@ performance_data_dir <- 'performance-data'
 index_data_dir <- 'index-data'
 final_data_dir <- 'final-data'
 
+
+log_tansformed_dir <- 'log-transformed'
+non_log_tansformed_dir <- 'non-log-transformed'
+
+
+
 default_plot_width <- 12
 default_plot_height <- 10
 
@@ -66,8 +72,13 @@ qc0_final_file_name <- 'qc0_final_data.csv'    # masked and manifested ontologie
 qc1_file_name <- 'qc1_data.csv'
 qc2_file_name <- 'qc2_data.csv'
 
-qc1_filtered_file_name <- 'qc1_filtered_data.csv'
-qc2_filtered_file_name <- 'qc2_filtered_data.csv'
+qc1_filtered_file_name <- 'qc1_bad_data.csv'
+qc2_filtered_file_name <- 'qc2_bad_data.csv'
+
+
+qc1_log_transformed_file_name <- 'qc1_log_transformed_data.csv'
+qc2_log_transformed_file_name <- 'qc2_log_transformed_data.csv'
+
 
 
 qc0_treatment_mean_file_name <- 'qc0_treatment_mean.csv'

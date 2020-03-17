@@ -59,7 +59,7 @@ read_files <- function() {
 get_label <- function(col_name) { 
   if (is_match(col_name, 'PP')) { 
     # return(expression(Delta~"ln("~bar("PP")~paste('[',''^'o','C',''^2,'])')))
-    return(expression(Delta~bar("PP")~paste('[',''^'o','C',''^2,']')))
+    return(expression(Delta~bar("ln(PP)")~paste('[',''^'o','C',''^2,']')))
   } else if (is_match(col_name, 'iWatch_HR')) {
     # if (test_type == "tt") {
     #   return(expression(Delta~"ln("~bar("Heart Rate")~') [BPM]'))
@@ -74,7 +74,7 @@ get_label <- function(col_name) {
     # if (test_type == "tt") {
     #   return(expression(Delta~"ln("~bar("EDA")~paste('[', mu, 'S])')))
     # }
-    return(expression(Delta~bar('EDA')~' ['~mu~'S]')) 
+    return(expression(Delta~bar('ln(EDA)')~' ['~mu~'S]')) 
   } 
   return('Unknown axis.') 
 }
@@ -110,6 +110,8 @@ conduct_test <- function(df, day, signal_name, test_type) {
   } else if (test_type == "w") {
     p_val <- wilcox.test(df[[signal_name]])$p.value
   }
+  
+  # f_val <- var.test(df[[signal_name]], rep(0, length(df[[signal_name]])))$p.value
 
   # We find the sign of our results (this is the '*' thing we put in our two plots way up above)
   sign <- get_significance_sign(p_val)
@@ -121,6 +123,7 @@ conduct_test <- function(df, day, signal_name, test_type) {
                              Day = day,
                              Test_Type = test_type,
                              p_val = p_val,
+                             # f_val = f_val,
                              n = nrow(df),
                              # n = 54,
                              Significance = sign))
