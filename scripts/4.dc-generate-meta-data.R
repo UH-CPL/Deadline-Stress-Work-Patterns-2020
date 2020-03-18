@@ -15,6 +15,8 @@ enable_log_transformation=TRUE
 script_dir <- dirname(rstudioapi::getSourceEditorContext()$path)
 project_dir <- dirname(script_dir)
 
+setwd(project_dir)
+
 source(file.path(script_dir, 'us-common-functions.R'))
 
 mean_log_file <- file.path(project_dir, log_dir, paste0('mean-log-', format(Sys.Date(), format='%m-%d-%y'), '.txt'))
@@ -77,7 +79,8 @@ generate_mean_df <- function(df) {
     group_by(Participant_ID,	Day, Treatment) %>%
     filter(Mask==1) %>%
     summarize_all(mean, na.rm=T) %>%
-    ungroup()
+    ungroup() %>% 
+    select(-Mask)
   
   return(mean_df)
 }
@@ -97,14 +100,11 @@ generate_mean_data <- function(input_file_name, output_log_file_name, output_fil
       eda_shift_val <- min(df['E4_EDA'], na.rm = TRUE) + 0.001 
     }
     
-    print(head(df, 2))
+    # print(head(df, 2))
     df <- df %>% 
       mutate(PP=log(PP)+pp_shift_val, 
              E4_EDA=log(E4_EDA)+eda_shift_val) 
-    # %>% 
-    #   mutate(PP=PP-min(PP, na.rm = TRUE), 
-    #          E4_EDA=E4_EDA-min(E4_EDA, na.rm = TRUE))
-    print(head(df, 2))
+    # print(head(df, 2))
     
     convert_to_csv(df, file.path(project_dir, curated_data_dir, physiological_data_dir, output_log_file_name))
   }
@@ -151,38 +151,58 @@ get_day3_day4_mean_val <- function(df, signal_name) {
   return(NaN)
 }
 
+# generate_daywise_mean_data <- function() {
+#   subj_list <- unique(qc1_mean_df$Participant_ID)
+#   
+#   sapply(subj_list, function(subj) {
+#     qc1_mean_subj_df <- qc1_mean_df %>%
+#       filter(Participant_ID==subj & Treatment == 'WS')
+#     
+#     qc1_ws_mean_df <<- rbind.fill(qc1_ws_mean_df, qc1_mean_subj_df)
+#     # convert_to_csv(qc1_mean_subj_df, file.path(curated_data_dir, physiological_data_dir, qc1_ws_mean_file_name))
+#     
+#     temp_qc1_mean_subj_df <- qc1_mean_subj_df %>%
+#       filter(Day %in% c('Day1', 'Day2')) 
+#     
+#     # mutate(!!signal_name:=0)
+#     # mutate(qc1_mean_subj_df[[signal_name]]=qc1_mean_subj_df[[signal_name]]-vanilla_day_mean_val)
+#     # mutate(!!signal_name:=!!signal_name-vanilla_day_mean_val)
+#     # mutate(!!signal_name:=case_when(is.na(!!signal_name) | is.na(vanilla_day_mean_val)~NaN,
+#     #                     TRUE~!!signal_name-vanilla_day_mean_val))
+#     
+#     for (signal_name in signal_name_list) {
+#       vanilla_day_mean_val = get_day3_day4_mean_val(qc1_mean_subj_df, signal_name)
+#       print(paste(subj, signal_name, vanilla_day_mean_val))
+#       
+#       temp_qc1_mean_subj_df[temp_qc1_mean_subj_df$Day=="Day1", signal_name] = qc1_mean_subj_df[qc1_mean_subj_df$Day=="Day1", signal_name]-vanilla_day_mean_val
+#       temp_qc1_mean_subj_df[temp_qc1_mean_subj_df$Day=="Day2", signal_name] = qc1_mean_subj_df[qc1_mean_subj_df$Day=="Day2", signal_name]-vanilla_day_mean_val
+#     }
+#     
+#     qc1_deadline_mean_df <<- rbind.fill(qc1_deadline_mean_df, temp_qc1_mean_subj_df)
+#   })
+#   
+#   convert_to_csv(qc1_ws_mean_df, file.path(curated_data_dir, physiological_data_dir, qc1_ws_mean_file_name))
+#   convert_to_csv(qc1_deadline_mean_df, file.path(curated_data_dir, physiological_data_dir, qc1_deadline_mean_file_name))
+# }
+
+
+
 generate_daywise_mean_data <- function() {
-  subj_list <- unique(qc1_mean_df$Participant_ID)
+  # print(head(qc1_mean_df, 2))
   
-  sapply(subj_list, function(subj) {
-    qc1_mean_subj_df <- qc1_mean_df %>%
-      filter(Participant_ID==subj & Treatment == 'WS')
-    
-    qc1_ws_mean_df <<- rbind.fill(qc1_ws_mean_df, qc1_mean_subj_df)
-    # convert_to_csv(qc1_mean_subj_df, file.path(curated_data_dir, physiological_data_dir, qc1_ws_mean_file_name))
-    
-    temp_qc1_mean_subj_df <- qc1_mean_subj_df %>%
-      filter(Day %in% c('Day1', 'Day2')) 
-    
-    # mutate(!!signal_name:=0)
-    # mutate(qc1_mean_subj_df[[signal_name]]=qc1_mean_subj_df[[signal_name]]-vanilla_day_mean_val)
-    # mutate(!!signal_name:=!!signal_name-vanilla_day_mean_val)
-    # mutate(!!signal_name:=case_when(is.na(!!signal_name) | is.na(vanilla_day_mean_val)~NaN,
-    #                     TRUE~!!signal_name-vanilla_day_mean_val))
-    
-    for (signal_name in signal_name_list) {
-      vanilla_day_mean_val = get_day3_day4_mean_val(qc1_mean_subj_df, signal_name)
-      print(paste(subj, signal_name, vanilla_day_mean_val))
-      
-      temp_qc1_mean_subj_df[temp_qc1_mean_subj_df$Day=="Day1", signal_name] = qc1_mean_subj_df[qc1_mean_subj_df$Day=="Day1", signal_name]-vanilla_day_mean_val
-      temp_qc1_mean_subj_df[temp_qc1_mean_subj_df$Day=="Day2", signal_name] = qc1_mean_subj_df[qc1_mean_subj_df$Day=="Day2", signal_name]-vanilla_day_mean_val
-    }
-    
-    qc1_deadline_mean_df <<- rbind.fill(qc1_deadline_mean_df, temp_qc1_mean_subj_df)
-  })
+  qc1_mean_long_df <<- qc1_mean_df %>%
+    filter(Treatment == 'WS') %>%
+    gather(Signal, Mean_Value, -Participant_ID, -Day, -Treatment) %>% 
+    spread(Day, Mean_Value) %>% 
+    # mutate(Day3_Day4_Mean = (Day3+Day4)/2)
+    mutate(Day3_Day4_Mean = case_when(
+      !is.na(Day3) & !is.na(Day4)~(Day3+Day4)/2,
+      !is.na(Day3)~Day3,
+      !is.na(Day4)~Day4,
+      TRUE~Day3))
   
-  convert_to_csv(qc1_ws_mean_df, file.path(curated_data_dir, physiological_data_dir, qc1_ws_mean_file_name))
-  convert_to_csv(qc1_deadline_mean_df, file.path(curated_data_dir, physiological_data_dir, qc1_deadline_mean_file_name))
+  convert_to_csv(qc1_mean_long_df, file.path(curated_data_dir, physiological_data_dir, qc1_treatment_mean_transformed_file_name))
+  
 }
 
 
@@ -191,8 +211,8 @@ generate_daywise_mean_data <- function() {
 #-------------------------#
 # process_mean_data()
 
-generate_treatment_mean_data()
-# read_treatment_mean_files()
+# generate_treatment_mean_data()
+read_treatment_mean_files()
 
 generate_daywise_mean_data()
 

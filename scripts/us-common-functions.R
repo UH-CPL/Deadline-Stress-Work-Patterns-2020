@@ -85,9 +85,15 @@ qc0_treatment_mean_file_name <- 'qc0_treatment_mean.csv'
 qc1_treatment_mean_file_name <- 'qc1_treatment_mean.csv'
 qc2_treatment_mean_file_name <- 'qc2_treatment_mean.csv'
 
-qc0_ws_mean_file_name <- 'qc0_ws_mean.csv'
-qc1_ws_mean_file_name <- 'qc1_ws_mean.csv'
-qc2_ws_mean_file_name <- 'qc2_ws_mean.csv'
+
+qc0_treatment_mean_transformed_file_name <- 'qc0_treatment_mean_transformed.csv'
+qc1_treatment_mean_transformed_file_name <- 'qc1_treatment_mean_transformed.csv'
+qc2_treatment_mean_transformed_file_name <- 'qc2_treatment_mean_transformed.csv'
+
+
+# qc0_ws_mean_file_name <- 'qc0_ws_mean.csv'
+# qc1_ws_mean_file_name <- 'qc1_ws_mean.csv'
+# qc2_ws_mean_file_name <- 'qc2_ws_mean.csv'
 
 qc0_deadline_mean_file_name <- 'qc0_deadline_mean.csv'
 qc1_deadline_mean_file_name <- 'qc1_deadline_mean.csv'
