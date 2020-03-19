@@ -81,14 +81,14 @@ qc2_log_transformed_file_name <- 'qc2_log_transformed_data.csv'
 
 
 
-qc0_treatment_mean_file_name <- 'qc0_treatment_mean.csv'
-qc1_treatment_mean_file_name <- 'qc1_treatment_mean.csv'
-qc2_treatment_mean_file_name <- 'qc2_treatment_mean.csv'
+qc0_treatment_mean_v1_file_name <- 'qc0_treatment_mean_v1.csv'
+qc1_treatment_mean_v1_file_name <- 'qc1_treatment_mean_v1.csv'
+qc2_treatment_mean_v1_file_name <- 'qc2_treatment_mean_v1.csv'
 
 
-qc0_treatment_mean_transformed_file_name <- 'qc0_treatment_mean_transformed.csv'
-qc1_treatment_mean_transformed_file_name <- 'qc1_treatment_mean_transformed.csv'
-qc2_treatment_mean_transformed_file_name <- 'qc2_treatment_mean_transformed.csv'
+qc0_treatment_mean_v2_file_name <- 'qc0_treatment_mean_v2.csv'
+qc1_treatment_mean_v2_file_name <- 'qc1_treatment_mean_v2.csv'
+qc2_treatment_mean_v2_file_name <- 'qc2_treatment_mean_v2.csv'
 
 
 # qc0_ws_mean_file_name <- 'qc0_ws_mean.csv'
@@ -149,6 +149,13 @@ save_plot <- function(plot_name, plot, width=default_plot_width, height=default_
   ggsave(plot_path, plot, device=cairo_pdf, width=width, height=height)
 }
 
+save_rmd_plot <- function(plot_name, plot, width=default_plot_width, height=default_plot_height) {
+  plot_path <- file.path(project_dir, plots_dir, paste0(plot_name, '.png'))
+  ggsave(plot_path, plot, width=width, height=height)
+  
+  plot_path <- file.path(project_dir, plots_dir, paste0(plot_name, '.pdf'))
+  ggsave(plot_path, plot, device=cairo_pdf, width=width, height=height)
+}
 
 
 
@@ -161,7 +168,7 @@ print_msg <- function(msg) {
 }
 
 write_log_msg <- function(msg, file_name) {
-  message(msg)
+  print_msg(msg)
   write(msg, file=file_name, append=TRUE)
 }
 

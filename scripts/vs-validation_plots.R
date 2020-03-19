@@ -23,6 +23,9 @@ setwd(project_dir)
 
 source(file.path(script_dir, 'us-common-functions.R'))
 
+# validation_log_file <- file.path(project_dir, log_dir, paste0('validation-log-', format(Sys.Date(), format='%m-%d-%y'), '.txt'))
+# file.create(validation_log_file)
+
 
 
 qc1_deadline_mean_df <- tibble()
@@ -40,7 +43,7 @@ signal_name_list <- c('PP', 'E4_HR', 'E4_EDA', 'iWatch_HR')
 #---FUNCTION DEFINITION---#
 #-------------------------#
 read_files <- function() {
-  qc1_deadline_mean_df <<- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, qc1_deadline_mean_file_name))
+  qc1_deadline_mean_df <<- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, qc1_treatment_mean_v2_file_name))
   # print_msg(colnames(qc1_deadline_mean_df))
   # print_msg(head(qc1_deadline_mean_df, 2))
   
@@ -104,29 +107,89 @@ get_label <- function(col_name) {
 conduct_test <- function(df, day, signal_name, test_type) {
   # print(df)
   
-  # We calculate the p-value for this session difference
-  if (test_type == "t" | test_type == "tt") {
-    p_val <- t.test(df[[signal_name]])$p.value
-  } else if (test_type == "w") {
-    p_val <- wilcox.test(df[[signal_name]])$p.value
-  }
+  col_name <- paste0(day, '_Normalize')
   
-  # f_val <- var.test(df[[signal_name]], rep(0, length(df[[signal_name]])))$p.value
+  # We calculate the p-value for this session difference
+  # if (test_type == "t" | test_type == "tt") {
+  #   p_val <- t.test(df[[col_name]], alternative='greater')$p.value
+  #   p_val_2 <- t.test(df[[day]], df$Day3_Day4_Mean, alternative='greater')$p.value
+  # } else if (test_type == "w") {
+  #   p_val <- wilcox.test(df[[col_name]])$p.value
+  #   p_val_2 <- wilcox.test(df[[day]], df$Day3_Day4_Mean)$p.value
+  # }
+  
+  p_val_one_sample_two_sided <- t.test(df[[col_name]])$p.value
+  p_val_one_sample_greater  <- t.test(df[[col_name]], alternative='greater')$p.value
+  
+  # p_val_two_sample_two_sided <- t.test(df[[day]], df$Day3_Day4_Mean, paired=TRUE)$p.value
+  # p_val_two_sample_greater <- t.test(df[[day]], df$Day3_Day4_Mean, paired=TRUE, alternative='greater')$p.value
+  
+  
+  w_val_one_sample_two_sided <- wilcox.test(df[[col_name]])$p.value
+  w_val_one_sample_greater  <- wilcox.test(df[[col_name]], alternative='greater')$p.value
+  
+  # w_val_two_sample_two_sided <- wilcox.test(df[[day]], df$Day3_Day4_Mean, paired=TRUE)$p.value
+  # w_val_two_sample_greater <- wilcox.test(df[[day]], df$Day3_Day4_Mean, paired=TRUE, alternative='greater')$p.value
+  
+  
+  
+  variance_val <- var.test(df[[day]], df$Day3_Day4_Mean, data=df)$p.value
+  variance_greater_val <- var.test(df[[day]], df$Day3_Day4_Mean, data=df, alternative='greater')$p.value
+  variance_less_val <- var.test(df[[day]], df$Day3_Day4_Mean, data=df, alternative='less')$p.value
 
   # We find the sign of our results (this is the '*' thing we put in our two plots way up above)
-  sign <- get_significance_sign(p_val)
+  # sign <- get_significance_sign(p_val)
   # print(paste(p_val, sign))
   # print(paste('----------------------', sign))
 
   # Then we add EVERYTHING to that tibble we made earlier to hold it for us
   significance_df <<- rbind.fill(significance_df, tibble(Signal = signal_name,
                              Day = day,
-                             Test_Type = test_type,
-                             p_val = p_val,
-                             # f_val = f_val,
+                             # Test_Type = test_type,
                              n = nrow(df),
-                             # n = 54,
-                             Significance = sign))
+                             
+                             variance_val = variance_val,
+                             variance_val_sig = get_significance_sign(variance_val),
+                             
+                             variance_greater_val = variance_greater_val,
+                             variance_greater_val_sig = get_significance_sign(variance_greater_val),
+                             
+                             variance_less_val = variance_less_val,
+                             variance_less_val_sig = get_significance_sign(variance_less_val),
+                             
+                             
+                             
+                             
+                             
+                             p_val_one_sample_two_sided = p_val_one_sample_two_sided,
+                             p_val_one_sample_two_sided_sig = get_significance_sign(p_val_one_sample_two_sided),
+                             
+                             p_val_one_sample_greater = p_val_one_sample_greater,
+                             p_val_one_sample_greater_sig = get_significance_sign(p_val_one_sample_greater),
+                             
+                             # p_val_two_sample_two_sided = p_val_two_sample_two_sided,
+                             # p_val_two_sample_two_sided_sig = get_significance_sign(p_val_two_sample_two_sided),
+                             # 
+                             # p_val_two_sample_greater = p_val_two_sample_greater,
+                             # p_val_two_sample_greater_sig = get_significance_sign(p_val_two_sample_greater),
+                             
+                             
+                             
+                             
+                             w_val_one_sample_two_sided = w_val_one_sample_two_sided,
+                             w_val_one_sample_two_sided_sig = get_significance_sign(w_val_one_sample_two_sided),
+                             
+                             w_val_one_sample_greater = w_val_one_sample_greater,
+                             w_val_one_sample_greater_sig = get_significance_sign(w_val_one_sample_greater),
+                             
+                             # w_val_two_sample_two_sided = w_val_two_sample_two_sided,
+                             # w_val_two_sample_two_sided_sig = get_significance_sign(w_val_two_sample_two_sided),
+                             # 
+                             # w_val_two_sample_greater = w_val_two_sample_greater,
+                             # w_val_two_sample_greater_sig = get_significance_sign(w_val_two_sample_greater),
+    
+                             
+                             ))
   # print(paste("Day:", day, "Test Type:", test_type, "p-value:", p_val, "Significance:", sign))
   # print(significance_df)
 }
@@ -134,46 +197,35 @@ conduct_test <- function(df, day, signal_name, test_type) {
 
 get_significance <- function(signal_name) {
   
-  # Set a global variable to determine which test we do: 
   # 't' = t-test 
   # 'tt' = transformed t-test 
   # 'w' = Wilcoxon test 
   test_type <- "t" 
   end_str <- NA 
   
-  # Firstly, get rid of missing values
-  temp_mean_df <- mean_df[!is.na(mean_df[[signal_name]]), ] 
+  temp_mean_df <- mean_df %>% 
+    filter(Signal==signal_name) %>% 
+    select(Participant_ID, Treatment, Signal, Day1, Day2, Day3_Day4_Mean, Day1_Normalize, Day2_Normalize) %>% 
+    na.omit()
   
   if (nrow(temp_mean_df) != 0) {
-    # Ensure that we always log for PP and EDA 
-    # Of course to do that, we have to make sure all values are above 0 and shift up by the minimum value (plus a bit more) if not! 
-    # ------------- If we do this, this should reflect on plot too!!!!!
-    # if (signal_name == "PP" || signal_name == "E4_EDA") {
-    #   shift_val <- 0
-    #   if (min(temp_mean_df[[signal_name]]) <= 0) {
-    #     shift_val <- min(temp_mean_df[[signal_name]]) + 0.001
-    #   }
-    #   temp_mean_df[[signal_name]] <- log(temp_mean_df[[signal_name]]) + shift_val
+    shapiro_result_day1 <- shapiro.test(temp_mean_df$Day1_Normalize ) 
+    shapiro_result_day2 <- shapiro.test(temp_mean_df$Day2_Normalize ) 
+    
+    # if (shapiro_test_results$p.value < 0.05) {
+    #   test_type <- "w"
+    # } else {
+    #   test_type <- "t"
     # }
-    
-    shapiro_test_results <- shapiro.test(temp_mean_df[[signal_name]] ) 
-    
-    if (shapiro_test_results$p.value < 0.05) {
-      test_type <- "w"
-    } else {
-      test_type <- "t"
-    }
     
     if (signal_name == "PP" || signal_name == "E4_EDA") { 
       test_type = "tt" 
     } 
     
-    
-    days <- levels(factor(temp_mean_df$Day))
+    days <- c('Day1', 'Day2')
     
     for (day in days) {
-      # print(paste(signal_name, day, test_type))
-      conduct_test(temp_mean_df[temp_mean_df$Day==day,], day, signal_name, test_type)
+      conduct_test(temp_mean_df, day, signal_name, test_type)
     }
     
     # print(significance_df)
@@ -190,24 +242,48 @@ process_significance_table <- function() {
   }
 }
 
+print_outliers <- function(df, signal_name, day) {
+  df <- df %>% 
+    filter(Day==paste0(day, '_Normalize')) %>% 
+    select(Participant_ID, Value) %>% 
+    arrange(desc(Value))
+
+  # write_log_msg(paste0('---------- Outliers for ', signal_name, ' Day1'), validation_log_file)
+  # write_log_msg(df, validation_log_file)
+  
+  print(paste0('---------- Outliers for ', signal_name, ' Day1'))
+  print(df)
+}
 
 draw_plots <- function() {
   for (signal_name in signal_name_list) {
     plot_list <- list()
     
     plot_df <- mean_df %>% 
-      select(Day, signal_name) %>%
-      # select(Day, !!signal_name) %>%
-      drop_na()
+      filter(Signal==signal_name) %>% 
+      select(Participant_ID, Day1_Normalize, Day2_Normalize) %>% 
+      na.omit() %>% 
+      gather(Day, Value, Day1_Normalize, Day2_Normalize)
     
     sign <- significance_df$Significance 
     label <- get_label(signal_name) 
     # title <- get_title(signal_name) 
     
-    plot <- ggplot(plot_df, aes(x = Day, y = plot_df[[signal_name]])) + 
+    # outlier_day1 = boxplot(plot_df[plot_df$Day=='Day1_Normalize', plot_df$Value], plot=FALSE)$out
+    # outlier_day2 = boxplot(plot_df[plot_df$Day=='Day2_Normalize', plot_df$Value], plot=FALSE)$out
+    # 
+    # print(paste(signal_name, outlier_day1, outlier_day2))
+    
+    
+    print_outliers(plot_df, signal_name, 'Day1')
+    print_outliers(plot_df, signal_name, 'Day2')
+    
+    
+    plot <- ggplot(plot_df, aes(x = Day, y = Value)) + 
       geom_boxplot() +
-      # labs(title = title, y = label) + 
-      labs(y = label) + 
+      # geom_dotplot(binaxis='y', stackdir='center', dotsize=1) +
+      labs(title = signal_name, y = label) +
+      # labs(y = label) + 
       theme_bw(base_size = 18) + 
       theme(axis.title.x = element_blank(),
             panel.grid.major = element_blank(),
@@ -217,7 +293,7 @@ draw_plots <- function() {
             axis.line = element_line(colour = "black")) + 
       geom_hline(yintercept=0, linetype="dashed", color = "red", alpha = 0.6, size=1) +
       # scale_x_discrete(labels=labels_vec) + 
-      stat_summary(fun.y = mean, color = "darkred", geom = "point", shape = 3, size = 4, show_guide = FALSE) +
+      stat_summary(fun = mean, color = "darkred", geom = "point", shape = 3, size = 4, show.legend = FALSE) +
       stat_summary(fun.data = get_n, geom = "text", size = 6) +
       annotate("text", x=1, y=Inf, label= sign[1], vjust = 1.2, size = 10) +
       annotate("text", x=2, y=Inf, label= sign[2], vjust = 1.2, size = 10) +
