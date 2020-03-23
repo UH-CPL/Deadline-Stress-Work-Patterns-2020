@@ -102,7 +102,7 @@ draw_plots <- function() {
       message(day)
       
       for (treatment in treatment_list) {
-        message(treatment)
+        message(paste0('-- ', treatment, ' --'))
         
         hr_df <- qc1_log_transformed_df %>% 
           filter(Participant_ID==subj, Day==day, Treatment==treatment) %>%
@@ -175,15 +175,15 @@ draw_plots <- function() {
       
     }
     
-    message(getwd())
+    # message(getwd())
     print(grid_plot)
     save_rmd_plot(plot_name=paste0(subj, '-hr-comparison'), plot=grid_plot)
     }
 }
 
 
-read_data()
-draw_plots()
+# read_data()
+# draw_plots()
 ```
 
 

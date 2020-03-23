@@ -225,8 +225,8 @@ curate_rb_session_data <- function(subj_name, day_serial) {
   rb_start_time <- convert_s_interface_date(convert_marker_date(rb_marker_df$startTimestamp[1]))
   rb_end_time <- convert_s_interface_date(convert_marker_date(rb_marker_df$EndTimestamp[1]))
   
-  write_log_msg(paste0('Baseline start time: ', rb_start_time), curation_log_file)
-  write_log_msg(paste0('Baseline end time: ', rb_end_time), curation_log_file)
+  # write_log_msg(paste0('Baseline start time: ', rb_start_time), curation_log_file)
+  # write_log_msg(paste0('Baseline end time: ', rb_end_time), curation_log_file)
   
   downsampled_pp_df <- get_downsampled_pp(subj_name, day_serial, session_name) %>% 
     filter(rb_start_time <= Timestamp & Timestamp <= rb_end_time)
@@ -450,7 +450,6 @@ curate_ws_session_data <- function(subj_name, day_serial, rb_df) {
   session_name <- 'WorkingSession'
   
   
-  
   ###################################################
   ## Get 1-fps pp signal
   ###################################################
@@ -465,7 +464,6 @@ curate_ws_session_data <- function(subj_name, day_serial, rb_df) {
   # print(str(ws_df))
   
   
-  
   ###################################################
   ## Find out the app monitor log
   ###################################################
@@ -473,7 +471,6 @@ curate_ws_session_data <- function(subj_name, day_serial, rb_df) {
   # print(str(ws_df))
   # print(nrow(ws_df))
   # print(levels(factor(ws_df$Application)))
-  
   
   
   ## rbind.fill bind two data frames that don't have the same set of columns
@@ -659,7 +656,7 @@ curate_data <- function() {
   subj_list <- custom_read_csv(file.path(curated_data_dir, utility_data_dir, subj_list_file_name))$Subject
   
   sapply(subj_list, function(subj_name) {
-  # sapply(subj_list[3], function(subj_name) {
+  # sapply(subj_list[5], function(subj_name) {
     
     subj_dir <- file.path(raw_data_dir, grp_dir, subj_name)
     day_list <- get_dir_list(subj_dir)
