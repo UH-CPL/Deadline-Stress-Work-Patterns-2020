@@ -215,7 +215,7 @@ get_final_activities_and_app_usage <- function(all_subj_df) {
   return(all_subj_df)
 }
 
-format_activity_data <- function() {
+format_activity_app_usage_data <- function() {
   all_subj_df <- custom_read_csv(file.path(curated_data_dir, physiological_data_dir, qc0_raw_file_name))
   
   ## 1. Get final ontologies column
@@ -271,5 +271,5 @@ format_activity_data <- function() {
 #-------Main Program------#
 #-------------------------#
 ## activity denotes both subjects work activity and app usage activity
-format_activity_data()
+format_activity_app_usage_data()
 
