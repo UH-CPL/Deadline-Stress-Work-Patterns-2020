@@ -43,7 +43,7 @@ signal_name_list <- c('PP', 'E4_HR', 'E4_EDA', 'iWatch_HR')
 #---FUNCTION DEFINITION---#
 #-------------------------#
 read_files <- function() {
-  qc1_deadline_mean_df <<- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, qc1_treatment_mean_v2_file_name))
+  qc1_deadline_mean_df <<- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, qc1_treatment_mean_v3_file_name))
   # print_msg(colnames(qc1_deadline_mean_df))
   # print_msg(head(qc1_deadline_mean_df, 2))
   

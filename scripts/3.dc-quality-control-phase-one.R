@@ -95,18 +95,97 @@ remove_data_out_of_range <- function() {
   # print(filtered_df)
   
   convert_to_csv(qc1_df, file.path(project_dir, curated_data_dir, physiological_data_dir, qc1_file_name))
-  convert_to_csv(filtered_df, file.path(project_dir, curated_data_dir, physiological_data_dir, qc1_filtered_file_name))
+  convert_to_csv(filtered_df, file.path(project_dir, curated_data_dir, physiological_data_dir, qc1_filtered_data_file_name))
 }
 
 
-draw_filtered_plot <- function() {
+generate_daywise_mean_data <- function() {
   
+  qc1_mean_long_df <<- qc1_mean_v1_df %>%
+    gather(Signal, Mean_Value, -Participant_ID, -Day, -Treatment) %>% 
+    spread(Day, Mean_Value) %>%
+    mutate(Day3_Day4_Mean = case_when(
+      !is.na(Day3) & !is.na(Day4)~(Day3+Day4)/2,
+      !is.na(Day3)~Day3,
+      !is.na(Day4)~Day4,
+      TRUE~Day3))
+  
+  convert_to_csv(qc1_mean_long_df, file.path(curated_data_dir, physiological_data_dir, qc1_raw_mean_v2_file_name))
+  
+}
+
+
+
+generate_mean_df <- function(df) {
+  mean_df <- df %>%
+    # select(-Timestamp, -Sinterface_Time, -TreatmentTime) %>%
+    select(Participant_ID,	Day, Treatment, Mask, PP, E4_HR, E4_EDA, iWatch_HR) %>%
+    group_by(Participant_ID,	Day, Treatment) %>%
+    filter(Mask==1) %>%
+    summarize_all(mean, na.rm=T) %>%
+    ungroup() %>% 
+    select(-Mask)
+  
+  return(mean_df)
+}
+
+
+generate_mean_data <- function(input_file_name, output_log_file_name, output_file_name) {
+  df <- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, input_file_name))
+  
+  # if (enable_log_transformation==TRUE) {
+  #   pp_shift_val <- 0 
+  #   eda_shift_val <- 0 
+  #   
+  #   if (min(df['PP'], na.rm = TRUE) <= 0) { 
+  #     pp_shift_val <- min(df['PP'], na.rm = TRUE) + 0.001 
+  #   }
+  #   
+  #   if (min(df['E4_EDA'], na.rm = TRUE) <= 0) { 
+  #     eda_shift_val <- min(df['E4_EDA'], na.rm = TRUE) + 0.001 
+  #   }
+  #   
+  #   # print(head(df, 2))
+  #   df <- df %>% 
+  #     mutate(PP=log(PP)+pp_shift_val, 
+  #            E4_EDA=log(E4_EDA)+eda_shift_val) 
+  #   # print(head(df, 2))
+  #   
+  #   convert_to_csv(df, file.path(project_dir, curated_data_dir, physiological_data_dir, output_log_file_name))
+  # }
+  
+  mean_df <- generate_mean_df(df)
+  convert_to_csv(mean_df, file.path(project_dir, curated_data_dir, physiological_data_dir, output_file_name))
+  
+  return(mean_df)
+}
+
+
+
+generate_treatment_mean_data <- function() {
+  # qc0_mean_v1_df <<- generate_mean_data(qc0_final_file_name, qc0_log_transformed_v1_file_name, qc0_raw_mean_v1_file_name)
+  qc1_mean_v1_df <<- generate_mean_data(qc1_file_name, qc1_log_transformed_v1_file_name, qc1_raw_mean_v1_file_name)
 }
 
 process_quality_control <- function() {
   read_data()
   remove_data_out_of_range()
-  draw_filtered_plot()
+}
+
+process_mean_data <- function(baseline_parameter) {
+  generate_treatment_mean_data()
+  generate_daywise_mean_data()
+  
+  if (baseline_parameter==lowest_baseline) {
+    
+  } else if (baseline_parameter==corresponding_baseline) {
+    
+  } else if (baseline_parameter==day3_day4_ws_mean) {
+    
+  }
+  
+  
+  
 }
 
 
@@ -114,6 +193,13 @@ process_quality_control <- function() {
 #-------Main Program------#
 #-------------------------#
 process_quality_control()
+
+# process_mean_data(baseline_parameter)
+# ------------------------------------------------
+# lowest_baseline="lowest_baseline"
+# corresponding_baseline="corresponding_baseline"
+# day3_day4_ws_mean="day3_day4_ws_mean"
+# ------------------------------------------------
 
 
 

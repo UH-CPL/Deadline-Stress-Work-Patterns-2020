@@ -62,6 +62,23 @@ ELD='Listening on Headphone'
 PI='H-H Interaction|Personal Interaction PI|Physical Interaction PI'
 VI='C - Talking Skype & others|Virtual Interaction VI'
 
+
+
+
+
+
+
+###############################################################
+# Baseline Parameter
+###############################################################
+lowest_baseline="lowest_baseline"
+corresponding_baseline="corresponding_baseline"
+day3_day4_ws_mean="day3_day4_ws_mean"
+
+
+
+
+
 ###############################################################
 # qc0_file_name -> qc0_raw_file_name
 # qc99_file_name -> qc0_final_file_name
@@ -72,23 +89,45 @@ qc0_final_file_name <- 'qc0_final_data.csv'    # masked and manifested ontologie
 qc1_file_name <- 'qc1_data.csv'
 qc2_file_name <- 'qc2_data.csv'
 
-qc1_filtered_file_name <- 'qc1_bad_data.csv'
-qc2_filtered_file_name <- 'qc2_bad_data.csv'
-
-
-qc1_log_transformed_file_name <- 'qc1_log_transformed_data.csv'
-qc2_log_transformed_file_name <- 'qc2_log_transformed_data.csv'
 
 
 
-qc0_treatment_mean_v1_file_name <- 'qc0_treatment_mean_v1.csv'
-qc1_treatment_mean_v1_file_name <- 'qc1_treatment_mean_v1.csv'
-qc2_treatment_mean_v1_file_name <- 'qc2_treatment_mean_v1.csv'
+
+qc1_filtered_data_file_name <- 'qc1_bad_filtered_data.csv'
+qc2_filtered_data_file_name <- 'qc2_bad_filtered_data.csv'
 
 
-qc0_treatment_mean_v2_file_name <- 'qc0_treatment_mean_v2.csv'
-qc1_treatment_mean_v2_file_name <- 'qc1_treatment_mean_v2.csv'
-qc2_treatment_mean_v2_file_name <- 'qc2_treatment_mean_v2.csv'
+
+
+qc1_raw_mean_v1_file_name <- 'qc1_raw_mean_v1.csv'
+qc2_raw_mean_v1_file_name <- 'qc2_raw_mean_v1.csv'
+
+qc1_raw_mean_v2_file_name <- 'qc1_raw_mean_v2.csv'
+qc2_raw_mean_v2_file_name <- 'qc2_raw_mean_v2.csv'
+
+qc1_raw_mean_v3_file_name <- 'qc1_raw_mean_v3.csv'
+qc2_raw_mean_v3_file_name <- 'qc2_raw_mean_v3.csv'
+
+
+
+
+qc1_log_transformed_v1_file_name <- 'qc1_log_transformed_v1_data.csv'
+qc2_log_transformed_v1_file_name <- 'qc2_log_transformed_v1_data.csv'
+
+# qc1_log_transformed_v2_file_name <- 'qc1_log_transformed_v2_data.csv'
+# qc2_log_transformed_v2_file_name <- 'qc2_log_transformed_v2_data.csv'
+
+
+
+
+
+qc1_normalized_mean_v1_file_name <- 'qc1_normalized_mean_v1.csv'
+qc2_normalized_mean_v1_file_name <- 'qc2_normalized_mean_v1.csv'
+
+qc1_normalized_mean_v2_file_name <- 'qc1_normalized_mean_v2.csv'
+qc2_normalized_mean_v2_file_name <- 'qc2_normalized_mean_v2.csv'
+
+
 
 
 # qc0_ws_mean_file_name <- 'qc0_ws_mean.csv'
