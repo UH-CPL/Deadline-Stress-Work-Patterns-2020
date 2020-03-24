@@ -74,6 +74,7 @@ VI='C - Talking Skype & others|Virtual Interaction VI'
 lowest_baseline="lowest_baseline"
 corresponding_baseline="corresponding_baseline"
 day3_day4_ws_mean="day3_day4_ws_mean"
+day3_day4_ws_min="day3_day4_ws_min"
 
 
 
@@ -90,6 +91,9 @@ qc1_file_name <- 'qc1_data.csv'
 qc2_file_name <- 'qc2_data.csv'
 
 
+
+qc1_normalized_file_name <- 'qc1_normalized_data.csv'
+qc2_normalized_file_name <- 'qc2_normalized_data.csv'
 
 
 

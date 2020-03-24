@@ -4,9 +4,17 @@
 script_dir <- dirname(rstudioapi::getSourceEditorContext()$path)
 source(file.path(script_dir, 'us-common-functions.R'))
 
-# curation_log_file <- file.path(log_dir, paste0('run-scripts-log-', format(Sys.Date(), format='%m-%d-%y'), '.txt'))
-# file.create(curation_log_file)
 
+##########################################################
+#
+# lowest_baseline="lowest_baseline"
+# corresponding_baseline="corresponding_baseline"
+# day3_day4_ws_mean="day3_day4_ws_mean"
+# day3_day4_ws_min="day3_day4_ws_min"
+#
+##########################################################
+baseline_parameter <- lowest_baseline
+t_test_comparison <- day3_day4_ws_min
 
 
 
@@ -17,44 +25,35 @@ source(file.path(script_dir, 'us-common-functions.R'))
 
 
 
-
 #-------------------------------------------------------------------------------------------- 2
 # source(file.path(script_dir, '2.dc-process-activity-app-usage-data.R'))
 # format_activity_app_usage_data()
 
 
 
-
-
-
 #-------------------------------------------------------------------------------------------- 3
 source(file.path(script_dir, '3.dc-quality-control-phase-one.R'))
 process_quality_control()
-
-
-
-##########################################################
-#
-# lowest_baseline="lowest_baseline"
-# corresponding_baseline="corresponding_baseline"
-# day3_day4_ws_mean="day3_day4_ws_mean"
-#
-##########################################################
-process_mean_data(lowest_baseline)
-
-
-
-
+process_mean_data()
 
 
 
 #-------------------------------------------------------------------------------------------- 4
-# source(file.path(script_dir, '4.dc-generate-meta-data.R'))
-# function()
+source(file.path(script_dir, '4.dc-generate-normalized-data.R'))
+process_normalize_data()
 
 
 
+#-------------------------------------------------------------------------------------------- 5
+source(file.path(script_dir, '5.dc-generate-meta-data.R'))
+generate_treatment_mean_data()
+generate_daywise_mean_data()
 
+
+
+#-------------------------------------------------------------------------------------------- 6
+source(file.path(script_dir, 'vs-validation_plots.R'))
+draw_validation_plots()
 
 
 

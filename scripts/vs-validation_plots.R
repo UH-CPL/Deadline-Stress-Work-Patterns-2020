@@ -43,7 +43,7 @@ signal_name_list <- c('PP', 'E4_HR', 'E4_EDA', 'iWatch_HR')
 #---FUNCTION DEFINITION---#
 #-------------------------#
 read_files <- function() {
-  qc1_deadline_mean_df <<- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, qc1_treatment_mean_v3_file_name))
+  qc1_deadline_mean_df <<- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, qc1_normalized_mean_v2_file_name))
   # print_msg(colnames(qc1_deadline_mean_df))
   # print_msg(head(qc1_deadline_mean_df, 2))
   
@@ -81,26 +81,6 @@ get_label <- function(col_name) {
   } 
   return('Unknown axis.') 
 }
-
-
-# get_title <- function(col_name) { 
-#   if (is_match(col_name, 'PP')) { 
-#     return('Perinasal Perspiration')
-#   } else if (is_match(col_name, 'iWatch_HR')) {
-#     return('iWatch_HR')
-#   } else if (is_match(col_name, 'E4_HR')) {
-#     # if (test_type == "tt") {
-#     #   return(expression(Delta~"ln("~bar("Heart Rate")~') [BPM]'))
-#     # }
-#     return(expression(Delta~bar('Non-D-Wrist HR')~' [BPM]'))
-#   } else if (is_match(col_name, 'EDA')) {
-#     if (test_type == "tt") {
-#       return(expression(Delta~"ln("~bar("EDA")~paste('[', mu, 'S])')))
-#     }
-#     return(expression(Delta~bar('EDA')~' ['~mu~'S]')) 
-#   } 
-#   return('Unknown axis.') 
-# }
 
 
 
@@ -255,25 +235,35 @@ print_outliers <- function(df, signal_name, day) {
   print(df)
 }
 
+get_title <- function(signal_name) {
+  
+  if (baseline_parameter==lowest_baseline) {
+    title <- 'lowest baseline'
+  } else if (baseline_parameter==corresponding_baseline) {
+    title <- 'corresponding baseline'
+  } else if (baseline_parameter==day3_day4_ws_mean) {
+    title <- 'day3 day4 mean'
+  } else if (baseline_parameter==day3_day4_ws_min) {
+    title <- 'day3 day4 min'
+  } 
+  
+  paste(signal_name, ' - ', title)
+}
+
 draw_plots <- function() {
   for (signal_name in signal_name_list) {
     plot_list <- list()
     
     plot_df <- mean_df %>% 
       filter(Signal==signal_name) %>% 
-      select(Participant_ID, Day1_Normalize, Day2_Normalize) %>% 
+      select(Participant_ID, Day1_Normalize, Day2_Normalize) %>%
+      # select(Participant_ID, Day1, Day2) %>% 
       na.omit() %>% 
-      gather(Day, Value, Day1_Normalize, Day2_Normalize)
+      gather(Day, Value, -Participant_ID)
     
     sign <- significance_df$Significance 
     label <- get_label(signal_name) 
-    # title <- get_title(signal_name) 
-    
-    # outlier_day1 = boxplot(plot_df[plot_df$Day=='Day1_Normalize', plot_df$Value], plot=FALSE)$out
-    # outlier_day2 = boxplot(plot_df[plot_df$Day=='Day2_Normalize', plot_df$Value], plot=FALSE)$out
-    # 
-    # print(paste(signal_name, outlier_day1, outlier_day2))
-    
+    title <- get_title(signal_name)
     
     print_outliers(plot_df, signal_name, 'Day1')
     print_outliers(plot_df, signal_name, 'Day2')
@@ -282,15 +272,16 @@ draw_plots <- function() {
     plot <- ggplot(plot_df, aes(x = Day, y = Value)) + 
       geom_boxplot() +
       # geom_dotplot(binaxis='y', stackdir='center', dotsize=1) +
-      labs(title = signal_name, y = label) +
-      # labs(y = label) + 
+      labs(title = title, 
+           y = label) +
       theme_bw(base_size = 18) + 
       theme(axis.title.x = element_blank(),
             panel.grid.major = element_blank(),
             panel.grid.minor = element_blank(),
             axis.text.x=element_text(size=16, face='bold'),
             # plot.margin = unit(c(0.5, 0.5, 0.5, plot_margin_left), "lines"),  ##top, right, bottom, left
-            axis.line = element_line(colour = "black")) + 
+            axis.line = element_line(colour = "black"),
+            plot.title = element_text(size=24, hjust = 0.5)) + 
       geom_hline(yintercept=0, linetype="dashed", color = "red", alpha = 0.6, size=1) +
       # scale_x_discrete(labels=labels_vec) + 
       stat_summary(fun = mean, color = "darkred", geom = "point", shape = 3, size = 4, show.legend = FALSE) +
@@ -316,7 +307,7 @@ draw_validation_plots <- function() {
 #-------------------------#
 #-------Main Program------#
 #-------------------------#
-draw_validation_plots()
+# draw_validation_plots()
 
 
 

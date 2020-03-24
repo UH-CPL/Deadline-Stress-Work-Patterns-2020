@@ -52,6 +52,17 @@ generate_mean_df <- function(df) {
   return(mean_df)
 }
 
+get_shift_val <- function(df, signal) {
+  shift_val <- 0 
+  
+  if (min(df[[signal]], na.rm = TRUE) <= 0) { 
+    shift_val <- min(df[[signal]], na.rm = TRUE) + 0.001 
+  }
+  
+  print(paste0(signal, shift_val))
+  shift_val
+}
+
 
 generate_mean_data <- function(input_file_name, output_log_file_name, output_file_name) {
   df <- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, input_file_name))
@@ -69,10 +80,19 @@ generate_mean_data <- function(input_file_name, output_log_file_name, output_fil
     }
     
     # print(head(df, 2))
-    df <- df %>% 
-      mutate(PP=log(PP)+pp_shift_val, 
-             E4_EDA=log(E4_EDA)+eda_shift_val) 
+    # df <- df %>% 
+    #   mutate(PP=log(PP)+pp_shift_val, 
+    #          E4_EDA=log(E4_EDA)+eda_shift_val) 
     # print(head(df, 2))
+    
+    print(paste0(pp_shift_val, eda_shift_val))
+    
+    df <- df %>% 
+      mutate(PP=log(PP) + get_shift_val(df, 'PP'), 
+             E4_EDA=log(E4_EDA) + get_shift_val(df, 'E4_EDA'),
+             E4_HR=log(E4_HR) + get_shift_val(df, 'E4_HR'),
+             iWatch_HR=log(iWatch_HR) + get_shift_val(df, 'iWatch_HR'),
+             ) 
     
     convert_to_csv(df, file.path(project_dir, curated_data_dir, physiological_data_dir, output_log_file_name))
   }
@@ -85,14 +105,14 @@ generate_mean_data <- function(input_file_name, output_log_file_name, output_fil
 
 
 generate_treatment_mean_data <- function() {
-  # qc0_mean_v1_df <<- generate_mean_data(qc0_final_file_name, qc0_log_transformed_file_name, qc0_treatment_mean_v2_file_name)
-  # qc1_mean_v1_df <<- generate_mean_data(qc1_file_name, qc1_log_transformed_file_name, qc1_treatment_mean_v2_file_name)
+  # qc0_mean_v1_df <<- generate_mean_data(qc0_final_file_name, qc0_log_transformed_v1_file_name, qc0_normalized_mean_v1_file_name)
+  qc1_mean_v1_df <<- generate_mean_data(qc1_normalized_file_name, qc1_log_transformed_v1_file_name, qc1_normalized_mean_v1_file_name)
 }
 
 
 
 read_treatment_mean_files <- function() {
-  qc1_mean_v1_df <<- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, qc1_treatment_mean_v2_file_name))
+  qc1_mean_v1_df <<- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, qc1_normalized_mean_v1_file_name))
   # print_msg(colnames(qC1_df))  # "Participant_ID" "Day" "Treatment" "Timestamp" "Sinterface_Time" "TreatmentTime" "Raw_PP" "PP" "E4_HR" "E4_EDA" "iWatch_HR"
   # print_msg(head(qc1_df, 2))
 }
@@ -161,17 +181,27 @@ generate_daywise_mean_data <- function() {
   qc1_mean_long_df <<- qc1_mean_v1_df %>%
     # filter(Treatment == 'WS') %>%
     gather(Signal, Mean_Value, -Participant_ID, -Day, -Treatment) %>% 
-    spread(Day, Mean_Value) 
-    # %>%
-    # mutate(Day3_Day4_Mean = case_when(
-    #   !is.na(Day3) & !is.na(Day4)~(Day3+Day4)/2,
-    #   !is.na(Day3)~Day3,
-    #   !is.na(Day4)~Day4,
-    #   TRUE~Day3)) %>% 
-    # mutate(Day1_Normalize=Day1-Day3_Day4_Mean, 
-    #        Day2_Normalize=Day2-Day3_Day4_Mean)
+    spread(Day, Mean_Value) %>%
+    mutate(Day3_Day4_Mean = case_when(
+      !is.na(Day3) & !is.na(Day4)~(Day3+Day4)/2,
+      !is.na(Day3)~Day3,
+      !is.na(Day4)~Day4,
+      TRUE~Day3)) %>%
+    mutate(Day3_Day4_Min = pmin(Day3, Day4, na.rm = TRUE))
   
-  convert_to_csv(qc1_mean_long_df, file.path(curated_data_dir, physiological_data_dir, qc1_raw_mean_v2_file_name))
+  if (t_test_comparison==day3_day4_ws_mean) {
+    qc1_mean_long_df <<- qc1_mean_long_df %>%
+      mutate(Day1_Normalize=Day1-Day3_Day4_Mean,
+             Day2_Normalize=Day2-Day3_Day4_Mean)
+
+  } else if (t_test_comparison==day3_day4_ws_min) {
+    qc1_mean_long_df <<- qc1_mean_long_df %>%
+      mutate(Day1_Normalize=Day1-Day3_Day4_Min,
+             Day2_Normalize=Day2-Day3_Day4_Min)
+  }
+    
+  
+  convert_to_csv(qc1_mean_long_df, file.path(curated_data_dir, physiological_data_dir, qc1_normalized_mean_v2_file_name))
   
 }
 
@@ -180,8 +210,8 @@ generate_daywise_mean_data <- function() {
 #-------Main Program------#
 #-------------------------#
 # generate_treatment_mean_data()
-# read_treatment_mean_files()
-
+# # read_treatment_mean_files()
+# 
 # generate_daywise_mean_data()
 
 

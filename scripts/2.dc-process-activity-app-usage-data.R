@@ -15,8 +15,8 @@ script_dir <- dirname(rstudioapi::getSourceEditorContext()$path)
 source(file.path(script_dir, 'us-common-functions.R'))
 
 
-current_dir <- dirname(script_dir)
-setwd(current_dir)
+# current_dir <- dirname(script_dir)
+# setwd(current_dir)
 
 # activity_log_file <- file.path(log_dir, paste0('activity-log-', format(Sys.Date(), format='%m-%d-%y'), '.txt'))
 # file.create(activity_log_file)
@@ -271,5 +271,5 @@ format_activity_app_usage_data <- function() {
 #-------Main Program------#
 #-------------------------#
 ## activity denotes both subjects work activity and app usage activity
-format_activity_app_usage_data()
+# format_activity_app_usage_data()
 
