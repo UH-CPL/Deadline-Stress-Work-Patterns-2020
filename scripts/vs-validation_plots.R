@@ -250,6 +250,16 @@ get_title <- function(signal_name) {
   paste(signal_name, ' - ', title)
 }
 
+get_subj <-function(df, signal_val) {
+  df <- df %>% 
+    filter(Value==signal_val) %>% 
+    select(Participant_ID) %>% 
+    pull()
+  
+  print(df)
+  df
+}
+
 draw_plots <- function() {
   for (signal_name in signal_name_list) {
     plot_list <- list()
@@ -272,6 +282,14 @@ draw_plots <- function() {
     plot <- ggplot(plot_df, aes(x = Day, y = Value)) + 
       geom_boxplot() +
       # geom_dotplot(binaxis='y', stackdir='center', dotsize=1) +
+      stat_summary(geom="text", 
+                   fun=quantile,
+                   aes(label=sprintf("%1.3f", ..y..)),
+                   # aes(label=Participant_ID),
+                   # aes(label=get_subj(plot_df, ..y..)),
+                   # aes(label=sprintf("%s", get_subj(plot_df, ..y..))),
+                   # aes(label='T001'),
+                   position=position_nudge(x=0.45), size=5.5) +
       labs(title = title, 
            y = label) +
       theme_bw(base_size = 18) + 
