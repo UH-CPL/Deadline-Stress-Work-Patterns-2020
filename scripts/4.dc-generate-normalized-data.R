@@ -24,6 +24,9 @@ signal_name_list <- c('PP', 'E4_HR', 'E4_EDA', 'iWatch_HR')
 
 full_df <- tibble()
 mean_df <- tibble()
+normalized_df <- tibble()
+log_transformed_df <- tibble()
+
 mean_v1_df <- tibble()
 mean_v2_df <- tibble()
 
@@ -90,9 +93,20 @@ get_rb <- function(df, signal) {
   rb_val
 }
 
+get_shift_val <- function(df, signal) {
+  shift_val <- 0 
+  
+  if (min(df[[signal]], na.rm = TRUE) <= 0) { 
+    shift_val <- abs(min(df[[signal]], na.rm = TRUE)) + 0.001 
+  }
+  
+  # print(paste0(signal, ' - ', shift_val))
+  shift_val
+}
+
 normalize_data <- function() {
 
-  normalized_df <- full_df %>% 
+  normalized_df <<- full_df %>% 
     filter(Treatment=='WS') %>% 
     group_by(Participant_ID) %>%
     do(mutate(., 
@@ -105,11 +119,31 @@ normalize_data <- function() {
   convert_to_csv(normalized_df, file.path(curated_data_dir, physiological_data_dir, qc1_normalized_file_name))
 }
 
+log_transfer_data <- function() {
+
+  if (enable_log_transformation==TRUE) {
+    log_transformed_df <<- normalized_df %>% 
+      mutate(PP=log(PP+get_shift_val(normalized_df, 'PP')), 
+             E4_EDA=log(E4_EDA+get_shift_val(normalized_df, 'E4_EDA')),
+             E4_HR=log(E4_HR+get_shift_val(normalized_df, 'E4_HR')),
+             iWatch_HR=log(iWatch_HR+get_shift_val(normalized_df, 'iWatch_HR')),
+      )
+    # mutate(PP=log(PP) + get_shift_val(normalized_df, 'PP'),
+    #        E4_EDA=log(E4_EDA) + get_shift_val(normalized_df, 'E4_EDA'),
+    #        E4_HR=log(E4_HR) + get_shift_val(normalized_df, 'E4_HR'),
+    #        iWatch_HR=log(iWatch_HR) + get_shift_val(normalized_df, 'iWatch_HR'),
+    #        )
+    
+    convert_to_csv(log_transformed_df, file.path(project_dir, curated_data_dir, physiological_data_dir, qc1_log_trans_file_name))
+  }
+}
+
 
 process_normalize_data <-  function() {
   read_data()
   process_rb_data()
   normalize_data()
+  log_transfer_data()
 }
 
 

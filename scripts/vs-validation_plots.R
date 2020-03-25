@@ -210,7 +210,6 @@ get_significance <- function(signal_name) {
     
     # print(significance_df)
     convert_to_csv(significance_df, file.path(curated_data_dir, physiological_data_dir, significance_file_name))
-    
   }
 }
 
@@ -231,7 +230,7 @@ print_outliers <- function(df, signal_name, day) {
   # write_log_msg(paste0('---------- Outliers for ', signal_name, ' Day1'), validation_log_file)
   # write_log_msg(df, validation_log_file)
   
-  print(paste0('---------- Outliers for ', signal_name, ' Day1'))
+  print(paste0('---------- Outliers for ', signal_name, ' ', day))
   print(df)
 }
 
@@ -247,7 +246,7 @@ get_title <- function(signal_name) {
     title <- 'day3 day4 min'
   } 
   
-  paste(signal_name, ' - ', title)
+  # paste(signal_name, ' - ', title)
 }
 
 get_subj <-function(df, signal_val) {
@@ -256,7 +255,7 @@ get_subj <-function(df, signal_val) {
     select(Participant_ID) %>% 
     pull()
   
-  print(df)
+  # print(df)
   df
 }
 
@@ -308,7 +307,7 @@ draw_plots <- function() {
       annotate("text", x=2, y=Inf, label= sign[2], vjust = 1.2, size = 10) +
       scale_y_continuous(expand = c(0.15, 0, 0.15, 0))
     
-    print(plot)
+    # print(plot)
     save_plot(paste0(signal_name, '_validation'), plot)
   }
 }

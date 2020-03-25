@@ -53,7 +53,7 @@ variance_test <- function(df) {
         variance_less_val <- var.test(deadline_day_df[[signal_name]], vanilla_day_df[[signal_name]], alternative='less')$p.value
         
         
-        print(paste(variance_val, variance_greater_val, variance_less_val))
+        # print(paste(variance_val, variance_greater_val, variance_less_val))
         
         variance_test_df <<- rbind.fill(variance_test_df, tibble(Participant_ID = unique(df$Participant_ID),
                                                                  Signal = signal_name,

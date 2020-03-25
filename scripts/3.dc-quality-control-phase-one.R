@@ -34,8 +34,8 @@ read_data <- function() {
   qc0_df <<- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, qc0_final_file_name)) %>% 
     select(Participant_ID, Day, Treatment, TreatmentTime, PP, E4_HR, E4_EDA, iWatch_HR, Mask)
   
-  print_msg(colnames(qc0_df))  # "Participant_ID" "Day" "Treatment" "TreatmentTime" "PP" "E4_HR" "E4_EDA" "iWatch_HR"
-  print_msg(head(qc0_df, 2))
+  # print_msg(colnames(qc0_df))  # "Participant_ID" "Day" "Treatment" "TreatmentTime" "PP" "E4_HR" "E4_EDA" "iWatch_HR"
+  # print_msg(head(qc0_df, 2))
 }
 
 
