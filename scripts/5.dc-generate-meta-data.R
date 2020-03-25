@@ -7,7 +7,6 @@ library(plyr)
 
 
 
-enable_log_transformation=TRUE
 
 #-------------------------#
 #-----GLOBAL VARIABLES----#
@@ -15,7 +14,6 @@ enable_log_transformation=TRUE
 script_dir <- dirname(rstudioapi::getSourceEditorContext()$path)
 project_dir <- dirname(script_dir)
 
-setwd(project_dir)
 
 source(file.path(script_dir, 'us-common-functions.R'))
 
@@ -56,10 +54,10 @@ get_shift_val <- function(df, signal) {
   shift_val <- 0 
   
   if (min(df[[signal]], na.rm = TRUE) <= 0) { 
-    shift_val <- min(df[[signal]], na.rm = TRUE) + 0.001 
+    shift_val <- abs(min(df[[signal]], na.rm = TRUE)) + 0.001 
   }
   
-  print(paste0(signal, shift_val))
+  print(paste0(signal, ' - ', shift_val))
   shift_val
 }
 
@@ -68,31 +66,17 @@ generate_mean_data <- function(input_file_name, output_log_file_name, output_fil
   df <- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, input_file_name))
   
   if (enable_log_transformation==TRUE) {
-    pp_shift_val <- 0 
-    eda_shift_val <- 0 
-    
-    if (min(df['PP'], na.rm = TRUE) <= 0) { 
-      pp_shift_val <- min(df['PP'], na.rm = TRUE) + 0.001 
-    }
-    
-    if (min(df['E4_EDA'], na.rm = TRUE) <= 0) { 
-      eda_shift_val <- min(df['E4_EDA'], na.rm = TRUE) + 0.001 
-    }
-    
-    # print(head(df, 2))
-    # df <- df %>% 
-    #   mutate(PP=log(PP)+pp_shift_val, 
-    #          E4_EDA=log(E4_EDA)+eda_shift_val) 
-    # print(head(df, 2))
-    
-    print(paste0(pp_shift_val, eda_shift_val))
-    
     df <- df %>% 
-      mutate(PP=log(PP) + get_shift_val(df, 'PP'), 
-             E4_EDA=log(E4_EDA) + get_shift_val(df, 'E4_EDA'),
-             E4_HR=log(E4_HR) + get_shift_val(df, 'E4_HR'),
-             iWatch_HR=log(iWatch_HR) + get_shift_val(df, 'iWatch_HR'),
-             ) 
+      mutate(PP=log(PP+get_shift_val(df, 'PP')), 
+             E4_EDA=log(E4_EDA+get_shift_val(df, 'E4_EDA')),
+             E4_HR=log(E4_HR+get_shift_val(df, 'E4_HR')),
+             iWatch_HR=log(iWatch_HR+get_shift_val(df, 'iWatch_HR')),
+      )
+      # mutate(PP=log(PP) + get_shift_val(df, 'PP'),
+      #        E4_EDA=log(E4_EDA) + get_shift_val(df, 'E4_EDA'),
+      #        E4_HR=log(E4_HR) + get_shift_val(df, 'E4_HR'),
+      #        iWatch_HR=log(iWatch_HR) + get_shift_val(df, 'iWatch_HR'),
+      #        )
     
     convert_to_csv(df, file.path(project_dir, curated_data_dir, physiological_data_dir, output_log_file_name))
   }
@@ -105,8 +89,7 @@ generate_mean_data <- function(input_file_name, output_log_file_name, output_fil
 
 
 generate_treatment_mean_data <- function() {
-  # qc0_mean_v1_df <<- generate_mean_data(qc0_final_file_name, qc0_log_transformed_v1_file_name, qc0_normalized_mean_v1_file_name)
-  qc1_mean_v1_df <<- generate_mean_data(qc1_normalized_file_name, qc1_log_transformed_v1_file_name, qc1_normalized_mean_v1_file_name)
+  qc1_mean_v1_df <<- generate_mean_data(qc1_normalized_file_name, qc1_log_trans_file_name, qc1_log_trans_mean_v1_file_name)
 }
 
 
@@ -201,7 +184,7 @@ generate_daywise_mean_data <- function() {
   }
     
   
-  convert_to_csv(qc1_mean_long_df, file.path(curated_data_dir, physiological_data_dir, qc1_normalized_mean_v2_file_name))
+  convert_to_csv(qc1_mean_long_df, file.path(curated_data_dir, physiological_data_dir, qc1_log_trans_mean_v2_file_name))
   
 }
 

@@ -115,21 +115,16 @@ qc2_raw_mean_v3_file_name <- 'qc2_raw_mean_v3.csv'
 
 
 
-qc1_log_transformed_v1_file_name <- 'qc1_log_transformed_v1_data.csv'
-qc2_log_transformed_v1_file_name <- 'qc2_log_transformed_v1_data.csv'
-
-# qc1_log_transformed_v2_file_name <- 'qc1_log_transformed_v2_data.csv'
-# qc2_log_transformed_v2_file_name <- 'qc2_log_transformed_v2_data.csv'
+qc1_log_trans_file_name <- 'qc1_log_trans_data.csv'
+qc2_log_trans_file_name <- 'qc2_log_trans_data.csv'
 
 
 
+qc1_log_trans_mean_v1_file_name <- 'qc1_log_trans_mean_v1.csv'
+qc2_log_trans_mean_v1_file_name <- 'qc2_log_trans_mean_v1.csv'
 
-
-qc1_normalized_mean_v1_file_name <- 'qc1_normalized_mean_v1.csv'
-qc2_normalized_mean_v1_file_name <- 'qc2_normalized_mean_v1.csv'
-
-qc1_normalized_mean_v2_file_name <- 'qc1_normalized_mean_v2.csv'
-qc2_normalized_mean_v2_file_name <- 'qc2_normalized_mean_v2.csv'
+qc1_log_trans_mean_v2_file_name <- 'qc1_log_trans_mean_v2.csv'
+qc2_log_trans_mean_v2_file_name <- 'qc2_log_trans_mean_v2.csv'
 
 
 

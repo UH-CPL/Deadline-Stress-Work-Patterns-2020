@@ -19,7 +19,7 @@ library(plyr)
 #-------------------------#
 script_dir <- dirname(rstudioapi::getSourceEditorContext()$path)
 project_dir <- dirname(script_dir)
-setwd(project_dir)
+# setwd(project_dir)
 
 source(file.path(script_dir, 'us-common-functions.R'))
 
@@ -43,7 +43,7 @@ signal_name_list <- c('PP', 'E4_HR', 'E4_EDA', 'iWatch_HR')
 #---FUNCTION DEFINITION---#
 #-------------------------#
 read_files <- function() {
-  qc1_deadline_mean_df <<- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, qc1_normalized_mean_v2_file_name))
+  qc1_deadline_mean_df <<- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, qc1_log_trans_mean_v2_file_name))
   # print_msg(colnames(qc1_deadline_mean_df))
   # print_msg(head(qc1_deadline_mean_df, 2))
   

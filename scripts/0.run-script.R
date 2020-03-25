@@ -17,6 +17,9 @@ baseline_parameter <- lowest_baseline
 t_test_comparison <- day3_day4_ws_min
 
 
+enable_log_transformation=TRUE
+
+
 
 
 #-------------------------------------------------------------------------------------------- 1
@@ -56,6 +59,8 @@ source(file.path(script_dir, 'vs-validation_plots.R'))
 draw_validation_plots()
 
 
-
+#-------------------------------------------------------------------------------------------- 7
+source(file.path(script_dir, 'vs-variance-test.R'))
+conduct_variance_tests()
 
 
