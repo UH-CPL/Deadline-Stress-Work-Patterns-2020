@@ -69,11 +69,11 @@ generate_treatment_mean_data <- function() {
 
 
 
-read_treatment_mean_files <- function() {
-  qc1_mean_v1_df <<- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, qc1_normalized_mean_v1_file_name))
-  # print_msg(colnames(qC1_df))  # "Participant_ID" "Day" "Treatment" "Timestamp" "Sinterface_Time" "TreatmentTime" "Raw_PP" "PP" "E4_HR" "E4_EDA" "iWatch_HR"
-  # print_msg(head(qc1_df, 2))
-}
+# read_treatment_mean_files <- function() {
+#   qc1_mean_v1_df <<- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, qc1_normalized_mean_v1_file_name))
+#   # print_msg(colnames(qC1_df))  # "Participant_ID" "Day" "Treatment" "Timestamp" "Sinterface_Time" "TreatmentTime" "Raw_PP" "PP" "E4_HR" "E4_EDA" "iWatch_HR"
+#   # print_msg(head(qc1_df, 2))
+# }
 
 get_signal_val <- function(df, day, signal_name) {
   # print(df[df$Day==day, signal_name])
@@ -129,6 +129,11 @@ generate_daywise_mean_data <- function() {
   
 }
 
+
+
+generate_ws_chunk_mean_data <- function() {
+  
+}
 
 #-------------------------#
 #-------Main Program------#

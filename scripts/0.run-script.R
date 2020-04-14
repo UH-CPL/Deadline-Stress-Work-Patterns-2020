@@ -35,31 +35,36 @@ enable_log_transformation=TRUE
 
 
 #-------------------------------------------------------------------------------------------- 3
-source(file.path(script_dir, '3.dc-quality-control-phase-one.R'))
-process_quality_control()
-process_mean_data()
+# source(file.path(script_dir, '3.dc-quality-control-phase-one.R'))
+# process_quality_control()
+# process_mean_data()
 
 
 
 #-------------------------------------------------------------------------------------------- 4
-source(file.path(script_dir, '4.dc-generate-normalized-data.R'))
-process_normalize_data()
-
+# source(file.path(script_dir, '4.dc-generate-normalized-data.R'))
+# process_normalize_data()
 
 
 #-------------------------------------------------------------------------------------------- 5
+# source(file.path(script_dir, '5.dc-generate-meta-data.R'))
+# generate_treatment_mean_data()
+# generate_daywise_mean_data()
+
+
 source(file.path(script_dir, '5.dc-generate-meta-data.R'))
-generate_treatment_mean_data()
-generate_daywise_mean_data()
+generate_ws_chunk_mean_data()
 
 
 
-#-------------------------------------------------------------------------------------------- 6
+
+
+#-------------------------------------------------------------------------------------------- 7
 source(file.path(script_dir, 'vs-validation_plots.R'))
 draw_validation_plots()
 
 
-#-------------------------------------------------------------------------------------------- 7
+#-------------------------------------------------------------------------------------------- 8
 source(file.path(script_dir, 'vs-variance-test.R'))
 conduct_variance_tests()
 
