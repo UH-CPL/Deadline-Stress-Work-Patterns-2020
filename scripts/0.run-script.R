@@ -60,13 +60,13 @@ generate_ws_chunk_mean_data()
 
 
 #-------------------------------------------------------------------------------------------- 7
-source(file.path(script_dir, 'vs-validation_plots.R'))
-draw_validation_plots()
+# source(file.path(script_dir, 'vs-validation_plots.R'))
+# draw_validation_plots()
 
 
 #-------------------------------------------------------------------------------------------- 8
-source(file.path(script_dir, 'vs-variance-test.R'))
-conduct_variance_tests()
+# source(file.path(script_dir, 'vs-variance-test.R'))
+# conduct_variance_tests()
 
 
 #-------------------------------------------------------------------------------------------- #

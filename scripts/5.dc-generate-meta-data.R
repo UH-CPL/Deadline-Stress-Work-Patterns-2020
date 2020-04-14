@@ -21,17 +21,14 @@ mean_log_file <- file.path(project_dir, log_dir, paste0('mean-log-', format(Sys.
 file.create(mean_log_file)
 
 
-
-
-qc1_mean_v1_df <- tibble()
-qc1_ws_mean_df <- tibble()
-qc1_deadline_mean_df <- tibble()
-
-
 # signal_name_list <- c('PP')
 signal_name_list <- c('PP', 'E4_HR', 'E4_EDA', 'iWatch_HR')
 
 
+
+input_file_name <- qc1_log_trans_file_name 
+treatement_mean_file_name <- qc1_log_trans_mean_v1_file_name
+daywise_mean_file_name <- qc1_log_trans_mean_v2_file_name
 
 
 #-------------------------#
@@ -53,19 +50,16 @@ generate_mean_df <- function(df) {
 
 
 
-generate_mean_data <- function(input_file_name, output_file_name) {
-  df <- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, input_file_name))
-  
-  mean_df <- generate_mean_df(df)
-  convert_to_csv(mean_df, file.path(project_dir, curated_data_dir, physiological_data_dir, output_file_name))
-  
-  return(mean_df)
-}
-
-
 generate_treatment_mean_data <- function() {
-  qc1_mean_v1_df <<- generate_mean_data(qc1_log_trans_file_name, qc1_log_trans_mean_v1_file_name)
+  df <- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, input_file_name))
+  mean_df <<- generate_mean_df(df)
+  convert_to_csv(mean_df, file.path(project_dir, curated_data_dir, physiological_data_dir, treatement_mean_file_name))
 }
+
+
+# generate_treatment_mean_data <- function() {
+#   qc1_mean_v1_df <<- generate_mean_data(qc1_log_trans_file_name, qc1_log_trans_mean_v1_file_name)
+# }
 
 
 
@@ -102,7 +96,7 @@ get_day3_day4_mean_val <- function(df, signal_name) {
 generate_daywise_mean_data <- function() {
   # print(head(qc1_mean_v1_df, 2))
   
-  qc1_mean_long_df <<- qc1_mean_v1_df %>%
+  mean_long_df <<- mean_df %>%
     # filter(Treatment == 'WS') %>%
     gather(Signal, Mean_Value, -Participant_ID, -Day, -Treatment) %>% 
     spread(Day, Mean_Value) %>%
@@ -114,18 +108,17 @@ generate_daywise_mean_data <- function() {
     mutate(Day3_Day4_Min = pmin(Day3, Day4, na.rm = TRUE))
   
   if (t_test_comparison==day3_day4_ws_mean) {
-    qc1_mean_long_df <<- qc1_mean_long_df %>%
+    mean_long_df <<- mean_long_df %>%
       mutate(Day1_Normalize=Day1-Day3_Day4_Mean,
              Day2_Normalize=Day2-Day3_Day4_Mean)
 
   } else if (t_test_comparison==day3_day4_ws_min) {
-    qc1_mean_long_df <<- qc1_mean_long_df %>%
+    mean_long_df <<- mean_long_df %>%
       mutate(Day1_Normalize=Day1-Day3_Day4_Min,
              Day2_Normalize=Day2-Day3_Day4_Min)
   }
-    
-  
-  convert_to_csv(qc1_mean_long_df, file.path(curated_data_dir, physiological_data_dir, qc1_log_trans_mean_v2_file_name))
+
+  convert_to_csv(mean_long_df, file.path(curated_data_dir, physiological_data_dir, daywise_mean_file_name))
   
 }
 
@@ -139,8 +132,6 @@ generate_ws_chunk_mean_data <- function() {
 #-------Main Program------#
 #-------------------------#
 # generate_treatment_mean_data()
-# # read_treatment_mean_files()
-# 
 # generate_daywise_mean_data()
 
 

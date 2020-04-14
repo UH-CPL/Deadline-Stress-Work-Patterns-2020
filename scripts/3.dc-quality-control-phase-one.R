@@ -116,7 +116,7 @@ generate_daywise_mean_data <- function(treatment_mean_df) {
     
   
     
-  convert_to_csv(daywise_mean_df, file.path(curated_data_dir, physiological_data_dir, qc1_raw_mean_v2_file_name))
+  convert_to_csv(daywise_mean_df, file.path(project_dir, curated_data_dir, physiological_data_dir, qc1_raw_mean_v2_file_name))
   
   daywise_mean_df
 }
