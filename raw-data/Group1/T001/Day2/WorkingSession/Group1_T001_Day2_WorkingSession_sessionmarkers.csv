@@ -4,7 +4,7 @@ Activity 2,2881.537,Mon Feb 18 12:39:21.668 2019,2881.537,Mon Feb 18 13:09:10.20
 Activity 3,2881.537,Mon Feb 18 13:09:11.204 2019,4179.078,Mon Feb 18 13:10:10.745 2019,Computer Reading (CR)
 Activity 4,4430.663,Mon Feb 18 13:10:11.745 2019,6462.883,Mon Feb 18 13:18:55.745 2019,Out
 Activity 5,8082.763,Mon Feb 18 13:18:56.745 2019,17235.93,Mon Feb 18 13:31:05.593 2019,"Eat in Place (EiP), Physical Interaction (PI)"
-Activity 6,15842.234,Mon Feb 18 13:31:06.593 2019,17235.93,Mon Feb 18 13:32:35.593 2019,"Eat in Place (EiP), Computer Reading (CR)"
+Activity 6,15842.234,Mon Feb 18 13:31:06.593 2019,17235.93,Mon Feb 18 13:32:35.593 2019,"Computer Reading (CR), Eat in Place (EiP)"
 Activity 7,15842.234,Mon Feb 18 13:32:36.593 2019,17235.93,Mon Feb 18 13:34:25.593 2019,Out
 Activity 8,15842.234,Mon Feb 18 13:34:26.593 2019,17235.93,Mon Feb 18 13:36:10.593 2019,Computer Reading (CR)
 Activity 9,15842.234,Mon Feb 18 13:36:11.593 2019,17235.93,Mon Feb 18 13:50:05.593 2019,Physical Interaction (PI)
@@ -16,7 +16,7 @@ Activity 14,15842.234,Mon Feb 18 14:45:52.593 2019,17235.93,Mon Feb 18 14:52:40.
 Activity 15,15842.234,Mon Feb 18 14:52:41.593 2019,17235.93,Mon Feb 18 15:40:05.593 2019,Physical Interaction (PI)
 Activity 16,15842.234,Mon Feb 18 15:40:06.593 2019,17235.93,Mon Feb 18 16:41:50.593 2019,Computer Writing (CW)
 Activity 17,15842.234,Mon Feb 18 16:41:51.593 2019,17235.93,Mon Feb 18 16:46:00.593 2019,Out
-Activity 18,15842.234,Mon Feb 18 16:46:01.593 2019,17235.93,Mon Feb 18 16:50:10.593 2019,"Eat in Place (EiP), Computer Reading (CR)"
+Activity 18,15842.234,Mon Feb 18 16:46:01.593 2019,17235.93,Mon Feb 18 16:50:10.593 2019,"Computer Reading (CR), Eat in Place (EiP)"
 Activity 19,15842.234,Mon Feb 18 16:50:11.593 2019,17235.93,Mon Feb 18 16:54:27.593 2019,Computer Writing (CW)
-Activity 20,15842.234,Mon Feb 18 16:54:28.593 2019,17235.93,Mon Feb 18 16:56:05.593 2019,"Eat in Place (EiP), Computer Reading (CR)"
+Activity 20,15842.234,Mon Feb 18 16:54:28.593 2019,17235.93,Mon Feb 18 16:56:05.593 2019,"Computer Reading (CR), Eat in Place (EiP)"
 Activity 21,15842.234,Mon Feb 18 16:56:06.593 2019,17235.93,Mon Feb 18 17:09:15.593 2019,Computer Writing (CW)
