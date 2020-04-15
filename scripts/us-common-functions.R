@@ -128,6 +128,11 @@ qc2_log_trans_mean_v2_file_name <- 'qc2_log_trans_mean_v2.csv'
 
 
 
+qc1_log_trans_mean_chunk_file_name <- 'qc1_log_trans_mean_chunk_data.csv'
+qc2_log_trans_mean_chunk_file_name <- 'qc2_log_trans_mean_chunk_data.csv'
+
+
+
 
 # qc0_ws_mean_file_name <- 'qc0_ws_mean.csv'
 # qc1_ws_mean_file_name <- 'qc1_ws_mean.csv'
@@ -153,6 +158,7 @@ qc2_deadline_mean_file_name <- 'qc2_deadline_mean.csv'
 
 significance_file_name <- 'significance.csv'
 variance_test_file_name <- 'variance_test.csv'
+variance_test_chunk_mean_file_name <- 'variance_test_chunk_mean.csv'
 
 
 
@@ -221,6 +227,14 @@ replace_to_underscore <- function(str) {
 
 replace_to_space <- function(str) {
   gsubfn('.', list('_' = ' ', '-' = ' '), str)
+}
+
+remove_rigth_substr <- function(str, n){
+  substr(str, 1, nchar(str)-n)
+}
+
+get_right_substr <- function(str, n){
+  substr(str, nchar(str)-n+1, nchar(str))
 }
 
 trim <- function( x ) {

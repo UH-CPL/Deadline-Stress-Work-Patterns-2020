@@ -20,6 +20,9 @@ t_test_comparison <- day3_day4_ws_min
 enable_log_transformation=TRUE
 
 
+chunk_sizes <- c(5, 10, 15)
+
+
 
 
 #-------------------------------------------------------------------------------------------- 1

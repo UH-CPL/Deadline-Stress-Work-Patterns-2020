@@ -30,6 +30,7 @@ input_file_name <- qc1_log_trans_file_name
 treatement_mean_file_name <- qc1_log_trans_mean_v1_file_name
 daywise_mean_file_name <- qc1_log_trans_mean_v2_file_name
 
+chunk_mean_file_name <- remove_rigth_substr(qc1_log_trans_mean_chunk_file_name, 4)
 
 #-------------------------#
 #---FUNCTION DEFINITION---#
@@ -123,9 +124,70 @@ generate_daywise_mean_data <- function() {
 }
 
 
-
-generate_ws_chunk_mean_data <- function() {
+generate_chunk_mean_df <- function(df, chunk_size_minute) {
+  chunk_size_sec <- chunk_size_minute*60
   
+  # for (subj in df$Participant_ID) {
+  for (subj in c('T001')) {
+    subj_df <- df %>% 
+      filter(Participant_ID==subj)
+    
+    
+    # for (day in subj_df$Day) {
+    for (day in c('Day1')) {
+      day_df <- subj_df %>% 
+        filter(Day==day)
+      
+      
+      # total_row <- nrow(day_df)
+      # print(total_row)
+      # print(day_df$TreatmentTime[nrow(day_df)])
+      
+      i <- 0
+      end_treatment_sec <- day_df$TreatmentTime[nrow(day_df)]
+      
+      
+      
+      while (i*chunk_size_sec<end_treatment_sec) {
+        temp_df <- day_df %>% 
+          filter(TreatmentTime>=i*chunk_size_sec & TreatmentTime<=(i+1)*chunk_size_sec-1,
+                 Mask==1) 
+        # %>% 
+        #   select()
+        #   summarize_all(mean, na.rm=T) %>%
+        #     
+        #   mean_df <- df %>%
+        #   # select(-Timestamp, -Sinterface_Time, -TreatmentTime) %>%
+        #   select(Participant_ID,	Day, Treatment, Mask, PP, E4_HR, E4_EDA, iWatch_HR) %>%
+        #   group_by(Participant_ID,	Day, Treatment) %>%
+        #   filter(Mask==1) %>%
+        #   summarize_all(mean, na.rm=T) %>%
+        #   ungroup() %>% 
+        #   select(-Mask)
+          
+          
+      
+        print(paste(i, i*chunk_size_sec, (i+1)*chunk_size_sec-1, nrow(temp_df)))
+        i=i+1
+      }
+      
+    }
+  }
+    
+}
+
+# input_file_name <- qc1_log_trans_file_name 
+# chunk_mean_file_name <- qc1_log_trans_mean_chunk_file_name
+generate_ws_chunk_mean_data <- function() {
+  df <- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, input_file_name))
+  
+  for (chunk_size in chunk_sizes) {
+    mean_chunk_df <<- generate_chunk_mean_df(df, chunk_size)
+    convert_to_csv(mean_chunk_df, file.path(project_dir, 
+                                            curated_data_dir, 
+                                            physiological_data_dir, 
+                                            paste0(chunk_mean_file_name, '_', chunk_size, '.csv')))
+    }
 }
 
 #-------------------------#
@@ -133,6 +195,12 @@ generate_ws_chunk_mean_data <- function() {
 #-------------------------#
 # generate_treatment_mean_data()
 # generate_daywise_mean_data()
+
+
+# chunk_sizes <- c(5, 10, 15)
+# chunk_sizes <- c(1, 2)
+chunk_sizes <- c(1)
+generate_ws_chunk_mean_data()
 
 
 
