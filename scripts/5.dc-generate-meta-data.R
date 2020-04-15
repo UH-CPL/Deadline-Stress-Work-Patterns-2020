@@ -125,55 +125,59 @@ generate_daywise_mean_data <- function() {
 
 
 generate_chunk_mean_df <- function(df, chunk_size_minute) {
+  chunk_mean_df <- tibble()
   chunk_size_sec <- chunk_size_minute*60
   
-  # for (subj in df$Participant_ID) {
-  for (subj in c('T001')) {
+  for (subj in df$Participant_ID) {
+  # for (subj in c('T001')) {
     subj_df <- df %>% 
       filter(Participant_ID==subj)
     
-    
-    # for (day in subj_df$Day) {
-    for (day in c('Day1')) {
+    for (day in subj_df$Day) {
+    # for (day in c('Day1')) {
       day_df <- subj_df %>% 
-        filter(Day==day)
+        filter(Day==day) %>% 
+        filter(Mask==1)
       
-      
-      # total_row <- nrow(day_df)
-      # print(total_row)
-      # print(day_df$TreatmentTime[nrow(day_df)])
+      # # total_row <- nrow(day_df)
+      # # print(total_row)
+      # # print(day_df$TreatmentTime[nrow(day_df)])
       
       i <- 0
       end_treatment_sec <- day_df$TreatmentTime[nrow(day_df)]
       
-      
-      
       while (i*chunk_size_sec<end_treatment_sec) {
-        temp_df <- day_df %>% 
-          filter(TreatmentTime>=i*chunk_size_sec & TreatmentTime<=(i+1)*chunk_size_sec-1,
-                 Mask==1) 
-        # %>% 
-        #   select()
-        #   summarize_all(mean, na.rm=T) %>%
-        #     
-        #   mean_df <- df %>%
-        #   # select(-Timestamp, -Sinterface_Time, -TreatmentTime) %>%
-        #   select(Participant_ID,	Day, Treatment, Mask, PP, E4_HR, E4_EDA, iWatch_HR) %>%
-        #   group_by(Participant_ID,	Day, Treatment) %>%
-        #   filter(Mask==1) %>%
-        #   summarize_all(mean, na.rm=T) %>%
-        #   ungroup() %>% 
-        #   select(-Mask)
-          
-          
-      
-        print(paste(i, i*chunk_size_sec, (i+1)*chunk_size_sec-1, nrow(temp_df)))
+      # while (i<10) {
+        temp_chunk_df <- day_df %>% 
+          filter(TreatmentTime>=i*chunk_size_sec & TreatmentTime<=(i+1)*chunk_size_sec-1) %>% 
+          select(Participant_ID,	Day, Treatment, PP) %>% 
+          group_by(Participant_ID,	Day, Treatment) %>% 
+          summarize_all(list(
+          Mean_PP = ~mean(., na.rm=TRUE),
+          Total_Rows = ~n(),
+          Total_Non_NA_Rows = ~sum(!is.na(.))
+            
+            ### Median = ~median(., na.rm=TRUE),
+            ### Sd = ~sd(., na.rm=TRUE),
+            
+            )) %>%
+          mutate(
+            SampleNo=i+1,
+            StartTreatmentTime=i*chunk_size_sec,
+            EndTreatmentTime=(i+1)*chunk_size_sec-1
+                 )
+          # # ungroup() %>% 
+        
         i=i+1
+        chunk_mean_df <- rbind.fill(chunk_mean_df, temp_chunk_df)
+        
+        print(paste(i, i*chunk_size_sec, (i+1)*chunk_size_sec-1))
+        # # print(temp_chunk_df)
       }
-      
     }
   }
-    
+   
+  chunk_mean_df 
 }
 
 # input_file_name <- qc1_log_trans_file_name 
@@ -182,7 +186,7 @@ generate_ws_chunk_mean_data <- function() {
   df <- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, input_file_name))
   
   for (chunk_size in chunk_sizes) {
-    mean_chunk_df <<- generate_chunk_mean_df(df, chunk_size)
+    mean_chunk_df <- generate_chunk_mean_df(df, chunk_size)
     convert_to_csv(mean_chunk_df, file.path(project_dir, 
                                             curated_data_dir, 
                                             physiological_data_dir, 
@@ -197,7 +201,7 @@ generate_ws_chunk_mean_data <- function() {
 # generate_daywise_mean_data()
 
 
-# chunk_sizes <- c(5, 10, 15)
+# chunk_sizes <- c(1, 5, 10, 15)
 # chunk_sizes <- c(1, 2)
 chunk_sizes <- c(1)
 generate_ws_chunk_mean_data()
