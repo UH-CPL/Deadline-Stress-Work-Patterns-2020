@@ -20,7 +20,8 @@ t_test_comparison <- day3_day4_ws_min
 enable_log_transformation=TRUE
 
 
-chunk_sizes <- c(5, 10, 15)
+percentage <- 10
+chunk_sizes <- c(1, 2, 5, 10, 15)
 
 
 
@@ -55,12 +56,6 @@ chunk_sizes <- c(5, 10, 15)
 # generate_daywise_mean_data()
 
 
-source(file.path(script_dir, '5.dc-generate-meta-data.R'))
-generate_ws_chunk_mean_data()
-
-
-
-
 
 #-------------------------------------------------------------------------------------------- 7
 # source(file.path(script_dir, 'vs-validation_plots.R'))
@@ -70,6 +65,14 @@ generate_ws_chunk_mean_data()
 #-------------------------------------------------------------------------------------------- 8
 # source(file.path(script_dir, 'vs-variance-test.R'))
 # conduct_variance_tests()
+
+
+#-------------------------------------------------------------------------------------------- 9
+source(file.path(script_dir, '5.dc-generate-meta-data.R'))
+generate_ws_chunk_mean_data()
+
+source(file.path(script_dir, 'vs-variance-test-chunk-data.R'))
+conduct_variance_tests_chunk_data()
 
 
 #-------------------------------------------------------------------------------------------- #

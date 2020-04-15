@@ -221,9 +221,9 @@ generate_ws_chunk_mean_data <- function() {
 # generate_daywise_mean_data()
 
 
-chunk_sizes <- c(5, 10, 15)
-# chunk_sizes <- c(15)
-generate_ws_chunk_mean_data()
+# chunk_sizes <- c(1)
+# chunk_sizes <- c(5, 10, 15)
+# generate_ws_chunk_mean_data()
 
 
 
