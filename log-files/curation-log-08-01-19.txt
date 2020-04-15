@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 ----------
 T005-Day1
@@ -68,3 +69,75 @@ S-Interface
 SearchUI
 ShellExperienceHost
 WINWORD
+=======
+
+----------
+T005-Day1
+----------
+Processing.....Resting Baseline
+Processing.....Working Session
+
+Merging.....e4 data
+Merging.....iwatch data
+Merging.....all subj data
+
+
+----------
+T005-Day2
+----------
+Processing.....Resting Baseline
+Processing.....Working Session
+
+Merging.....e4 data
+Merging.....iwatch data
+Merging.....all subj data
+
+
+----------
+T005-Day3
+----------
+Processing.....Resting Baseline
+Processing.....Working Session
+
+Merging.....e4 data
+Merging.....iwatch data
+Merging.....all subj data
+
+
+----------
+T005-Day4
+----------
+Processing.....Resting Baseline
+Processing.....Working Session
+
+Merging.....e4 data
+Merging.....iwatch data
+Merging.....all subj data
+
+
+----------
+T005-Day5
+----------
+Processing.....Resting Baseline
+Processing.....Working Session
+
+Merging.....e4 data
+Merging.....iwatch data
+Merging.....all subj data
+
+Total relative time mismatch row: 0
+Acrobat
+ApplicationFrameHost
+chrome
+EXCEL
+explorer
+Idle
+LockApp
+MendeleyDesktop
+OpenWith
+POWERPNT
+S-Interface
+SearchUI
+ShellExperienceHost
+WINWORD
+>>>>>>> local-shaila-new

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 ----------
 T009-Day1
@@ -13,3 +14,20 @@ Fixing.....missing working session data
 Merging.....all subj data
 
 Total relative time mismatch row: 241
+=======
+
+----------
+T005-Day1
+----------
+Processing.....Resting Baseline
+Baseline start time: 2019-05-25 10:17:50
+Baseline end time: 2019-05-25 10:22:05
+Processing.....Working Session
+
+Merging.....e4 data
+Merging.....iwatch data
+Fixing.....missing working session data
+Merging.....all subj data
+
+Total relative time mismatch row: 256
+>>>>>>> local-shaila-new

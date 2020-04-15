@@ -1,0 +1,295 @@
+
+----------
+T001-Day1
+----------
+Processing.....Resting Baseline
+Baseline start time: 2019-02-15 12:07:00
+Baseline end time: 2019-02-15 12:11:00
+Processing.....Working Session
+
+Merging.....e4 data
+Merging.....iwatch data
+Fixing.....missing working session data
+Merging.....all subj data
+
+
+----------
+T001-Day2
+----------
+Processing.....Resting Baseline
+Baseline start time: 2019-02-18 12:10:15
+Baseline end time: 2019-02-18 12:14:18
+Processing.....Working Session
+
+Merging.....e4 data
+Merging.....iwatch data
+Fixing.....missing working session data
+Merging.....all subj data
+
+
+----------
+T001-Day3
+----------
+Processing.....Resting Baseline
+Baseline start time: 2019-02-26 13:09:26
+Baseline end time: 2019-02-26 13:13:26
+Processing.....Working Session
+
+Merging.....e4 data
+Merging.....iwatch data
+Fixing.....missing working session data
+Merging.....all subj data
+
+
+----------
+T001-Day4
+----------
+Processing.....Resting Baseline
+Baseline start time: 2019-02-28 13:39:00
+Baseline end time: 2019-02-28 13:43:00
+Processing.....Working Session
+
+Merging.....e4 data
+Merging.....iwatch data
+Fixing.....missing working session data
+Merging.....all subj data
+
+
+----------
+T003-Day1
+----------
+Processing.....Resting Baseline
+Baseline start time: 2019-05-14 10:03:45
+Baseline end time: 2019-05-14 10:04:37
+Processing.....Working Session
+
+Merging.....e4 data
+Merging.....iwatch data
+Fixing.....missing working session data
+Merging.....all subj data
+
+
+----------
+T003-Day2
+----------
+Processing.....Resting Baseline
+Baseline start time: 2019-05-15 11:42:57
+Baseline end time: 2019-05-15 11:43:02
+Processing.....Working Session
+
+Merging.....e4 data
+Merging.....iwatch data
+Fixing.....missing working session data
+Merging.....all subj data
+
+
+----------
+T003-Day3
+----------
+Processing.....Resting Baseline
+Baseline start time: 2019-05-20 11:35:59
+Baseline end time: 2019-05-20 11:40:03
+Processing.....Working Session
+
+Merging.....e4 data
+Merging.....iwatch data
+Fixing.....missing working session data
+Merging.....all subj data
+
+
+----------
+T003-Day4
+----------
+Processing.....Resting Baseline
+Baseline start time: 2019-05-21 11:32:50
+Baseline end time: 2019-05-21 11:36:50
+Processing.....Working Session
+
+Merging.....e4 data
+Merging.....iwatch data
+Fixing.....missing working session data
+Merging.....all subj data
+
+
+----------
+T005-Day1
+----------
+Processing.....Resting Baseline
+Baseline start time: 2019-05-25 10:17:50
+Baseline end time: 2019-05-25 10:22:05
+Processing.....Working Session
+
+Merging.....e4 data
+Merging.....iwatch data
+Fixing.....missing working session data
+Merging.....all subj data
+
+
+----------
+T005-Day2
+----------
+Processing.....Resting Baseline
+Baseline start time: 2019-05-26 13:13:26
+Baseline end time: 2019-05-26 13:17:20
+Processing.....Working Session
+
+Merging.....e4 data
+Merging.....iwatch data
+Fixing.....missing working session data
+Merging.....all subj data
+
+
+----------
+T005-Day3
+----------
+Processing.....Resting Baseline
+Baseline start time: 2019-05-29 10:57:50
+Baseline end time: 2019-05-29 11:02:01
+Processing.....Working Session
+
+Merging.....e4 data
+Merging.....iwatch data
+Fixing.....missing working session data
+Merging.....all subj data
+
+
+----------
+T005-Day4
+----------
+Processing.....Resting Baseline
+Baseline start time: 2019-05-30 14:08:45
+Baseline end time: 2019-05-30 14:12:46
+Processing.....Working Session
+
+Merging.....e4 data
+Merging.....iwatch data
+Fixing.....missing working session data
+Merging.....all subj data
+
+
+----------
+T005-Day5
+----------
+Processing.....Resting Baseline
+Baseline start time: 2019-05-31 13:14:30
+Baseline end time: 2019-05-31 13:18:30
+Processing.....Working Session
+
+Merging.....e4 data
+Merging.....iwatch data
+Fixing.....missing working session data
+Merging.....all subj data
+
+
+----------
+T007-Day1
+----------
+Processing.....Resting Baseline
+Baseline start time: 2019-06-05 11:12:50
+Baseline end time: 2019-06-05 11:16:54
+Processing.....Working Session
+
+Merging.....e4 data
+Merging.....iwatch data
+Fixing.....missing working session data
+Merging.....all subj data
+
+
+----------
+T007-Day2
+----------
+Processing.....Resting Baseline
+Baseline start time: 2019-06-06 12:47:30
+Baseline end time: 2019-06-06 12:51:40
+Processing.....Working Session
+
+Merging.....e4 data
+Merging.....iwatch data
+Fixing.....missing working session data
+Merging.....all subj data
+
+
+----------
+T007-Day3
+----------
+Processing.....Resting Baseline
+Baseline start time: 2019-06-13 12:42:19
+Baseline end time: 2019-06-13 12:46:20
+Processing.....Working Session
+
+Merging.....e4 data
+Merging.....iwatch data
+Fixing.....missing working session data
+Merging.....all subj data
+
+
+----------
+T007-Day4
+----------
+Processing.....Resting Baseline
+Baseline start time: 2019-06-14 09:32:40
+Baseline end time: 2019-06-14 09:36:40
+Processing.....Working Session
+
+Merging.....e4 data
+Merging.....iwatch data
+Fixing.....missing working session data
+Merging.....all subj data
+
+
+----------
+T009-Day1
+----------
+Processing.....Resting Baseline
+Baseline start time: 2019-07-24 10:24:15
+Baseline end time: 2019-07-24 10:28:15
+Processing.....Working Session
+
+Merging.....e4 data
+Merging.....iwatch data
+Fixing.....missing working session data
+Merging.....all subj data
+
+
+----------
+T009-Day2
+----------
+Processing.....Resting Baseline
+Baseline start time: 2019-07-25 13:44:14
+Baseline end time: 2019-07-25 13:48:15
+Processing.....Working Session
+
+Merging.....e4 data
+Merging.....iwatch data
+Fixing.....missing working session data
+Merging.....all subj data
+
+
+----------
+T009-Day3
+----------
+Processing.....Resting Baseline
+Baseline start time: 2019-08-05 12:09:15
+Baseline end time: 2019-08-05 12:13:08
+Processing.....Working Session
+
+Merging.....e4 data
+Merging.....iwatch data
+Fixing.....missing working session data
+Merging.....all subj data
+
+
+----------
+T009-Day4
+----------
+Processing.....Resting Baseline
+Baseline start time: 2019-08-06 12:33:05
+Baseline end time: 2019-08-06 12:37:08
+Processing.....Working Session
+
+Merging.....e4 data
+Merging.....iwatch data
+Fixing.....missing working session data
+Merging.....all subj data
+
+Total relative time mismatch row: 4678

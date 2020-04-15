@@ -1,0 +1,206 @@
+#-------------------------#
+#--------LIBRARIES--------#
+#-------------------------#
+library(tidyverse) 
+library(dplyr)
+library(plyr) 
+
+
+
+#-------------------------#
+#-----GLOBAL VARIABLES----#
+#-------------------------#
+script_dir <- dirname(rstudioapi::getSourceEditorContext()$path)
+project_dir <- dirname(script_dir)
+
+source(file.path(script_dir, 'us-common-functions.R'))
+
+qc1_log_file <- file.path(project_dir, log_dir, paste0('quality-control-phase-one-log-', format(Sys.Date(), format='%m-%d-%y'), '.txt'))
+file.create(qc1_log_file)
+
+
+
+
+qc0_df <- tibble()
+qc1_df <- tibble()
+
+
+# signal_name_list <- c('PP')
+signal_name_list <- c('PP', 'E4_HR', 'E4_EDA', 'iWatch_HR')
+
+
+#--- CHANGE HERE ---#
+read_data <- function() {
+  qc0_df <<- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, qc0_final_file_name)) %>% 
+    select(Participant_ID, Day, Treatment, TreatmentTime, PP, E4_HR, E4_EDA, iWatch_HR, Mask)
+  
+  # print_msg(colnames(qc0_df))  # "Participant_ID" "Day" "Treatment" "TreatmentTime" "PP" "E4_HR" "E4_EDA" "iWatch_HR"
+  # print_msg(head(qc0_df, 2))
+}
+
+
+get_valid_range <- function(signal) {
+  if (grepl('HR', signal)) {
+    return(c(40, 140))
+  } else if (grepl('EDA', signal)) {
+    return(c(0.01, 100))
+  } else if (grepl('BR', signal)) {
+    return(c(4, 40))
+  } 
+  
+  # else if (grepl('BR', signal)) {
+  #   filtered_df <- filtered_df %>% filter(filtered_df[[signal]] < 4 | filtered_df[[signal]] > 40)
+  # } else {
+  #   filtered_df <- filtered_df[filtered_df[[signal]] == 0, ]
+  # }
+  
+  return(c(0, 100))
+  
+}
+
+# get_out_of_range_data <- function(signal) {
+#   range_list <- get_valid_range(signal)
+#   # print(paste(range_list, range_list[1], range_list[2]))
+#   temp_filtered_df <- qc1_df %>% 
+#     select(Participant_ID, Day, Treatment, TreatmentTime, !!signal) %>% 
+#     filter(qc1_df[[signal]] < range_list[1] | qc1_df[[signal]] > range_list[2]) %>% 
+#     gather(Signal_Name, Value, !!signal)
+#   
+#   if (nrow(temp_filtered_df)>0) {
+#     qc1_df[[signal]][qc1_df[[signal]] < range_list[1] | qc1_df[[signal]] > range_list[2]] <<- NA
+#   }
+#   
+#   return(temp_filtered_df)
+# }
+
+
+#--- CHANGE HERE ---#
+remove_data_out_of_range <- function() {
+  filtered_df <- tibble()
+  qc1_df <<- qc0_df
+  
+  for (signal in signal_name_list) {
+    range_list <- get_valid_range(signal)
+    
+    temp_filtered_df <- qc1_df %>% 
+      select(Participant_ID, Day, Treatment, TreatmentTime, !!signal) %>% 
+      filter(qc1_df[[signal]] < range_list[1] | qc1_df[[signal]] > range_list[2]) %>% 
+      gather(Signal_Name, Value, !!signal)
+    
+    filtered_df <- rbind.fill(filtered_df, temp_filtered_df)
+    
+    if (nrow(temp_filtered_df)>0) {
+      qc1_df[[signal]][qc1_df[[signal]] < range_list[1] | qc1_df[[signal]] > range_list[2]] <<- NA
+    }
+  }
+  
+  # print(filtered_df)
+  
+  convert_to_csv(qc1_df, file.path(project_dir, curated_data_dir, physiological_data_dir, qc1_file_name))
+  convert_to_csv(filtered_df, file.path(project_dir, curated_data_dir, physiological_data_dir, qc1_filtered_data_file_name))
+}
+
+
+generate_daywise_mean_data <- function(treatment_mean_df) {
+  
+  daywise_mean_df <<- treatment_mean_df %>%
+    gather(Signal, Mean_Value, -Participant_ID, -Day, -Treatment) %>% 
+    spread(Day, Mean_Value) %>%
+    mutate(Day3_Day4_Mean = case_when(
+      !is.na(Day3) & !is.na(Day4)~(Day3+Day4)/2,
+      !is.na(Day3)~Day3,
+      !is.na(Day4)~Day4,
+      TRUE~Day3)) %>%  # it's creating problem for NA. Anyhow Day3 or Day4 is NA, so default NA
+    mutate(Day3_Day4_Min = pmin(Day3, Day4, na.rm = TRUE)) %>% 
+    mutate(Four_Day_Min = pmin(Day1, Day2, Day3, Day4, na.rm = TRUE))
+    
+  
+    
+  convert_to_csv(daywise_mean_df, file.path(project_dir, curated_data_dir, physiological_data_dir, qc1_raw_mean_v2_file_name))
+  
+  daywise_mean_df
+}
+
+
+
+generate_mean_df <- function(df) {
+  mean_df <- df %>%
+    # select(-Timestamp, -Sinterface_Time, -TreatmentTime) %>%
+    select(Participant_ID,	Day, Treatment, Mask, PP, E4_HR, E4_EDA, iWatch_HR) %>%
+    group_by(Participant_ID,	Day, Treatment) %>%
+    filter(Mask==1) %>%
+    summarize_all(mean, na.rm=T) %>%
+    ungroup() %>% 
+    select(-Mask)
+  
+  return(mean_df)
+}
+
+
+generate_mean_data <- function(input_file_name, output_log_file_name, output_file_name) {
+  df <- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, input_file_name))
+  
+  # if (enable_log_transformation==TRUE) {
+  #   pp_shift_val <- 0 
+  #   eda_shift_val <- 0 
+  #   
+  #   if (min(df['PP'], na.rm = TRUE) <= 0) { 
+  #     pp_shift_val <- min(df['PP'], na.rm = TRUE) + 0.001 
+  #   }
+  #   
+  #   if (min(df['E4_EDA'], na.rm = TRUE) <= 0) { 
+  #     eda_shift_val <- min(df['E4_EDA'], na.rm = TRUE) + 0.001 
+  #   }
+  #   
+  #   # print(head(df, 2))
+  #   df <- df %>% 
+  #     mutate(PP=log(PP)+pp_shift_val, 
+  #            E4_EDA=log(E4_EDA)+eda_shift_val) 
+  #   # print(head(df, 2))
+  #   
+  #   convert_to_csv(df, file.path(project_dir, curated_data_dir, physiological_data_dir, output_log_file_name))
+  # }
+  
+  mean_df <- generate_mean_df(df)
+  convert_to_csv(mean_df, file.path(project_dir, curated_data_dir, physiological_data_dir, output_file_name))
+  
+  return(mean_df)
+}
+
+
+#--- CHANGE HERE ---#
+generate_treatment_mean_data <- function() {
+  # treatment_mean_df <<- generate_mean_data(qc0_final_file_name, qc0_log_transformed_v1_file_name, qc0_raw_mean_v1_file_name)
+  treatment_mean_df <- generate_mean_data(qc1_file_name, qc1_log_transformed_v1_file_name, qc1_raw_mean_v1_file_name)
+  
+  treatment_mean_df
+}
+
+#--- CHANGE HERE ---#
+process_quality_control <- function() {
+  read_data()
+  remove_data_out_of_range()
+}
+
+process_mean_data <- function() {
+  treatment_mean_df <- generate_treatment_mean_data()
+  daywise_mean_df <- generate_daywise_mean_data(treatment_mean_df)
+}
+
+
+#-------------------------#
+#-------Main Program------#
+#-------------------------#
+# process_quality_control()
+
+# process_mean_data()
+# ------------------------------------------------
+# lowest_baseline="lowest_baseline"
+# corresponding_baseline="corresponding_baseline"
+# day3_day4_ws_mean="day3_day4_ws_mean"
+# ------------------------------------------------
+
+
+
+
+
