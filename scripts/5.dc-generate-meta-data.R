@@ -128,16 +128,28 @@ generate_chunk_mean_df <- function(df, chunk_size_minute) {
   chunk_mean_df <- tibble()
   chunk_size_sec <- chunk_size_minute*60
   
-  for (subj in df$Participant_ID) {
+  print(paste0('For chunk size: ', chunk_size_minute, ' minute'))
+  print('-----------------------------------------------------')
+  
+  for (subj in unique(df$Participant_ID)) {
   # for (subj in c('T001')) {
+    
+    print('')
+    print(subj)
+    print('-------')
+    
     subj_df <- df %>% 
       filter(Participant_ID==subj)
     
-    for (day in subj_df$Day) {
+    
+    for (day in unique(subj_df$Day)) {
     # for (day in c('Day1')) {
+      
+      print(day)
       day_df <- subj_df %>% 
-        filter(Day==day) %>% 
-        filter(Mask==1)
+        filter(Day==day) 
+      # %>% 
+      #   filter(Mask==1)
       
       # # total_row <- nrow(day_df)
       # # print(total_row)
@@ -148,31 +160,39 @@ generate_chunk_mean_df <- function(df, chunk_size_minute) {
       
       while (i*chunk_size_sec<end_treatment_sec) {
       # while (i<10) {
+        
         temp_chunk_df <- day_df %>% 
-          filter(TreatmentTime>=i*chunk_size_sec & TreatmentTime<=(i+1)*chunk_size_sec-1) %>% 
-          select(Participant_ID,	Day, Treatment, PP) %>% 
-          group_by(Participant_ID,	Day, Treatment) %>% 
-          summarize_all(list(
-          Mean_PP = ~mean(., na.rm=TRUE),
-          Total_Rows = ~n(),
-          Total_Non_NA_Rows = ~sum(!is.na(.))
-            
-            ### Median = ~median(., na.rm=TRUE),
-            ### Sd = ~sd(., na.rm=TRUE),
-            
+          filter(TreatmentTime>=i*chunk_size_sec & TreatmentTime<=(i+1)*chunk_size_sec-1)
+        
+        if (nrow(temp_chunk_df)>1) {
+          temp_chunk_df <- temp_chunk_df %>% 
+            select(Participant_ID,	Day, Treatment, Mask, PP) %>% 
+            group_by(Participant_ID,	Day, Treatment, Mask) %>% 
+            summarize_all(list(
+              Mean_PP = ~mean(., na.rm=TRUE),
+              Total_Rows = ~n(),
+              Total_Non_NA_Rows = ~sum(!is.na(.))
+              
+              ### Median = ~median(., na.rm=TRUE),
+              ### Sd = ~sd(., na.rm=TRUE),
+              
             )) %>%
-          mutate(
-            SampleNo=i+1,
-            StartTreatmentTime=i*chunk_size_sec,
-            EndTreatmentTime=(i+1)*chunk_size_sec-1
-                 )
-          # # ungroup() %>% 
-        
-        i=i+1
-        chunk_mean_df <- rbind.fill(chunk_mean_df, temp_chunk_df)
-        
-        print(paste(i, i*chunk_size_sec, (i+1)*chunk_size_sec-1))
-        # # print(temp_chunk_df)
+            mutate(
+              SampleNo=i+1,
+              StartTreatmentTime=i*chunk_size_sec,
+              EndTreatmentTime=min((i+1)*chunk_size_sec-1, end_treatment_sec),
+              DiffTreatmentTime=EndTreatmentTime-StartTreatmentTime
+            )
+          ## ungroup() %>% 
+          
+          
+          chunk_mean_df <- rbind.fill(chunk_mean_df, temp_chunk_df)
+          
+          ## print(paste(i, i*chunk_size_sec, (i+1)*chunk_size_sec-1))
+          ## print(temp_chunk_df)
+        }
+         
+        i=i+1 
       }
     }
   }
@@ -190,7 +210,7 @@ generate_ws_chunk_mean_data <- function() {
     convert_to_csv(mean_chunk_df, file.path(project_dir, 
                                             curated_data_dir, 
                                             physiological_data_dir, 
-                                            paste0(chunk_mean_file_name, '_', chunk_size, '.csv')))
+                                            paste0(chunk_mean_file_name, '_', chunk_size, '_minute.csv')))
     }
 }
 
@@ -201,9 +221,8 @@ generate_ws_chunk_mean_data <- function() {
 # generate_daywise_mean_data()
 
 
-# chunk_sizes <- c(1, 5, 10, 15)
-# chunk_sizes <- c(1, 2)
-chunk_sizes <- c(1)
+chunk_sizes <- c(5, 10, 15)
+# chunk_sizes <- c(15)
 generate_ws_chunk_mean_data()
 
 
