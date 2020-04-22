@@ -124,7 +124,7 @@ generate_daywise_mean_data <- function() {
 }
 
 
-generate_chunk_mean_df <- function(df, chunk_size_minute) {
+generate_chunk_mean_df <- function(df, chunk_size_minute, signal) {
   chunk_mean_df <- tibble()
   chunk_size_sec <- chunk_size_minute*60
   
@@ -166,10 +166,10 @@ generate_chunk_mean_df <- function(df, chunk_size_minute) {
         
         if (nrow(temp_chunk_df)>1) {
           temp_chunk_df <- temp_chunk_df %>% 
-            select(Participant_ID,	Day, Treatment, Mask, PP) %>% 
+            select(Participant_ID,	Day, Treatment, Mask, !!signal) %>% 
             group_by(Participant_ID,	Day, Treatment, Mask) %>% 
             summarize_all(list(
-              Mean_PP = ~mean(., na.rm=TRUE),
+              Mean_Val = ~mean(., na.rm=TRUE),
               Total_Rows = ~n(),
               Total_Non_NA_Rows = ~sum(!is.na(.))
               
@@ -205,13 +205,16 @@ generate_chunk_mean_df <- function(df, chunk_size_minute) {
 generate_ws_chunk_mean_data <- function() {
   df <- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, input_file_name))
   
-  for (chunk_size in chunk_sizes) {
-    mean_chunk_df <- generate_chunk_mean_df(df, chunk_size)
-    convert_to_csv(mean_chunk_df, file.path(project_dir, 
-                                            curated_data_dir, 
-                                            physiological_data_dir, 
-                                            paste0(chunk_mean_file_name, '_', chunk_size, '_minute.csv')))
+  for (signal in signal_name_list) {
+    for (chunk_size in chunk_sizes) {
+      mean_chunk_df <- generate_chunk_mean_df(df, chunk_size, signal)
+      convert_to_csv(mean_chunk_df, file.path(project_dir, 
+                                              curated_data_dir, 
+                                              physiological_data_dir, 
+                                              paste0(chunk_mean_file_name, '_', signal, '_', chunk_size, '_minute.csv')))
     }
+  }
+  
 }
 
 #-------------------------#

@@ -20,8 +20,8 @@ t_test_comparison <- day3_day4_ws_min
 enable_log_transformation=TRUE
 
 
-percentage <- 10
-chunk_sizes <- c(1, 2, 5, 10, 15)
+discard_rate <- 10  # in %
+chunk_sizes <- c(5, 10, 15)
 
 
 
