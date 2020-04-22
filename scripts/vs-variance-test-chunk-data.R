@@ -18,8 +18,8 @@ source(file.path(script_dir, 'us-common-functions.R'))
 # variance_test_df <- tibble()
 
 
-signal_name_list <- c('Mean_PP')
-# signal_name_list <- c('PP', 'E4_HR', 'E4_EDA', 'iWatch_HR')
+# signal_name_list <- c('Mean_PP')
+signal_name_list <- c('PP', 'E4_HR', 'E4_EDA', 'iWatch_HR')
 
 
 chunk_mean_file_name <- remove_rigth_substr(qc1_log_trans_mean_chunk_file_name, 4)
