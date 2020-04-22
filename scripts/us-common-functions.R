@@ -8,6 +8,7 @@ curated_data_dir <- 'curated-data'
 subj_data_dir <- 'subject-data'
 utility_data_dir <- 'utility-data'
 physiological_data_dir <- 'physiological-data'
+physiological_questionnaire_data_dir <- 'physiological-questionnaire-data'
 questionnaire_data_dir <- 'questionnaire-data'
 performance_data_dir <- 'performance-data'
 index_data_dir <- 'index-data'
@@ -73,6 +74,10 @@ day3_day4_ws_mean="day3_day4_ws_mean"
 day3_day4_ws_min="day3_day4_ws_min"
 
 
+
+
+activity_state_nasa_file_name <- 'activity_state_nasa.csv'
+trait_biographic_file_name <- 'trait_biographic.csv'
 
 
 

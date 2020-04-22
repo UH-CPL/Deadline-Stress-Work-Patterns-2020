@@ -1,0 +1,195 @@
+---
+title: "Heart Rate Comparison Plots"
+header-includes:
+- \usepackage{booktabs}
+# - \usepackage{sectsty} \sectionfont{\centering}
+output:
+  pdf_document: default
+  html_document: default
+geometry: top=3.5cm, bottom=3cm
+
+# knit: (function(inputFile, encoding) { rmarkdown::render(inputFile, encoding = encoding, output_file = file.path('plots', 'supplementary.pdf')) })
+---
+
+
+```{r echo = FALSE, warning = FALSE, message = FALSE} 
+
+#-------------------------#
+#--------LIBRARIES--------#
+#-------------------------#
+library(readr)
+library(dplyr)
+library(tidyverse)
+library(ggplot2)
+library(grid)
+library(gridExtra)
+library(ggpubr)
+library(gsubfn)
+library(cowplot)
+
+
+
+#-------------------------#
+#-----GLOBAL VARIABLES----#
+#-------------------------#
+project_dir<-dirname(getwd())
+source(file.path(getwd(), 'us-common-functions.R'))
+
+# setwd(project_dir)
+
+qc1_treatment_mean_df <- tibble()
+
+
+hr_col_names <- c('E4_HR', 'iWatch_HR')
+common_col_names <- c('Participant_ID', 'Day', 'Treatment', 'TreatmentTime')
+hr_col_list <- c(common_col_names, hr_col_names)
+
+
+hr_col_vec <- c('coral', 'dodgerblue')
+hr_mean_col_vec <- c('coral3', 'dodgerblue3')
+
+``` 
+
+
+```{r echo=FALSE, warning = FALSE, message = FALSE}
+read_data <- function() {
+  qc1_log_transformed_df <<- custom_read_csv(file.path(project_dir, 
+                                                     curated_data_dir, 
+                                                     physiological_data_dir, 
+                                                     qc1_log_transformed_file_name))
+  qc1_treatment_mean_df <<- custom_read_csv(file.path(project_dir, 
+                                                     curated_data_dir, 
+                                                     physiological_data_dir, 
+                                                     qc1_treatment_mean_v1_file_name))
+}
+
+get_hr_y_min_lim <- function(df) {
+  if(min(df$Value) < 50) min(df$Value) else 50
+}
+
+get_hr_y_max_lim <- function(df) {
+  if(max(df$Value) > 120) max(df$Value) else 120
+}
+
+get_mean <- function(subj, day, treatment, col_name) {
+  mean <- qc1_treatment_mean_df %>%
+    filter(Participant_ID==subj & Day==day & Treatment==treatment) %>%
+    select(col_name) %>% 
+    unlist(.)
+  return(mean)
+}
+
+
+draw_plots <- function() {
+  subj_list <- levels(factor(qc1_treatment_mean_df$Participant_ID))
+  day_list <- levels(factor(qc1_treatment_mean_df$Day))
+  treatment_list <- levels(factor(qc1_treatment_mean_df$Treatment))
+  
+  # print(subj_list)
+  
+
+  for(subj in subj_list) {
+  # for(subj in c('T003')) {
+  # for(subj in c('T001', 'T007')) {
+    
+    plot_list <- list()
+    
+    message('')
+    message(subj)
+    message('-----------------')
+    
+    for (day in day_list) {
+      message(day)
+      
+      for (treatment in treatment_list) {
+        message(paste0('-- ', treatment, ' --'))
+        
+        hr_df <- qc1_log_transformed_df %>% 
+          filter(Participant_ID==subj, Day==day, Treatment==treatment) %>%
+          select(hr_col_list) %>% 
+          gather(Signal, Value, hr_col_names) %>% 
+          # mutate(Signal=replace(Signal, Signal=='E4_HR', 'E4_HR'),
+          #        Signal=replace(Signal, Signal=='iWatch_HR', 'iWatch_HR')) %>%
+          filter(!is.na(Value))
+        
+        
+        hr_factors <- levels(factor(hr_df$Signal))
+      
+        temp_hr_col_vec <- vector()
+        temp_hr_mean_col_vec <- vector()
+        
+        for(idx in 1:length(hr_col_names)) {
+          if(hr_col_names[idx] %in% hr_factors) {
+            temp_hr_col_vec <- c(temp_hr_col_vec, hr_col_vec[idx])
+            temp_hr_mean_col_vec <- c(temp_hr_mean_col_vec, hr_mean_col_vec[idx])
+          }
+        }
+        
+        title <- paste0(subj, ' - ', day, ' - ', treatment)
+        
+        if(nrow(hr_df)>0) {
+          
+          hr_plot <- hr_df %>%
+            ggplot(aes(x=TreatmentTime, y=Value, colour=Signal)) +
+            geom_line() +
+            scale_colour_manual(values=temp_hr_col_vec) +
+            # ylim(get_hr_y_min_lim(hr_df), get_hr_y_max_lim(hr_df))
+            ggtitle(title) +
+            xlab('') +
+            ylab('HR [BPM]')
+          
+          hr_plot <- hr_plot + 
+            theme_bw() +
+            theme(plot.title = element_text(hjust = 0.5, face = "bold"),
+                  legend.title=element_blank(),
+                  panel.grid.major = element_blank(),
+                  panel.grid.minor = element_blank(),
+                  axis.line = element_line(colour = "black"),
+                  legend.position="bottom")
+          
+          for(idx in 1:length(hr_factors)) {
+            hr_plot <- hr_plot +
+              geom_hline(yintercept=get_mean(subj, day, treatment, hr_factors[idx]), 
+                       linetype="dashed",
+                       size=1.2,
+                       color=temp_hr_mean_col_vec[idx])
+          }
+          
+          if (day=='Day4') {
+            hr_plot <- hr_plot + xlab('Time [s]')
+          }
+
+        }
+        
+        plot_list[[length(plot_list)+1]] <- hr_plot
+      }
+    }
+    
+    if(length(plot_list)!=0) {
+      # grid_plot <- grid.arrange(grobs=plot_list, ncol=2)
+      grid_plot <- plot_grid(plotlist=plot_list, 
+                         align='h',
+                         cols=2)
+                         # rel_heights=c(0.3, 1))
+                         # rel_heights=c(1.15, 1))
+      
+    }
+    
+    # message(getwd())
+    print(grid_plot)
+    save_rmd_plot(plot_name=paste0(subj, '-hr-comparison'), plot=grid_plot)
+    }
+}
+
+
+# read_data()
+# draw_plots()
+```
+
+
+
+<!-- DRAW PLOTS -->
+```{r echo=FALSE, warning = FALSE, message = FALSE}
+read_data()
+draw_plots()
+```

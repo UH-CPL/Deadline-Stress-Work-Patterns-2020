@@ -71,12 +71,33 @@ chunk_sizes <- c(5, 10, 15)
 # source(file.path(script_dir, '5.dc-generate-meta-data.R'))
 # generate_ws_chunk_mean_data()
 
-source(file.path(script_dir, 'vs-variance-test-chunk-data.R'))
-conduct_variance_tests_chunk_data()
+# source(file.path(script_dir, 'vs-variance-test-chunk-data.R'))
+# conduct_variance_tests_chunk_data()
 
 
 #-------------------------------------------------------------------------------------------- #
 #                      PLEASE REMOVE THE REPEATED CODE  3 & 5                                 #
 #-------------------------------------------------------------------------------------------- #
+
+
+
+
+
+
+
+#-------------------------------------------------------------------------------------------- 10
+source(file.path(script_dir, 'vs-linear-models.Rmd'))
+conduct_linear_modeling()
+
+
+
+
+
+
+
+
+
+
+
 
 
