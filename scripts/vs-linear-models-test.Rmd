@@ -1,0 +1,46 @@
+---
+title: "Linear Models -Test"
+header-includes:
+- \usepackage{booktabs}
+- \usepackage{sectsty} \sectionfont{\centering}
+output:
+  pdf_document: default
+  html_document: default
+geometry: top=3.5cm, bottom=3cm
+
+#knit: (function(inputFile, encoding) { rmarkdown::render(inputFile, encoding = encoding, output_file = file.path('plots', 'supplementary.pdf')) })
+---
+
+
+
+
+```{r echo = FALSE, warning = FALSE, message = FALSE, results='hide'} 
+#-------------------------#
+#--------LIBRARIES--------#
+#-------------------------#
+library(lme4)
+library(nlme)
+library(VGAM)
+
+
+# load data
+data(iris)
+# fit model
+fit <- vglm(Species~., family=multinomial, data=iris)
+# summarize the fit
+summary(fit)
+# make predictions
+probabilities <- predict(fit, iris[,1:4], type="response")
+predictions <- apply(probabilities, 1, which.max)
+predictions[which(predictions=="1")] <- levels(iris$Species)[1]
+predictions[which(predictions=="2")] <- levels(iris$Species)[2]
+predictions[which(predictions=="3")] <- levels(iris$Species)[3]
+# summarize accuracy
+print(table(predictions, iris$Species))
+``` 
+
+
+\newpage
+```{r echo=FALSE, warning = FALSE, message = FALSE}
+print('Hello')
+```

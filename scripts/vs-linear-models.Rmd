@@ -20,6 +20,11 @@ geometry: top=3.5cm, bottom=3cm
 #-------------------------#
 library(lme4)
 library(nlme)
+library(VGAM)
+library(MASS)
+library(caret)
+
+
 
 #-------------------------#
 #-----GLOBAL VARIABLES----#
@@ -41,23 +46,44 @@ setwd(project_dir)
 #-------------------------#
 #-----   FUNCTIONS    ----#
 #-------------------------#
-read_data <- function(chunk_size_minute, signal) {
-  activity_state_nasa_df <<- custom_read_csv(file.path(project_dir, 
+read_data <- function() {
+  physiological_questionnaire_data_path <- file.path(project_dir, 
                                         curated_data_dir, 
-                                        physiological_questionnaire_data_dir,
-                                        activity_state_nasa_file_name))
+                                        physiological_questionnaire_data_dir)
   
-  trait_biographic_df <<- custom_read_csv(file.path(project_dir, 
-                                        curated_data_dir, 
-                                        physiological_questionnaire_data_dir,
-                                        trait_biographic_file_name))
+  mean_df <- custom_read_csv(file.path(project_dir,
+            curated_data_dir,
+            physiological_data_dir,
+            qc1_log_trans_mean_v1_file_name))
+
+  activity_state_nasa_df <- custom_read_csv(file.path(physiological_questionnaire_data_path, activity_state_nasa_file_name))
+  trait_biographic_df <- custom_read_csv(file.path(physiological_questionnaire_data_path, trait_biographic_file_name))
   
-  # print(head(activity_state_nasa_df, 5))
-  # print(head(trait_biographic_df, 5))
+  physiological_questionnaire_df <<- merge(mean_df, activity_state_nasa_df, by=c('Participant_ID', 'Day'))
+  physiological_questionnaire_df <<- merge(physiological_questionnaire_df, trait_biographic_df, by='Participant_ID')
+  
+  # # print(head(physiological_questionnaire_df, 5))
+  # # print(head(activity_state_nasa_df, 5))
+  # # print(head(trait_biographic_df, 5))
+  
+  
+  # print(colnames(physiological_questionnaire_df))
+  # physiological_questionnaire_df$Day <<- factor(physiological_questionnaire_df$Day)
+  convert_to_csv(physiological_questionnaire_df, file.path(physiological_questionnaire_data_path,
+                                                           physiological_questionnaire_file_name))
 }
 ```
 
 
+<!-- Participant_ID	Day	Treatment	PP	E4_HR	E4_EDA	iWatch_HR	
+R	W	Out	SA	SP	I	
+Mental	Physical	Temporal	Performance	Effort	Frustration	
+StartDay	EndDay	
+Position	Department	Google_Scholar_H.index	Working_To_Submit	Proposal_Venue	Proposal_Submitted	Date_Of_Submission_Proposal	Approximate_Date_Of_Submission_Proposal	Received_Funding_Before	Role_In_Proposal	Type_Of_site	Num_Of_Investigators	Size_Of_Grant	Historic_Acceptance_Rate_Of_Venue	Proposal_Importance_To_Career	Conference.Journal_Name	Paper_Submitted	Date_Of_Submission	Approximate_Date_Of_Submission	Prviously_Published_This_Venue	Authorship	NumberOf_Co_Authors	Historic_Acceptance_Rate	Importance_To_Career	How_Long_Working_INDays	Start_Working_Critical_Proposal_Paper	Time_Precedes_Paper_Proposal_InDays	Work_Office	Working_Hours_TypicalWorkday	Working_Hours_BeforeDeadline	Break_After_Hours	Activities_During_Break	Trait_anxiety	Personality_AB	BFI_.Agreeableness	BFI_.Conscientiousness	BFI_.Extraversion	BFI_.Neuroticism	BFI_.Openness	
+StartDay_S.Anxiety.Before.Deadline	
+EndDay_S.Anxiety.Before.Deadline	
+StartDay_S.Anxiety.After.Deadline	
+EndDay_S.Anxiety.After.Deadline -->
 
 \newpage
 ```{r echo=FALSE, warning = FALSE, message = FALSE}
@@ -66,23 +92,300 @@ read_data()
 
 
 
+
+
+
+
+<!-- \newpage -->
+<!-- Linear Model - 1.1.1 --> No Random Effect -->
+<!-- ------------------------------ -->
+<!-- ```{r echo=FALSE, warning = FALSE, message = FALSE} -->
+<!-- model = lm(PP ~ Day, data=physiological_questionnaire_df, na.action = na.omit) -->
+<!-- print(summary(model)) -->
+<!-- ``` -->
+
+<!-- \newpage -->
+<!-- Linear Model - 1.1.2 --> No Random Effect -->
+<!-- ------------------------------ -->
+<!-- ```{r echo=FALSE, warning = FALSE, message = FALSE} -->
+<!-- model = lm(PP ~ Day + StartDay + EndDay + Mental + Physical + Temporal + Performance + Effort + Frustration, data=physiological_questionnaire_df, na.action = na.omit) -->
+<!-- print(summary(model)) -->
+<!-- ``` -->
+
+<!-- \newpage -->
+<!-- Linear Model - 1.1.3 --> No Random Effect -->
+<!-- ------------------------------ -->
+<!-- ```{r echo=FALSE, warning = FALSE, message = FALSE} -->
+<!-- model = lm(PP ~ Mental + Physical + Temporal + Performance + Effort + Frustration, data=physiological_questionnaire_df, na.action = na.omit) -->
+<!-- print(summary(model)) -->
+<!-- ``` -->
+
+
+<!-- \newpage -->
+<!-- Linear Model - 1.1.4 --> No Random Effect -->
+<!-- ------------------------------ -->
+<!-- ```{r echo=FALSE, warning = FALSE, message = FALSE} -->
+<!-- model = lm(PP ~ StartDay + EndDay, data=physiological_questionnaire_df, na.action = na.omit) -->
+<!-- print(summary(model)) -->
+<!-- ``` -->
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- \newpage -->
+<!-- Linear Model - 1.2.1 -> No Random Effect -->
+<!-- ------------------------------ -->
+<!-- ```{r echo=FALSE, warning = FALSE, message = FALSE} -->
+<!-- model = lm(E4_HR ~ Day, data=physiological_questionnaire_df, na.action = na.omit) -->
+<!-- print(summary(model)) -->
+<!-- ``` -->
+
+
+<!-- \newpage -->
+<!-- Linear Model - 1.2.2 -> No Random Effect -->
+<!-- ------------------------------ -->
+<!-- ```{r echo=FALSE, warning = FALSE, message = FALSE} -->
+<!-- model = lm(E4_HR ~ Day + StartDay + EndDay + Mental + Physical + Temporal + Performance + Effort + Frustration, data=physiological_questionnaire_df, na.action = na.omit) -->
+<!-- print(summary(model)) -->
+<!-- ``` -->
+
+<!-- \newpage -->
+<!-- Linear Model - 1.2.3 -> No Random Effect -->
+<!-- ------------------------------ -->
+<!-- ```{r echo=FALSE, warning = FALSE, message = FALSE} -->
+<!-- model = lm(E4_HR ~ Mental + Physical + Temporal + Performance + Effort + Frustration, data=physiological_questionnaire_df, na.action = na.omit) -->
+<!-- print(summary(model)) -->
+<!-- ``` -->
+
+
+<!-- \newpage -->
+<!-- Linear Model - 1.2.4 -> No Random Effect -->
+<!-- ------------------------------ -->
+<!-- ```{r echo=FALSE, warning = FALSE, message = FALSE} -->
+<!-- model = lm(E4_HR ~ StartDay + EndDay, data=physiological_questionnaire_df, na.action = na.omit) -->
+<!-- print(summary(model)) -->
+<!-- ``` -->
+
+
+
+
+<!-- \newpage -->
+<!-- Linear Model - 1.3 -> No Random Effect -->
+<!-- ------------------------------ -->
+<!-- ```{r echo=FALSE, warning = FALSE, message = FALSE} -->
+<!-- model = lm(E4_EDA ~ Day, data=physiological_questionnaire_df, na.action = na.omit) -->
+<!-- print(summary(model)) -->
+<!-- ``` -->
+
+
+<!-- \newpage -->
+<!-- Linear Model - 1.4 -> No Random Effect -->
+<!-- ------------------------------ -->
+<!-- ```{r echo=FALSE, warning = FALSE, message = FALSE} -->
+<!-- model = lm(iWatch_HR ~ Day, data=physiological_questionnaire_df, na.action = na.omit) -->
+<!-- print(summary(model)) -->
+<!-- ``` -->
+
+
+
+
+
+
+
+
+
+
+
 \newpage
+Linear Model - 2.1.1 -> Random Effect
+------------------------------
 ```{r echo=FALSE, warning = FALSE, message = FALSE}
-print('Hello')
+# model = lmer(PP ~ Day + Mental + Temporal + 1|Participant_ID,
+#               data=physiological_questionnaire_df,
+#               REML=FALSE)
+# print(summary(model))
+
+
+model = lme(PP ~ Day + StartDay + EndDay + Mental + Physical + Temporal + Performance + Effort + Frustration,
+            data=physiological_questionnaire_df,
+            random=~1|Participant_ID,
+            na.action = na.omit)
+print(summary(model))
+print(anova(model))
+```
+
+
+
+\newpage
+Linear Model - 2.1.2 -> Random Effect
+------------------------------
+```{r echo=FALSE, warning = FALSE, message = FALSE}
+model = lme(PP ~ StartDay + EndDay + Mental + Physical + Temporal + Performance + Effort + Frustration,
+            data=physiological_questionnaire_df,
+            random=~1|Participant_ID,
+            na.action = na.omit)
+print(summary(model))
 ```
 
 
 
 
+
+
+
+
+
+
+
+
+
 \newpage
+Linear Model - 2.2.1 -> Random Effect
+------------------------------
 ```{r echo=FALSE, warning = FALSE, message = FALSE}
-print('Hello')
+model = lme(E4_HR ~ Day + StartDay + EndDay + Mental + Physical + Temporal + Performance + Effort + Frustration, 
+            data=physiological_questionnaire_df,
+            random=~1|Participant_ID,
+            na.action = na.omit)
+print(summary(model))
+print(anova(model))
+```
+
+
+
+\newpage
+Linear Model - 2.2.2 -> Random Effect
+------------------------------
+```{r echo=FALSE, warning = FALSE, message = FALSE}
+model = lme(E4_HR ~ StartDay + EndDay + Mental + Physical + Temporal + Performance + Effort + Frustration, 
+            data=physiological_questionnaire_df,
+            random=~1|Participant_ID,
+            na.action = na.omit)
+print(summary(model))
 ```
 
 
 
 
+
+
+
+
+
+
+
+\newpage
+Linear Model - 2.3.1 -> Random Effect
+------------------------------
+```{r echo=FALSE, warning = FALSE, message = FALSE}
+model = lme(E4_EDA ~ Day + StartDay + EndDay + Mental + Physical + Temporal + Performance + Effort + Frustration, 
+            data=physiological_questionnaire_df,
+            random=~1|Participant_ID,
+            na.action = na.omit)
+print(summary(model))
+print(anova(model))
+```
+
+
+
+\newpage
+Linear Model - 2.3.2 -> Random Effect
+------------------------------
+```{r echo=FALSE, warning = FALSE, message = FALSE}
+model = lme(E4_EDA ~ StartDay + EndDay + Mental + Physical + Temporal + Performance + Effort + Frustration, 
+            data=physiological_questionnaire_df,
+            random=~1|Participant_ID,
+            na.action = na.omit)
+print(summary(model))
+```
+
+
+
+
+
+
+
+
+\newpage
+Linear Model - 2.4.1 -> Random Effect
+------------------------------
+```{r echo=FALSE, warning = FALSE, message = FALSE}
+model = lme(iWatch_HR ~ Day + StartDay + EndDay + Mental + Physical + Temporal + Performance + Effort + Frustration, 
+            data=physiological_questionnaire_df,
+            random=~1|Participant_ID,
+            na.action = na.omit)
+print(summary(model))
+print(anova(model))
+```
+
+
+
+\newpage
+Linear Model - 2.4.2 -> Random Effect
+------------------------------
+```{r echo=FALSE, warning = FALSE, message = FALSE}
+model = lme(iWatch_HR ~ StartDay + EndDay + Mental + Physical + Temporal + Performance + Effort + Frustration, 
+            data=physiological_questionnaire_df,
+            random=~1|Participant_ID,
+            na.action = na.omit)
+print(summary(model))
+```
+
+
+
+
+
+
+
+
+
+\newpage
+Logistic Model - 1
+```{r echo=FALSE, warning = FALSE, message = FALSE}
+model <- vglm(Day~PP + Mental + Temporal, family=multinomial, data=physiological_questionnaire_df, na.action = na.omit)
+print(summary(model))
+```
+
+
+\newpage
+Logistic Model - 2
+```{r echo=FALSE, warning = FALSE, message = FALSE}
+model <- vglm(Day~E4_HR, family=multinomial, data=physiological_questionnaire_df, na.action = na.omit)
+print(summary(model))
+```
+
+
+
+\newpage
+Linear Discriminant Analysis - 1
+```{r echo=FALSE, warning = FALSE, message = FALSE}
+model <- lda(Day~E4_HR, family=multinomial, data=physiological_questionnaire_df, na.action = na.omit)
+print(summary(model))
+```
+
+
+
+<!-- \newpage -->
+<!-- Partial Least Squares Discriminant Analysis - 1 -->
+<!-- ```{r echo=FALSE, warning = FALSE, message = FALSE} -->
+
+<!-- x <- physiological_questionnaire_df$E4_HR -->
+<!-- y <- physiological_questionnaire_df$Day -->
+<!-- # fit model -->
+<!-- fit <- plsda(x, y, probMethod="Bayes") -->
+<!-- print(summary(model)) -->
+<!-- ``` -->
+
 \newpage
 ```{r echo=FALSE, warning = FALSE, message = FALSE}
-print('Hello')
+mat <- model.matrix(~Day, data = physiological_questionnaire_df)
+head(mat[, -1])
 ```
