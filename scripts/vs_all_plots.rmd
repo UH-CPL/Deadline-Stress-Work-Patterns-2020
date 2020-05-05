@@ -39,8 +39,8 @@ data_file_name<-'qc99_all_subj.csv'
 
 
 ```{r cars, echo=FALSE}
-DF<-read.csv(file.path(data_dir,data_file_name),stringsAsFactors = FALSE)
-file_name <- 'Quantitive_All_subject.csv'
+ DF<-read.csv(file.path(data_dir,data_file_name),stringsAsFactors = FALSE)
+# file_name <- 'Quantitive_All_subject.csv'
 DF<-DF[!(DF$Participant_ID=="T005" & DF$Day=="Day4"),]
 DF$Day[DF$Day=="Day5"] <- "Day4"
 ```
@@ -130,27 +130,32 @@ mean_of_session_iw<-function(DataFrame, col_name,col_number){
 
 
 ```{r}
-sid<-factor(DF$Participant_ID)
+# sid<-factor(DF$Participant_ID)
+# 
+# n=nlevels(sid)
+# for (i in 1:n) {
+#   DF_Participant<-subset(DF, Participant_ID==levels(sid)[i])
+# 
+#   subject_title=levels(sid)[i]
+#   Baseline_DF <- DF_Participant %>% filter(Treatment=="RB")
+#   Baseline_Plot_Physiological(Baseline_DF,subject_title)
+# 
+#   WS_DF <- DF_Participant %>% filter(Treatment=="WS")
+#   WS_Plot_Physiological(WS_DF,subject_title)
+# 
+# }
 
-n=nlevels(sid)
-for (i in 1:n) {
-  DF_Participant<-subset(DF, Participant_ID==levels(sid)[i])
-
-  subject_title=levels(sid)[i]
-  Baseline_DF <- DF_Participant %>% filter(Treatment=="RB")
-  Baseline_Plot_Physiological(Baseline_DF,subject_title)
-
-  WS_DF <- DF_Participant %>% filter(Treatment=="WS")
-  WS_Plot_Physiological(WS_DF,subject_title)
-
-}
-
-# subject_title="T017"
-# DF_Sub_Day<-subset(DF, Participant_ID=="T017")
-# Baseline_DF <- DF_Sub_Day %>% filter(Treatment=="RB")
-# WS_DF <- DF_Sub_Day %>% filter(Treatment=="WS")
-# Baseline_Plot_Physiological(Baseline_DF,subject_title)
-# WS_Plot_Physiological(WS_DF,subject_title)
+subject_title="T007"
+DF_Sub_Day<-subset(DF, Participant_ID=="T007")
+Baseline_DF <- DF_Sub_Day %>% filter(Treatment=="RB")
+WS_DF <- DF_Sub_Day %>% filter(Treatment=="WS")
+for (i in 1:nrow(WS_DF)) {
+  if (WS_DF$PP[i] < 0.0024 & is.na(WS_DF$PP[i])==FALSE ){
+    WS_DF$PP[i]=NA
+  }
+} 
+Baseline_Plot_Physiological(Baseline_DF,subject_title)
+WS_Plot_Physiological(WS_DF,subject_title)
 
 
 ```

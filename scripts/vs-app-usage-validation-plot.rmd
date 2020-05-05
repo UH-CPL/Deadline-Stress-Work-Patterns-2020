@@ -32,8 +32,8 @@ unique(DF$Application)
 ```
 
 ```{r}
-DF_Sub1<-subset(DF, Participant_ID=="T007" & DF$Treatment=="WS" & Day=="Day2" & DF$Activities_QC2=="Computer Working" & DF$Reduced_Ontology_One!="SA")
-#DF_Sub1<-subset(DF, Participant_ID=="T005" & DF$Treatment=="WS" & Day=="Day4")
+#DF_Sub1<-subset(DF, Participant_ID=="T015" & DF$Treatment=="WS" & Day=="Day1" & DF$Activities_QC2=="Computer Working" & DF$Reduced_Ontology_One!="SA")
+DF_Sub1<-subset(DF, Participant_ID=="T017" & DF$Treatment=="WS" & Day=="Day3")
 unique(DF_Sub1$Application)
 tab_activities <- table(DF_Sub1$Application_QC1)
 tab_activities
@@ -50,23 +50,22 @@ tab_activities
 DF=DF %>% mutate(Modified_App = ifelse(Application_QC1 == "Microsoft Word" | Application_QC1 == "Microsoft AutoUpdate" |Application_QC1 == "Microsoft PowerPoint" | Application_QC1 == "AdobeAcrobat"| 
                                                    Application_QC1 == "AdobeReader" | Application_QC1 == "Emacs-x86_64-10_9" |Application_QC1 == "EndNote X7"|Application_QC1 == "Microsoft Excel" |Application_QC1 == "zotero"|
                                                    Application_QC1 == "Evernote"| Application_QC1 == "Preview"|Application_QC1 == "TextEdit"|Application_QC1 == "Acrobat"|Application_QC1 == "WINWORD"|
-                                                  Application_QC1 == "POWERPNT"|Application_QC1 == "EXCEL"|Application_QC1=="MendeleyDesktop","Document Apps", 
-                                       
-                                       
+                                                  Application_QC1 == "POWERPNT"|Application_QC1 == "EXCEL"|Application_QC1=="MendeleyDesktop"|Application_QC1=="AcroRd32"|Application_QC1=="Photoshop"
+                                       |Application_QC1=="lyx"|Application_QC1=="BibDesk"|Application_QC1=="TeXShop","Document Apps", 
                                        
                                 ifelse(Application_QC1 == "Mail"| Application_QC1 == "Microsoft Outlook", "Email",
                                        
                                        
                                 ifelse(Application_QC1=="Google Chrome"| Application_QC1=="firefox"|Application_QC1=="Safari"|Application_QC1=="chrome", "Web Browsing Apps",
                                        
-                                ifelse(Application_QC1=="Photos"| Application_QC1=="iTunes"|Application_QC1=="Spotify" | Application_QC1=="App Store", "Entertaining Apps",
+                                ifelse(Application_QC1=="Photos"| Application_QC1=="iTunes"|Application_QC1=="Spotify" | Application_QC1=="App Store"| Application_QC1=="FindMy", "Entertaining Apps",
                                        
                                 ifelse(Application_QC1=="Calendar"| Application_QC1=="Finder" | Application_QC1=="Notes" | Application_QC1=="explorer", "Utilities Apps",
                                        
                                 ifelse(Application_QC1=="JavaApplication_QC1Stub"| Application_QC1=="RStudio" | Application_QC1=="Osascript" | Application_QC1=="Terminal" | Application_QC1=="Console" 
-                                                 |Application_QC1=="ATLAS.ti" |Application_QC1=="TeamViewer" | Application_QC1 == "Idle", "Programming Apps",
+                                                 |Application_QC1=="ATLAS.ti" |Application_QC1=="TeamViewer" | Application_QC1 == "Idle"| Application_QC1 == "rstudio"| Application_QC1 == "pycharm"| Application_QC1 == "iTerm2"| Application_QC1 == "Mathematica"| Application_QC1 == "MATLAB", "Programming Apps",
                                        
-                                ifelse(Application_QC1=="QQ"| Application_QC1=="Skype" |Application_QC1=="FaceTime"| Application_QC1=="Slack" |Application_QC1=="WeChat"| Application_QC1=="Messages"  , "Virtual Communication Apps",
+                                ifelse(Application_QC1=="QQ"| Application_QC1=="Skype" |Application_QC1=="FaceTime"| Application_QC1=="Slack" |Application_QC1=="WeChat"| Application_QC1=="Messages" | Application_QC1=="Telegram Desktop" | Application_QC1=="Discord"  , "Virtual Communication Apps",
                                        
                                 ifelse(Application_QC1=="Cisco AnyConnect Secure Mobility Client"| Application_QC1=="NA", "NA" ,"NA")))))))))
 #unique(DF$Modified_App)
@@ -160,7 +159,7 @@ p<-ggplot(data, aes(x=x, fill=y)) +
 ```
 
 ```{r, echo=FALSE}
-plot_location<-"C:/Users/soton/Documents/R/DeadlineProject/Plots/AppsActivity/Version2/"
+plot_location<-"C:/Users/soton/Documents/R/DeadlineProject/Plots/AppsActivity/Version5/"
 plot_list<-list()
 sid<-factor(DF$Participant_ID)
 n=nlevels(sid)
@@ -209,5 +208,3 @@ for (i in 1:n) {
     
     
 ```
-
-$$\sum_{n=1}^{10} n^2$$

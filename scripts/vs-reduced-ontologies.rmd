@@ -35,6 +35,7 @@ setwd('..')
 root_dir <- getwd()
 data_dir <- file.path(root_dir, 'curated-data/physiological-data')
 data_file_name<-'qc99_all_subj.csv'
+#data_file_name<-'qc0_all_subj.csv'
 ```
 
 ```{r}
@@ -145,7 +146,7 @@ for (i in 1:numberSid) {
     final_list[[length(final_list) + 1]] <- final_plot
     
   full_path<-paste(plot_location,subject_name_list[i],".pdf",sep="")
-  ggsave(full_path, final_plot, width = 8.5, height = 11, units = "in")
+  #ggsave(full_path, final_plot, width = 8.5, height = 11, units = "in")
 }
 
 ```
@@ -154,11 +155,13 @@ for (i in 1:numberSid) {
 ```{r}
 Draw_Timeline_Heatmap<-function(Data_Frame, Title){
   print("1111111111111111111")
+  #Data_Frame_=Draw_Timeline_Day(Data_Frame, Title)
   Data_Frame_=Draw_Timeline_Day(Data_Frame, Title)
   print("after timeline")
-  #print(Timeline)
+  #print(Data_Frame_)
   print("Before Heatmap calling")
   Heatmap=Draw_HeatMap_Day(Data_Frame_, Title)
+  #Heatmap=Draw_HeatMap_Day(Data_Frame, Title)
   print("after calling")
   #print(Heatmap)
 }
@@ -443,7 +446,7 @@ print("Entered")
         mytable_mat[is.nan(mytable_mat)] <- 0
         mat <- melt(mytable_mat,na.rm = TRUE)
 
-  mat$percent<-percent(mat$value/sum(mat$value))
+  # mat$percent<-percent(mat$value/sum(mat$value))
   mat$percent<-percent(mat$value/sum(mat$value))
   mat$percent_in_num<-(mat$value/sum(mat$value))*100
   mat$percent_in_num<-round(mat$percent_in_num, 2)

@@ -1,0 +1,693 @@
+---
+title: "Unsupervised Clustering with Principal Component Analysis (PCA)"
+output:
+  pdf_document: 
+    fig_caption: yes
+  word_document: default
+  html_document:
+    df_print: paged
+---
+\pagenumbering{gobble}
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(grid)
+library(gridExtra)
+library(dplyr)
+library(ggpubr)
+#install.packages('DataCombine')
+library(DataCombine)
+library(dplyr)
+library(reshape2)
+library(tidyr)
+library(stringr)
+library(plyr)
+library(ggplot2)
+library(dplyr)
+library(miceadds)
+library(gtools)
+library(ggpubr)
+library(gvlma)
+library(MASS)
+library(reshape2)
+library(ggcorrplot)
+library(GGally)
+library(ggnewscale)
+library(scales)
+library(cowplot)
+
+library(tidyverse)  # data manipulation
+library(cluster)    # clustering algorithms
+library(factoextra)
+library(dendextend)
+library(FeatureImpCluster)
+library(flexclust)
+library(DMwR)
+library("FactoMineR")
+```
+
+<!-- ## Clustering the Subject based on Physiological, Activity and Psychometric Data. -->
+
+```{r,echo=FALSE}
+
+current_dir <- getwd()
+setwd('..')
+root_dir <- getwd()
+data_dir <- file.path(root_dir, 'curated-data/physiological-data')
+#data_file_name<-'qc99_all_subj.csv'
+#data_file_name<-'qc1_treatment_mean_v1.csv'
+data_file_name<-'qc1_log_trans_mean_v1.csv'
+```
+
+```{r, echo=FALSE}
+Main_DF<-read.csv(file.path(data_dir,data_file_name),stringsAsFactors = FALSE)
+Main_DF<-subset(Main_DF, select = -c(E4_EDA,iWatch_HR ))
+
+
+Cluster_DF <- data.frame(matrix(ncol = 9, nrow = 9))
+x <- c("Participant_ID", "Day1_PP", "Day2_PP", "Day3_PP", "Day4_PP","Day1_HR","Day2_HR", "Day3_HR", "Day4_HR")
+colnames(Cluster_DF) <- x
+
+Cluster_DF$Participant_ID<-levels(factor(Main_DF$Participant_ID))
+rownames(Cluster_DF)<-Cluster_DF$Participant_ID
+
+Cluster_DF$Participant_ID<-NULL
+
+Day_No<-factor(Main_DF$Day)
+numberOfDay=nlevels(Day_No)
+      for (j in 1:numberOfDay) {
+        
+        #Cluster_DF_RB<-subset(Main_DF, Day==levels(Day_No)[j] & Main_DF$Treatment=="RB")
+        Cluster_DF_WS<-subset(Main_DF, Day==levels(Day_No)[j] & Main_DF$Treatment=="WS")
+        
+        
+        #Cluster_DF[j]<- Cluster_DF_WS$PP - Cluster_DF_RB$PP
+        Cluster_DF[j]<- Cluster_DF_WS$PP
+        #Cluster_DF[j+1]<- Cluster_DF_WS$E4_HR - Cluster_DF_RB$E4_HR
+        
+      }
+
+
+      for (j in 1:numberOfDay) {
+        
+        #Cluster_DF_RB<-subset(Main_DF, Day==levels(Day_No)[j] & Main_DF$Treatment=="RB")
+        Cluster_DF_WS<-subset(Main_DF, Day==levels(Day_No)[j] & Main_DF$Treatment=="WS")
+        #Cluster_DF[j]<- Cluster_DF_WS$PP - Cluster_DF_RB$PP
+        #Cluster_DF[j+4]<- Cluster_DF_WS$E4_HR - Cluster_DF_RB$E4_HR
+        Cluster_DF[j+4]<- Cluster_DF_WS$E4_HR
+      }
+
+Cluster_DF[is.na(Cluster_DF)] <- 0
+
+Cluster_DF$Day1_PP<-NULL
+Cluster_DF$Day1_HR<-NULL
+Cluster_DF$Day4_PP<-NULL
+Cluster_DF$Day4_HR<-NULL
+
+DF_Bib<-read.csv("C:/Users/soton/Documents/R/DeadlineProject/Questionnaire/@CustomBiographic/Questionnaire Data.csv")
+
+# Cluster_DF$Trait_anxiety<- scale(DF_Bib$Trait_anxiety)
+Cluster_DF$Trait_anxiety<- DF_Bib$Trait_anxiety
+Cluster_DF_P_Trait<-scale(Cluster_DF)
+# Cluster_DF$Personality<- DF_Bib$Trait_anxiety
+```
+
+
+
+
+
+## Clustering with PP-HR-Trait Anxiety
+
+```{r, echo=FALSE}
+
+# Cluster_DF<-SoftMax(Cluster_DF)
+set.seed(123)
+# final <- kmeans(Cluster_DF, 2, nstart = 25)
+# #print(final)
+# fviz_cluster(final, data = Cluster_DF)+ggtitle("Clustering PP-HR-Trait Anxiety k = 2")+ xlab("") + ylab("")+theme(plot.title = element_text(hjust = 0.5))
+
+res.pca <- PCA(Cluster_DF_P_Trait, scale = TRUE, graph = FALSE)
+
+d <- dist(Cluster_DF_P_Trait, method = "euclidean")
+hc5 <- hclust(d, method = "ward.D2" )
+
+plot(hc5, cex = 0.6, hang = -1, sub = "", xlab = "")
+# res.pca <- PCA(Cluster_DF_P_Trait, scale = TRUE)
+
+# fviz_eig(res.pca)
+#print(res.pca)
+# fviz_pca_ind(res.pca)
+fviz_pca_ind(res.pca, col.ind = "cos2", # Color by the quality of representation
+             gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
+             repel = TRUE     # Avoid text overlapping
+             )+xlim(-4, 4) + ylim (-4, 4) + labs(title ="Subjects Factor Map -PCA")+ theme(plot.title = element_text(hjust = 0.5))
+
+fviz_pca_var(res.pca,
+             col.var = "contrib", # Color by contributions to the PC
+             gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
+             repel = TRUE     # Avoid text overlapping
+             )+ labs(title ="Variables Contributions")+ theme(plot.title = element_text(hjust = 0.5))
+```
+
+
+
+##  Clustering with PP HR and BFI
+```{r, echo=FALSE}
+Cluster_DF$Trait_anxiety<-NULL
+# Cluster_DF$Agreeableness<- scale(DF_Bib$BFI_.Agreeableness)
+# Cluster_DF$Conscientiousness<- scale(DF_Bib$BFI_.Conscientiousness)
+# Cluster_DF$Extraversion<- scale(DF_Bib$BFI_.Extraversion)
+# Cluster_DF$Neuroticism<- scale(DF_Bib$BFI_.Neuroticism)
+# Cluster_DF$Openness<- scale(DF_Bib$BFI_.Openness)
+
+
+Cluster_DF$Agreeableness<- DF_Bib$BFI_.Agreeableness
+Cluster_DF$Conscientiousness<- DF_Bib$BFI_.Conscientiousness
+Cluster_DF$Extraversion<- DF_Bib$BFI_.Extraversion
+Cluster_DF$Neuroticism<- DF_Bib$BFI_.Neuroticism
+Cluster_DF$Openness<- DF_Bib$BFI_.Openness
+
+
+PP_HR_BFI<-SoftMax(Cluster_DF)
+```
+
+
+<!-- ## Final Clustering with PP HR and BFI -->
+```{r, echo=FALSE}
+
+
+# Cluster_DF<-SoftMax(Cluster_DF)
+set.seed(123)
+# final <- kmeans(Cluster_DF, 2, nstart = 25)
+# #print(final)
+# fviz_cluster(final, data = Cluster_DF)+ggtitle("Clustering PP-HR-BFI k = 2")+ xlab("") + ylab("")+theme(plot.title = element_text(hjust = 0.5))
+
+d <- dist(PP_HR_BFI, method = "euclidean")
+hc5 <- hclust(d, method = "ward.D2" )
+
+# Cut tree into 4 groups
+# sub_grp <- cutree(hc5, k = 2)
+
+# Number of members in each cluster
+#table(sub_grp)
+
+plot(hc5, cex = 0.6, hang = -1, xlab = "", sub = "")
+
+res.pca <- PCA(PP_HR_BFI, scale = TRUE, graph = FALSE)
+# res.pca <- PCA(Cluster_DF, scale = FALSE)
+# fviz_eig(res.pca)
+
+fviz_pca_ind(res.pca,
+             col.ind = "cos2", # Color by the quality of representation
+             gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
+             repel = TRUE     # Avoid text overlapping
+             )+xlim(-4, 4) + ylim (-4, 4) + labs(title ="Subjects Factor Map -PCA")+ theme(plot.title = element_text(hjust = 0.5))
+fviz_pca_var(res.pca,
+             col.var = "contrib", # Color by contributions to the PC
+             gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
+             repel = TRUE     # Avoid text overlapping
+             )+ labs(title ="Variables Contributions")+ theme(plot.title = element_text(hjust = 0.5))
+```
+
+
+
+##  Clustering with PP HR Trait Anxiety and BFI
+
+```{r, echo=FALSE}
+# Cluster_DF$Trait_anxiety<- scale(DF_Bib$Trait_anxiety)
+Cluster_DF$Trait_anxiety<- DF_Bib$Trait_anxiety
+PP_HR_BFI_Trait<-SoftMax(Cluster_DF)
+```
+
+<!-- ##  Final Clustering with PP HR Trait Anxiety and BFI -->
+```{r, echo=FALSE}
+# Cluster_DF<- scale(Cluster_DF)
+# set.seed(123)
+# final <- kmeans(Cluster_DF, 2, nstart = 25)
+# #print(final)
+# fviz_cluster(final, data = Cluster_DF)+ggtitle("Clustering PP-HR-Trait-BFI k = 2")+ xlab("") + ylab("")+theme(plot.title = element_text(hjust = 0.5))
+
+d <- dist(PP_HR_BFI_Trait, method = "euclidean")
+hc5 <- hclust(d, method = "ward.D2" )
+
+# Cut tree into 4 groups
+sub_grp <- cutree(hc5, k = 2)
+
+# Number of members in each cluster
+#table(sub_grp)
+
+plot(hc5, cex = 0.6, hang = -1, xlab = "", sub = "")
+
+
+# res.pca <- PCA(Cluster_DF, scale = TRUE)
+res.pca <- PCA(PP_HR_BFI_Trait, scale = TRUE, graph = FALSE)
+# fviz_eig(res.pca)
+
+fviz_pca_ind(res.pca,
+             col.ind = "cos2", # Color by the quality of representation
+             gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
+             repel = TRUE     # Avoid text overlapping
+             )+xlim(-4, 4) + ylim (-4, 4) + labs(title ="Subjects Factor Map -PCA")+ theme(plot.title = element_text(hjust = 0.5))
+fviz_pca_var(res.pca,
+             col.var = "contrib", # Color by contributions to the PC
+             gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
+             repel = TRUE     # Avoid text overlapping
+             )+ labs(title ="Variables Contributions")+ theme(plot.title = element_text(hjust = 0.5))
+```
+
+
+
+```{r, echo=FALSE}
+current_dir <- getwd()
+setwd('..')
+root_dir <- getwd()
+data_dir <- file.path(root_dir, 'curated-data/physiological-data')
+#data_file_name<-'qc99_all_subj.csv'
+data_file_name<-'Activity_Data.csv'
+
+Activity_Data_all<-read.csv(file.path(data_dir,data_file_name),stringsAsFactors = FALSE)
+
+Activity_Data_all$Com_R_W<- rowSums(Activity_Data_all[,(3:4)])
+Activity_Data_all$Others<- rowSums(Activity_Data_all[,(6:8)])
+
+# Activity_Data_all$R<-scale(Activity_Data_all$R)
+# Activity_Data_all$W <-scale(Activity_Data_all$W)
+# Activity_Data_all$Out<-scale(Activity_Data_all$Out)
+# Activity_Data_all$SA<-scale(Activity_Data_all$SA)
+# Activity_Data_all$SP<-scale(Activity_Data_all$SP)
+# Activity_Data_all$I<-scale(Activity_Data_all$I)
+
+
+# Activity_Data_all$R<-Activity_Data_all$R
+# Activity_Data_all$W <-Activity_Data_all$W
+# Activity_Data_all$Out<-Activity_Data_all$Out
+# Activity_Data_all$SA<-Activity_Data_all$SA
+# Activity_Data_all$SP<-Activity_Data_all$SP
+# Activity_Data_all$I<-Activity_Data_all$I
+
+
+Questionnaire_Data<-read.csv("C:/Users/soton/Documents/R/DeadlineProject/Questionnaire/@EndDay/Data/EndDaySurveyWithResult.csv",stringsAsFactors = FALSE)
+Questionnaire_Data$Nasa<-rowSums(Questionnaire_Data[,(4:9)])
+
+
+Cluster_DF <- data.frame(matrix(ncol = 9, nrow = 9))
+x <- c("Participant_ID", "Day1_PP", "Day2_PP", "Day3_PP", "Day4_PP","Day1_HR","Day2_HR", "Day3_HR", "Day4_HR")
+colnames(Cluster_DF) <- x
+
+Cluster_DF$Participant_ID<-levels(factor(Main_DF$Participant_ID))
+rownames(Cluster_DF)<-Cluster_DF$Participant_ID
+
+Cluster_DF$Participant_ID<-NULL
+
+Day_No<-factor(Main_DF$Day)
+numberOfDay=nlevels(Day_No)
+      for (j in 1:numberOfDay) {
+        
+        #Cluster_DF_RB<-subset(Main_DF, Day==levels(Day_No)[j] & Main_DF$Treatment=="RB")
+        Cluster_DF_WS<-subset(Main_DF, Day==levels(Day_No)[j] & Main_DF$Treatment=="WS")
+        
+        
+        #Cluster_DF[j]<- Cluster_DF_WS$PP - Cluster_DF_RB$PP
+        Cluster_DF[j]<- Cluster_DF_WS$PP
+        #Cluster_DF[j+1]<- Cluster_DF_WS$E4_HR - Cluster_DF_RB$E4_HR
+        
+      }
+
+
+      for (j in 1:numberOfDay) {
+        
+        #Cluster_DF_RB<-subset(Main_DF, Day==levels(Day_No)[j] & Main_DF$Treatment=="RB")
+        Cluster_DF_WS<-subset(Main_DF, Day==levels(Day_No)[j] & Main_DF$Treatment=="WS")
+        #Cluster_DF[j]<- Cluster_DF_WS$PP - Cluster_DF_RB$PP
+        #Cluster_DF[j+4]<- Cluster_DF_WS$E4_HR - Cluster_DF_RB$E4_HR
+        Cluster_DF[j+4]<- Cluster_DF_WS$E4_HR
+      }
+
+Cluster_DF[is.na(Cluster_DF)] <- 0
+
+```
+
+
+<!-- ## Clustering Day1 on PP HR Activity Data and NASA  -->
+```{r, echo=FALSE}
+
+# Activity_Data_all$Mental<-scale(Questionnaire_Data$Mentally)
+# Activity_Data_all$Physically<-scale(Questionnaire_Data$Physically)
+# Activity_Data_all$Hurried<-scale(Questionnaire_Data$Hurried)
+# Activity_Data_all$Successful<-scale(Questionnaire_Data$Successful)
+# Activity_Data_all$Hard<-scale(Questionnaire_Data$How_Hard)
+# Activity_Data_all$Insecure<-scale(Questionnaire_Data$Insecure)
+
+Activity_Data_all$Nasa<-scale(Questionnaire_Data$Nasa)
+Activity_Data_all$Com_R_W<-scale(Activity_Data_all$Com_R_W)
+Activity_Data_all$Out<-scale(Activity_Data_all$Out)
+Activity_Data_all$Others<-scale(Activity_Data_all$Others)
+
+# 
+# Activity_Data_all$StartDay<-(Sum_df$StartDay)
+# Activity_Data_all$EndDay<-(Sum_df$EndDay)
+# 
+# Activity_Data_all$Mental<-Questionnaire_Data$Mentally
+# Activity_Data_all$Physically<-Questionnaire_Data$Physically
+# Activity_Data_all$Hurried<-Questionnaire_Data$Hurried
+# Activity_Data_all$Successful<-Questionnaire_Data$Successful
+# Activity_Data_all$Hard<-Questionnaire_Data$How_Hard
+# Activity_Data_all$Insecure<-Questionnaire_Data$Insecure
+
+write.csv(Activity_Data_all, file="Activity_Data_all.csv")
+ 
+Activity_Data_Day1<-subset(Activity_Data_all, Day=="Day1")
+
+Activity_Data_Day1$PP<- Cluster_DF$Day1_PP
+Activity_Data_Day1$HR<- Cluster_DF$Day1_HR
+
+rownames(Activity_Data_Day1)<-Activity_Data_Day1$Participant_ID
+Activity_Data_Day1$Participant_ID<-NULL
+Activity_Data_Day1$Day<-NULL
+
+Activity_Data_Day1<-Activity_Data_Day1[, -c(1, 2, 4, 5, 6)]
+
+# colnames(Activity_Data_Day1)<-c("Day1_Out", "Day1_Comp_RW", "Day1_Others", "Day1_NASA",  "Day1_PP", "Day1_HR")
+
+# colnames(Activity_Data_Day1)<-c("Day1_R", "Day1_W", "Day1_Out", "Day1_SA", "Day1_SP", "Day1_I", "Day1_Mental", "Day1_Physical", "Day1_Hurried", "Day1_Successful", "Day1_Hard", "Day1_Insecure", "Day1_PP", "Day1_HR")
+```
+
+
+
+
+## Clustering Day1 on PP HR Activity Data and NASA
+```{r, echo=FALSE}
+set.seed(123)
+# final <- kmeans(Activity_Data_Day1, 2, nstart = 25)
+# #print(final)
+# fviz_cluster(final, data = Activity_Data_Day1)+ggtitle("Day1 using Activity-PP-HR-NASA k = 2")+ xlab("") + ylab("")+theme(plot.title = element_text(hjust = 0.5))
+
+d <- dist(Activity_Data_Day1, method = "euclidean")
+hc5 <- hclust(d, method = "ward.D2" )
+
+# Cut tree into 4 groups
+# sub_grp <- cutree(hc5, k = 2)
+
+# Number of members in each cluster
+#table(sub_grp)
+
+plot(hc5, cex = 0.6, hang = -1, sub = "", xlab = "")
+
+res.pca <- PCA(Activity_Data_Day1, scale = TRUE, graph = FALSE)
+# res.pca <- PCA(Activity_Data_Day1, scale = FALSE)
+# fviz_eig(res.pca)
+
+fviz_pca_ind(res.pca,
+             col.ind = "cos2", # Color by the quality of representation
+             gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
+             repel = TRUE     # Avoid text overlapping
+             )+xlim(-4, 4) + ylim (-4, 4) + labs(title ="Subjects Factor Map -PCA")+ theme(plot.title = element_text(hjust = 0.5))
+fviz_pca_var(res.pca,
+             col.var = "contrib", # Color by contributions to the PC
+             gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
+             repel = TRUE     # Avoid text overlapping
+             )+ labs(title ="Variables Contributions")+ theme(plot.title = element_text(hjust = 0.5))
+```
+
+
+
+<!-- # ```{r, echo=FALSE} -->
+<!-- # set.seed(10) -->
+<!-- # res <- kcca(Activity_Data_Day1,k=4) -->
+<!-- # FeatureImp_res <- FeatureImpCluster(res,as.data.table(Activity_Data_Day1)) -->
+<!-- # plot(FeatureImp_res) -->
+<!-- # ``` -->
+
+## Clustering Day2 on PP HR Activity Data and NASA
+
+```{r, echo=FALSE}
+Activity_Data_Day2<-subset(Activity_Data_all, Day=="Day2")
+
+Activity_Data_Day2$PP<- Cluster_DF$Day2_PP
+Activity_Data_Day2$HR<- Cluster_DF$Day2_HR
+
+rownames(Activity_Data_Day2)<-Activity_Data_Day2$Participant_ID
+Activity_Data_Day2$Participant_ID<-NULL
+Activity_Data_Day2$Day<-NULL
+
+Activity_Data_Day2<-Activity_Data_Day2[, -c(1, 2, 4, 5, 6)]
+
+# colnames(Activity_Data_Day2)<-c("Day2_Out", "Day2_Comp_RW", "Day2_Others", "Day2_NASA",  "Day2_PP", "Day2_HR")
+
+# 
+# colnames(Activity_Data_Day2)<-c("Day2_R", "Day2_W", "Day2_Out", "Day2_SA", "Day2_SP", "Day2_I", "Day2_Mental", "Day2_Physical", "Day2_Hurried", "Day2_Successful", "Day2_Hard", "Day2_Insecure", "Day2_PP", "Day2_HR")
+# 
+# Activity_Data_Day2$Day2_SA<-NULL
+```
+
+
+
+
+
+
+
+<!-- ## Final Clustering Day2 on PP HR Activity Data and NASA -->
+
+```{r, echo=FALSE}
+set.seed(123)
+# final <- kmeans(Activity_Data_Day2, 2, nstart = 25)
+# #print(final)
+# fviz_cluster(final, data = Activity_Data_Day2)+ggtitle("Day2 using Activity-PP-HR-NASA k = 2")+ xlab("") + ylab("")+theme(plot.title = element_text(hjust = 0.5))
+
+d <- dist(Activity_Data_Day2, method = "euclidean")
+hc5 <- hclust(d, method = "ward.D2" )
+
+# Cut tree into 4 groups
+# sub_grp <- cutree(hc5, k = 2)
+
+# Number of members in each cluster
+#table(sub_grp)
+
+plot(hc5, cex = 0.6, hang = -1, sub = "", xlab = "")
+
+
+res.pca <- PCA(Activity_Data_Day2, scale = TRUE, graph = FALSE)
+# res.pca <- PCA(Activity_Data_Day2, scale = FALSE)
+# fviz_eig(res.pca)
+
+fviz_pca_ind(res.pca,
+             col.ind = "cos2", # Color by the quality of representation
+             gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
+             repel = TRUE     # Avoid text overlapping
+             )+xlim(-4, 4) + ylim (-4, 4) + labs(title ="Subjects Factor Map -PCA")+ theme(plot.title = element_text(hjust = 0.5))
+fviz_pca_var(res.pca,
+             col.var = "contrib", # Color by contributions to the PC
+             gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
+             repel = TRUE     # Avoid text overlapping
+             )+ labs(title ="Variables Contributions")+ theme(plot.title = element_text(hjust = 0.5))
+```
+
+
+
+
+<!-- ## Clustering Day3 on PP HR Activity Data and NASA -->
+```{r, echo=FALSE}
+Activity_Data_Day3<-subset(Activity_Data_all, Day=="Day3")
+
+Activity_Data_Day3$PP<- Cluster_DF$Day3_PP
+Activity_Data_Day3$HR<- Cluster_DF$Day3_HR
+
+rownames(Activity_Data_Day3)<-Activity_Data_Day3$Participant_ID
+Activity_Data_Day3$Participant_ID<-NULL
+Activity_Data_Day3$Day<-NULL
+Activity_Data_Day3<-Activity_Data_Day3[, -c(1, 2, 4, 5, 6)]
+
+
+# colnames(Activity_Data_Day3)<-c("Day3_Out", "Day3_Comp_RW", "Day3_Others", "Day3_NASA",  "Day3_PP", "Day3_HR")
+
+#Activity_Data_Day2$SA<-NULL
+# colnames(Activity_Data_Day3)<-c("Day3_R", "Day3_W", "Day3_Out", "Day3_SA", "Day3_SP", "Day3_I", "Day3_Mental", "Day3_Physical", "Day3_Hurried", "Day3_Successful", "Day3_Hard", "Day3_Insecure", "Day3_PP", "Day3_HR")
+```
+
+
+
+## Clustering Day3 on PP HR Activity Data and NASA
+
+```{r, echo=FALSE}
+set.seed(123)
+# final <- kmeans(Activity_Data_Day3, 2, nstart = 25)
+#print(final)
+# fviz_cluster(final, data = Activity_Data_Day3)+ggtitle("Day3 using Activity-PP-HR-NASA k = 2")+ xlab("") + ylab("")+theme(plot.title = element_text(hjust = 0.5))
+
+d <- dist(Activity_Data_Day3, method = "euclidean")
+hc5 <- hclust(d, method = "ward.D2" )
+
+# Cut tree into 4 groups
+# sub_grp <- cutree(hc5, k = 2)
+
+# Number of members in each cluster
+#table(sub_grp)
+
+plot(hc5, cex = 0.6, hang = -1, sub = "", xlab = "")
+
+res.pca <- PCA(Activity_Data_Day3, scale = TRUE, graph = FALSE)
+# res.pca <- PCA(Activity_Data_Day3, scale = FALSE)
+# fviz_eig(res.pca)
+
+# fviz_pca_ind(res.pca,
+#              col.ind = "cos2", # Color by the quality of representation
+#              gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
+#              repel = TRUE     # Avoid text overlapping
+#              )
+fviz_pca_ind(res.pca,
+             col.ind = "cos2", # Color by the quality of representation
+             gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
+             repel = TRUE     # Avoid text overlapping
+             )+xlim(-4, 4) + ylim (-4, 4) + labs(title ="Subjects Factor Map -PCA")+ theme(plot.title = element_text(hjust = 0.5))
+fviz_pca_var(res.pca,
+             col.var = "contrib", # Color by contributions to the PC
+             gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
+             repel = TRUE     # Avoid text overlapping
+             )+ labs(title ="Variables Contributions")+ theme(plot.title = element_text(hjust = 0.5))
+```
+
+
+
+<!-- ## Clustering Day4 on PP HR Activity Data and NASA -->
+```{r, echo=FALSE}
+Activity_Data_Day4<-subset(Activity_Data_all, Day=="Day4")
+
+Activity_Data_Day4$PP<- Cluster_DF$Day4_PP
+Activity_Data_Day4$HR<- Cluster_DF$Day4_HR
+
+rownames(Activity_Data_Day4)<-Activity_Data_Day4$Participant_ID
+Activity_Data_Day4$Participant_ID<-NULL
+Activity_Data_Day4$Day<-NULL
+
+Activity_Data_Day4<-Activity_Data_Day4[, -c(1, 2, 4, 5, 6)]
+
+
+# colnames(Activity_Data_Day4)<-c("Day4_Out", "Day4_Comp_RW", "Day4_Others", "Day4_NASA",  "Day4_PP", "Day4_HR")
+# colnames(Activity_Data_Day4)<-c("Day4_R", "Day4_W", "Day4_Out", "Day4_SA", "Day4_SP", "Day4_I", "Day4_Mental", "Day4_Physical", "Day4_Hurried", "Day4_Successful", "Day4_Hard", "Day4_Insecure", "Day4_PP", "Day4_HR")
+# 
+# Activity_Data_Day4$Day4_I<-NULL
+```
+
+
+
+## Clustering Day4 on PP HR Activity Data and NASA
+```{r, echo=FALSE}
+set.seed(123)
+# final <- kmeans(Activity_Data_Day4, 2, nstart = 25)
+#print(final)
+# fviz_cluster(final, data = Activity_Data_Day4)+ggtitle("Day4 using Activity-PP-HR-NASA k = 2")+ xlab("") + ylab("")+theme(plot.title = element_text(hjust = 0.5))
+
+d <- dist(Activity_Data_Day4, method = "euclidean")
+hc5 <- hclust(d, method = "ward.D2" )
+
+# Cut tree into 4 groups
+# sub_grp <- cutree(hc5, k = 2)
+
+# Number of members in each cluster
+#table(sub_grp)
+
+plot(hc5, cex = 0.6, hang = -1, xlab = "", sub = "")
+
+res.pca <- PCA(Activity_Data_Day4, scale = TRUE, graph = FALSE)
+# res.pca <- PCA(Activity_Data_Day4, scale = FALSE)
+# fviz_eig(res.pca)
+
+# fviz_pca_ind(res.pca,
+#              col.ind = "cos2", # Color by the quality of representation
+#              gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
+#              repel = TRUE     # Avoid text overlapping
+#              )
+fviz_pca_ind(res.pca,
+             col.ind = "cos2", # Color by the quality of representation
+             gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
+             repel = TRUE     # Avoid text overlapping
+             )+xlim(-4, 4) + ylim (-4, 4) + labs(title ="Subjects Factor Map -PCA")+ theme(plot.title = element_text(hjust = 0.5))
+fviz_pca_var(res.pca,
+             col.var = "contrib", # Color by contributions to the PC
+             gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
+             repel = TRUE     # Avoid text overlapping
+             )+ labs(title ="Variables Contributions")+ theme(plot.title = element_text(hjust = 0.5))
+```
+
+
+## Clustering Days(Day3+Day4) on PP HR Activity Data and NASA
+
+```{r, echo=FALSE, warning=FALSE}
+# add rownames as a column in each data.frame and bind rows
+all_data<-bind_rows(Activity_Data_Day3 %>% add_rownames(), 
+          Activity_Data_Day4 %>% add_rownames()) %>% 
+    # evaluate following calls for each value in the rowname column
+    group_by(rowname)%>% 
+    # add all non-grouping variables
+    summarise_all(sum)
+rownames(all_data)<-all_data$rowname
+all_data$rowname<-NULL
+all_data<-all_data/2
+
+# all_data$Trait_anxiety<-scale(DF_Bib$Trait_anxiety)
+# all_data$Agreeableness<- scale(DF_Bib$BFI_.Agreeableness)
+# all_data$Conscientiousness<- scale(DF_Bib$BFI_.Conscientiousness)
+# all_data$Extraversion<- scale(DF_Bib$BFI_.Extraversion)
+# all_data$Neuroticism<- scale(DF_Bib$BFI_.Neuroticism)
+# all_data$Openness<- scale(DF_Bib$BFI_.Openness)
+
+
+
+
+
+```
+
+
+```{r, echo=FALSE}
+# all_data<-cbind(Activity_Data_Day1, Activity_Data_Day2, Activity_Data_Day3, Activity_Data_Day4)
+# 
+# all_data$Trait_anxiety<-scale(DF_Bib$Trait_anxiety)
+# all_data$Agreeableness<- scale(DF_Bib$BFI_.Agreeableness)
+# all_data$Conscientiousness<- scale(DF_Bib$BFI_.Conscientiousness)
+# all_data$Extraversion<- scale(DF_Bib$BFI_.Extraversion)
+# all_data$Neuroticism<- scale(DF_Bib$BFI_.Neuroticism)
+# all_data$Openness<- scale(DF_Bib$BFI_.Openness)
+
+
+
+# all_data$Trait_anxiety<-DF_Bib$Trait_anxiety
+# all_data$Agreeableness<- DF_Bib$BFI_.Agreeableness
+# all_data$Conscientiousness<- DF_Bib$BFI_.Conscientiousness
+# all_data$Extraversion<- DF_Bib$BFI_.Extraversion
+# all_data$Neuroticism<- DF_Bib$BFI_.Neuroticism
+# all_data$Openness<- DF_Bib$BFI_.Openness
+```
+
+
+
+<!-- ## Final Clustering For all the Days -->
+
+```{r,echo=FALSE}
+set.seed(123)
+# final <- kmeans(all_data, 2, nstart = 25)
+#print(final)
+# fviz_cluster(final, data = all_data)+ggtitle("All the 4 Day Physiological, Activity, and Phychometric Data") + xlab("") + ylab("")+theme(plot.title = element_text(hjust = 0.5))
+
+distMatrix <- dist(all_data, method="euclidean")
+hc <- hclust(distMatrix, method="ward.D2")
+plot(hc, cex = 0.6, hang = -1, xlab = "", sub = "", main = "Clustering Dendogram")
+
+res.pca <- PCA(all_data, scale = TRUE, graph = FALSE)
+# res.pca <- PCA(all_data, scale = FALSE)
+
+fviz_pca_ind(res.pca,
+             col.ind = "cos2", # Color by the quality of representation
+             gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
+             repel = TRUE     # Avoid text overlapping
+             )+xlim(-4, 4) + ylim (-4, 4) + labs(title ="Subjects Factor Map -PCA")+ theme(plot.title = element_text(hjust = 0.5))
+fviz_pca_var(res.pca,
+             col.var = "contrib", # Color by contributions to the PC
+             gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
+             repel = TRUE     # Avoid text overlapping
+             )+ labs(title ="Variables Contributions")+ theme(plot.title = element_text(hjust = 0.5))
+```
+```{r, echo=FALSE}
+# out=(Activity_Data_Day3$Nasa+Activity_Data_Day4$Nasa)/2
+# out
+```
+
