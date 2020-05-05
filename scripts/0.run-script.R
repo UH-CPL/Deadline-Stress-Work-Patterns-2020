@@ -13,7 +13,7 @@ source(file.path(script_dir, 'us-common-functions.R'))
 # day3_day4_ws_min="day3_day4_ws_min"
 #
 ##########################################################
-baseline_parameter <- lowest_baseline
+baseline_parameter <- corresponding_baseline
 t_test_comparison <- day3_day4_ws_min
 
 
@@ -39,21 +39,21 @@ chunk_sizes <- c(5, 10, 15)
 
 
 #-------------------------------------------------------------------------------------------- 3
-# source(file.path(script_dir, '3.dc-quality-control-phase-one.R'))
-# process_quality_control()
-# process_mean_data()
+source(file.path(script_dir, '3.dc-quality-control-phase-one.R'))
+process_quality_control()
+process_mean_data()
 
 
 
 #-------------------------------------------------------------------------------------------- 4
-# source(file.path(script_dir, '4.dc-generate-normalized-data.R'))
-# process_normalize_data()
+source(file.path(script_dir, '4.dc-generate-normalized-data.R'))
+process_normalize_data()
 
 
 #-------------------------------------------------------------------------------------------- 5
-# source(file.path(script_dir, '5.dc-generate-meta-data.R'))
-# generate_treatment_mean_data()
-# generate_daywise_mean_data()
+source(file.path(script_dir, '5.dc-generate-meta-data.R'))
+generate_treatment_mean_data()
+generate_daywise_mean_data()
 
 
 
@@ -86,8 +86,8 @@ chunk_sizes <- c(5, 10, 15)
 
 
 #-------------------------------------------------------------------------------------------- 10
-source(file.path(script_dir, 'vs-linear-models.Rmd'))
-conduct_linear_modeling()
+# source(file.path(script_dir, 'vs-linear-models.Rmd'))
+# conduct_linear_modeling()
 
 
 

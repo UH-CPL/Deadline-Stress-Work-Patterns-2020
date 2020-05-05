@@ -4,12 +4,14 @@
 # library(XLConnect)
 # library(scales)
 # library(ggplot2)
-library(plyr)      ## for func rbind.fill()
+
 library(dplyr)
+library(plyr)      ## for func rbind.fill()
 library(readr)
 library(magrittr)  ## for func set_colnames()
 library(gsubfn)    ## for func read.pattern()
 library(zoo)       ## for func na.locf()
+library(data.table)
 
 
 # require(xlsx)
@@ -44,6 +46,8 @@ file.create(curation_log_file)
 all_subj_df <- tibble()
 win_app_usage_df <- tibble()
 
+
+decay_f <- NULL
 
 #-------------------------#
 #---FUNCTION DEFINITION---#
@@ -132,12 +136,13 @@ reduce_noise_and_downsample_newFFT <- function(session_dir, pp_file_name, sessio
   
   print(session_name)
   if(session_name=="Baseline"){
-    decay_f=1/6
+    decay_f <<- 1/6
   }
   if(session_name=="WorkingSession"){
-    decay_f= 1/150
+    decay_f <<- 1/150
   }
   #print(decay_f)
+  
   pp_df <- custom_read_csv(file.path(session_dir, pp_file_name))
   names(pp_df) <- c("Frame",	"Time",	"Timestamp", "PP")
  
@@ -496,6 +501,28 @@ merge_e4_data <- function(subj_name, day_serial, full_day_df) {
     
     for(e4_file_name in e4_file_list) {
       e4_df <- get_e4_data(day_dir, e4_file_name)
+      
+      if(is_match(e4_file_name, 'EDA')) {
+        e4_df <- e4_df %>% 
+          dplyr::rename(Raw_EDA=EDA) %>% 
+          na.omit()
+        
+        # setnames(e4_df, "EDA", "Raw_EDA")
+
+        # print(head(e4_df, 2))
+        # print(tail(e4_df, 2))
+        
+        # e4_df <- na.omit(e4_df)
+        
+        print(head(e4_df, 2))
+        print(tail(e4_df, 2))
+        
+        
+        # print(remove_noise(full_day_df$PP[c(1:500)], removeImpluse = T, lowpassDecayFreq = decay_f, samplePerSecond = 1))
+        # print(remove_noise(e4_df$Raw_EDA[c(1:500)], removeImpluse = T, lowpassDecayFreq = decay_f, samplePerSecond = 1))
+
+        e4_df$EDA <- remove_noise(e4_df$Raw_EDA, removeImpluse = T, lowpassDecayFreq = decay_f, samplePerSecond = 1)
+      }
       convert_to_csv(e4_df, file.path(curated_data_dir, subj_data_dir, paste0('Group1_', subj_name, '_', day_serial, '_', sub('.csv', '', sub('.*/', '', e4_file_name)), '.csv')))
       
       ##############################################################################################
@@ -515,6 +542,7 @@ merge_e4_data <- function(subj_name, day_serial, full_day_df) {
     }
   }
   
+  
   return(full_day_df)
 }
 
@@ -524,9 +552,12 @@ merge_iwatch_data <- function(subj_name, day_serial, full_day_df) {
   iWatch_file_name <- get_matched_file_names_recursively(day_dir, iWatch_file_pattern)
   
   if(!is_empty(iWatch_file_name) & (subj_name != "T015") & (subj_name != "T017")) {
-    print(paste("All",subj_name))
+    
+    # print(paste("All", subj_name))
+    # print(head(custom_read_csv(file.path(day_dir, iWatch_file_name))), 2)
+    
     full_day_df <- custom_read_csv(file.path(day_dir, iWatch_file_name)) %>% 
-      rename(Timestamp=Time,
+      dplyr::rename(Timestamp=Time,
              iWatch_HR=HeartRate) %>% 
       mutate(Timestamp=convert_s_interface_date(strptime(Timestamp, format='%Y-%m-%d %H:%M:%S')) - 5 * one_hour_sec) %>%
       # mutate(Timestamp=Timestamp - 5 * one_hour_sec) %>% 
@@ -544,7 +575,7 @@ merge_iwatch_data <- function(subj_name, day_serial, full_day_df) {
   if(!is_empty(iWatch_file_name) & (subj_name == "T015" | subj_name == "T017")) {
     print(paste("Daylight",subj_name))
     full_day_df <- custom_read_csv(file.path(day_dir, iWatch_file_name)) %>% 
-      rename(Timestamp=Time,
+      dplyr::rename(Timestamp=Time,
              iWatch_HR=HeartRate) %>% 
       mutate(Timestamp=convert_s_interface_date(strptime(Timestamp, format='%Y-%m-%d %H:%M:%S')) - 6 * one_hour_sec) %>%
       # mutate(Timestamp=Timestamp - 5 * one_hour_sec) %>% 
@@ -595,12 +626,14 @@ refactor_and_export_all_subj_data <- function(all_subj_df) {
   
   
   all_subj_df <- all_subj_df %>%
-    rename(Sinterface_Time=Time,
+    dplyr::rename(Sinterface_Time=Time,
            Activities=Ontologies,
            Raw_PP=PP,
            PP=NR_PP,
            E4_HR=HR,
-           E4_EDA=EDA) %>% 
+           E4_EDA=EDA
+           # Raw_E4_EDA=Raw_EDA,
+           ) %>% 
     
     ## Calculating relative treatment time
     group_by(Participant_ID, Day, Treatment) %>% 
@@ -617,8 +650,10 @@ refactor_and_export_all_subj_data <- function(all_subj_df) {
            Raw_PP,
            PP,
            
-           E4_HR,
+           # Raw_E4_EDA,
            E4_EDA,
+           
+           E4_HR,
            iWatch_HR,
            
            Activities,
@@ -655,14 +690,15 @@ curate_data <- function() {
   # subj_list <- get_dir_list(file.path(raw_data_dir, grp_dir))
   subj_list <- custom_read_csv(file.path(curated_data_dir, utility_data_dir, subj_list_file_name))$Subject
   
-  sapply(subj_list, function(subj_name) {
-  # sapply(subj_list[5], function(subj_name) {
+  # sapply(subj_list, function(subj_name) {
+  # sapply(subj_list[1], function(subj_name) {
+  sapply(c('T001', 'T003'), function(subj_name) {
     
     subj_dir <- file.path(raw_data_dir, grp_dir, subj_name)
     day_list <- get_dir_list(subj_dir)
     
-    sapply(day_list, function(day_serial) {
-    #sapply(day_list[1], function(day_serial) {
+    # sapply(day_list, function(day_serial) {
+    sapply(day_list[1], function(day_serial) {
       tryCatch({
         write_log_msg(paste0('\n----------\n', subj_name, '-', day_serial, "\n----------"), curation_log_file)
         
@@ -673,7 +709,7 @@ curate_data <- function() {
         write_log_msg('Processing.....Working Session', curation_log_file)
         full_day_df <- curate_ws_session_data(subj_name, day_serial, rb_df)
         
-        write_log_msg('\nMerging.....e4 data', curation_log_file)
+        write_log_msg('Merging.....e4 data', curation_log_file)
         full_day_df <- merge_e4_data(subj_name, day_serial, full_day_df)
         
         write_log_msg('Merging.....iwatch data', curation_log_file)
@@ -711,4 +747,6 @@ curate_data <- function() {
 #-------------------------#
 #-------Main Program------#
 #-------------------------#
-# curate_data()
+curate_data()
+
+

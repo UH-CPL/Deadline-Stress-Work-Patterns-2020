@@ -38,8 +38,12 @@ remove_noise = function (DataSignal, removeImpluse, lowpassDecayFreq, samplePerS
     }
     
     tempV = tempV/(sizeOf_Temp-1)
+    # print(paste(sizeOf_Temp, tempV))
     for(i in 2:sizeOf_Temp){
       diff = abs(TempNR[i] - TempNR[i-1])
+      
+      # print(paste(diff, tempV))
+      
       if(diff > tempV){
         if(TempNR[i] < TempNR[i-1]){
           TempNR[i] = TempNR[i-1]-tempV

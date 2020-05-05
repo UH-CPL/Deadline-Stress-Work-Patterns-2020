@@ -48,6 +48,9 @@ process_rb_data <- function(df, signal) {
       filter(Treatment=='RB')
     
   } else if (baseline_parameter==corresponding_baseline) {
+    mean_df <<- mean_v2_df %>% 
+      select(Participant_ID, Treatment, Signal, Day1, Day2, Day3, Day4) %>% 
+      filter(Treatment=='RB')
     
   } else if (baseline_parameter==day3_day4_ws_mean) {
     mean_df <<- mean_v2_df %>% 
@@ -76,7 +79,11 @@ get_rb <- function(df, signal) {
       select(Four_Day_Min) %>% 
       pull()
   } else if (baseline_parameter==corresponding_baseline) {
-    rb_val <- 0
+    day<-unique(df$Day)
+    rb_val <- mean_df %>% 
+      filter(Participant_ID==subj & Signal==signal) %>% 
+      select(!!day) %>% 
+      pull()
   } else if (baseline_parameter==day3_day4_ws_mean) {
     rb_val <- mean_df %>% 
       filter(Participant_ID==subj & Signal==signal) %>% 
@@ -105,10 +112,44 @@ get_shift_val <- function(df, signal) {
 }
 
 normalize_data <- function() {
-
-  normalized_df <<- full_df %>% 
-    filter(Treatment=='WS') %>% 
-    group_by(Participant_ID) %>%
+  
+  # if (baseline_parameter==corresponding_baseline) {
+  #   
+  #   normalized_df <<- full_df %>% 
+  #     filter(Treatment=='WS') %>% 
+  #     group_by(Participant_ID, Day) %>%
+  #     do(mutate(., 
+  #               PP=PP-get_rb(., 'PP'),
+  #               E4_EDA=E4_EDA-get_rb(., 'E4_EDA'),
+  #               E4_HR=E4_HR-get_rb(., 'E4_HR'),
+  #               iWatch_HR=iWatch_HR-get_rb(., 'iWatch_HR'),
+  #     ))
+  #   
+  # } else {
+  #   
+  #   normalized_df <<- full_df %>% 
+  #     filter(Treatment=='WS') %>% 
+  #     group_by(Participant_ID) %>%
+  #     do(mutate(., 
+  #               PP=PP-get_rb(., 'PP'),
+  #               E4_EDA=E4_EDA-get_rb(., 'E4_EDA'),
+  #               E4_HR=E4_HR-get_rb(., 'E4_HR'),
+  #               iWatch_HR=iWatch_HR-get_rb(., 'iWatch_HR'),
+  #     ))
+  # }
+  
+  ws_df <- full_df %>% 
+    filter(Treatment=='WS')
+  
+  if (baseline_parameter==corresponding_baseline) {
+    ws_df <- ws_df %>% 
+      group_by(Participant_ID, Day)
+  } else {
+    ws_df <- ws_df %>% 
+      group_by(Participant_ID) 
+  }
+      
+  normalized_df <<- ws_df %>%
     do(mutate(., 
               PP=PP-get_rb(., 'PP'),
               E4_EDA=E4_EDA-get_rb(., 'E4_EDA'),
