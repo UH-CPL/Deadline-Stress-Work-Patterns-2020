@@ -56,9 +56,9 @@ Working='Working'
 Thinking='Thinking|Thinking T'
 SP='SP - Talking|SP - Looking|SmartPhone - Looking|SmartPhone - Talking|Smart Phone SP'
 PR='^HC - Reading$|Hard Copy - Reading'
-# PW='^HC - Writing$|Hard Copy - Writing'
-# ELD='Listening on Headphone'
-# PI='H-H Interaction|Personal Interaction PI'
+PW='^HC - Writing$|Hard Copy - Writing|^Board Writing$|^Board Writing BW$'	
+ELD='Listening on Headphone'	
+PI='H-H Interaction|Personal Interaction PI|Physical Interaction PI'	
 VI='C - Talking Skype & others|Virtual Interaction VI'
 
 
