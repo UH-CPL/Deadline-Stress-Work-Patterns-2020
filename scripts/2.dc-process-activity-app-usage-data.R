@@ -104,7 +104,8 @@ get_final_activities <- function(all_subj_df) {
   # unique(all_subj_df$Activities)
   # unique(all_subj_df$D1)
   all_subj_df$Activities_QC1<-all_subj_df$D1
-  all_subj_df <- all_subj_df %>% rename(Activity_One=A,Activity_Two=B,Activity_Three=C)
+  all_subj_df <- all_subj_df %>% 
+    dplyr::rename(Activity_One=A,Activity_Two=B,Activity_Three=C)
   
   #######################################Reduced Ontoloties########################
  
@@ -261,7 +262,7 @@ format_activity_app_usage_data <- function() {
     )
   
   
-  View(all_subj_df)
+  # View(all_subj_df)
   # convert_to_csv(all_subj_df, file.path(curated_data_dir, physiological_data_dir, qc0_raw_file_name))
   convert_to_csv(all_subj_df, file.path(curated_data_dir, physiological_data_dir, qc0_final_file_name))
 }
