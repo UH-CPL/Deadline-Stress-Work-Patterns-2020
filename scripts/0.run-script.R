@@ -27,14 +27,14 @@ chunk_sizes <- c(5, 10, 15)
 
 
 #-------------------------------------------------------------------------------------------- 1
-# source(file.path(script_dir, '1.dc-curate-and-process-data.R'))
-# curate_data()
+source(file.path(script_dir, '1.dc-curate-and-process-data.R'))
+curate_data()
 
 
 
 #-------------------------------------------------------------------------------------------- 2
-# source(file.path(script_dir, '2.dc-process-activity-app-usage-data.R'))
-# format_activity_app_usage_data()
+source(file.path(script_dir, '2.dc-process-activity-app-usage-data.R'))
+format_activity_app_usage_data()
 
 
 
@@ -58,8 +58,8 @@ generate_daywise_mean_data()
 
 
 #-------------------------------------------------------------------------------------------- 7
-# source(file.path(script_dir, 'vs-validation_plots.R'))
-# draw_validation_plots()
+source(file.path(script_dir, 'vs-validation_plots.R'))
+draw_validation_plots()
 
 
 #-------------------------------------------------------------------------------------------- 8

@@ -507,20 +507,10 @@ merge_e4_data <- function(subj_name, day_serial, full_day_df) {
           dplyr::rename(Raw_EDA=EDA) %>% 
           na.omit()
         
-        # setnames(e4_df, "EDA", "Raw_EDA")
-
-        # print(head(e4_df, 2))
-        # print(tail(e4_df, 2))
+        ##############################################################################################################
+        decay_f <- 1/150
+        ##############################################################################################################
         
-        # e4_df <- na.omit(e4_df)
-        
-        print(head(e4_df, 2))
-        print(tail(e4_df, 2))
-        
-        
-        # print(remove_noise(full_day_df$PP[c(1:500)], removeImpluse = T, lowpassDecayFreq = decay_f, samplePerSecond = 1))
-        # print(remove_noise(e4_df$Raw_EDA[c(1:500)], removeImpluse = T, lowpassDecayFreq = decay_f, samplePerSecond = 1))
-
         e4_df$EDA <- remove_noise(e4_df$Raw_EDA, removeImpluse = T, lowpassDecayFreq = decay_f, samplePerSecond = 1)
       }
       convert_to_csv(e4_df, file.path(curated_data_dir, subj_data_dir, paste0('Group1_', subj_name, '_', day_serial, '_', sub('.csv', '', sub('.*/', '', e4_file_name)), '.csv')))
@@ -631,8 +621,8 @@ refactor_and_export_all_subj_data <- function(all_subj_df) {
            Raw_PP=PP,
            PP=NR_PP,
            E4_HR=HR,
-           E4_EDA=EDA
-           # Raw_E4_EDA=Raw_EDA,
+           E4_EDA=EDA,
+           Raw_E4_EDA=Raw_EDA,
            ) %>% 
     
     ## Calculating relative treatment time
@@ -650,7 +640,7 @@ refactor_and_export_all_subj_data <- function(all_subj_df) {
            Raw_PP,
            PP,
            
-           # Raw_E4_EDA,
+           Raw_E4_EDA,
            E4_EDA,
            
            E4_HR,
@@ -677,7 +667,7 @@ refactor_and_export_all_subj_data <- function(all_subj_df) {
   #   ungroup()
   
   
-  View(all_subj_df)
+  # View(all_subj_df)
   # write_log_msg(levels(factor(all_subj_df$Application)), curation_log_file)
   write_log_msg(paste0('Total relative time mismatch row: ', nrow(all_subj_df[all_subj_df$Sinterface_Time != all_subj_df$TreatmentTime, ])), curation_log_file)
   
@@ -687,18 +677,20 @@ refactor_and_export_all_subj_data <- function(all_subj_df) {
 
 
 curate_data <- function() {
+  full_day_df <- tibble()
+  
   # subj_list <- get_dir_list(file.path(raw_data_dir, grp_dir))
   subj_list <- custom_read_csv(file.path(curated_data_dir, utility_data_dir, subj_list_file_name))$Subject
   
-  # sapply(subj_list, function(subj_name) {
+  sapply(subj_list, function(subj_name) {
   # sapply(subj_list[1], function(subj_name) {
-  sapply(c('T001', 'T003'), function(subj_name) {
+  # sapply(c('T001', 'T003'), function(subj_name) {
     
     subj_dir <- file.path(raw_data_dir, grp_dir, subj_name)
     day_list <- get_dir_list(subj_dir)
     
-    # sapply(day_list, function(day_serial) {
-    sapply(day_list[1], function(day_serial) {
+    sapply(day_list, function(day_serial) {
+    # sapply(day_list[1], function(day_serial) {
       tryCatch({
         write_log_msg(paste0('\n----------\n', subj_name, '-', day_serial, "\n----------"), curation_log_file)
         
@@ -747,6 +739,11 @@ curate_data <- function() {
 #-------------------------#
 #-------Main Program------#
 #-------------------------#
-curate_data()
+# curate_data()
+
+
+# curate_data()
+# Subject Day List
+# EDA Smooth - RB vs WS
 
 
