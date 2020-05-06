@@ -57,20 +57,9 @@ process_subj_day_rr <- function(subj, day) {
     
     
     rr_df$Timestamp <- as.POSIXct(timestamp_vector, origin='1970-01-01', tz='America/Chicago') # timestamp with Houston timezone
-    print(rr_df$Timestamp[1])
-    rr_df$Timestamp <- convert_s_interface_date(rr_df$Timestamp) # timestamp with Houston timezone
-    print(rr_df$Timestamp[1])
     
-    rr_df <- rr_df %>%
-      mutate(Timestamp=convert_s_interface_date(strptime(substr(Timestamp, 1, 19), 
-                                                         format='%Y-%m-%d %H:%M:%S')))
-                                                          # format='%a %b %d %Y %H:%M:%S')))
+    # convert_to_csv(rr_df, file.path(curated_data_dir, subj_data_dir), paste0('Group1_', subj, '_', day, '_', 'RR.csv'))
     
-    # convert_s_interface_date(strptime(substr(Timestamp, 1, 24), 
-    #                                   format='%a %b %d %Y %H:%M:%S'))
-    # convert_to_csv(data.frame(rr_df), file.path(curated_data_dir, subj_data_dir,
-    #                                 paste0('Group1_', subj, '_', day, '_', 'RR.csv')))
-
   } else {
     rr_df <- custom_read_csv(file.path(curated_data_dir, subj_data_dir, processed_rr_file)) %>%
       mutate(Timestamp=as.POSIXct(Timestamp))
@@ -80,23 +69,31 @@ process_subj_day_rr <- function(subj, day) {
 }
 
 
+# strip.tz <- function(dt) {
+#   fmt <- 
+#   strftime(dt, format = "%Y-%m-%d %H:%M:%S", tz="")
+# }
+
 
 merge_with_other_channels <- function(rr_df) {
   all_subj_df <- custom_read_csv(file.path(curated_data_dir, physiological_data_dir, qc0_final_file_name)) %>% 
     select(-Raw_PP,	-PP,	-E4_HR,	-E4_EDA, -iWatch_HR)
   
   rr_df <- rr_df %>%
-    mutate(Timestamp=convert_s_interface_date(strptime(substr(Timestamp, 1, 19), 
-                                                       format='%Y-%m-%d %H:%M:%S')))
+    mutate(Timestamp=strftime(Timestamp, format='%Y-%m-%d %H:%M:%S', tz=""))
+
+  # print(rr_df$Timestamp[1])
+  # rr_df$Timestamp <- strip.tz(rr_df$Timestamp)
   
-  print(all_subj_df$Timestamp[1])
-  print(rr_df$Timestamp[1])
+  # print(all_subj_df$Timestamp[1])
+  # print(rr_df$Timestamp[1])
   
   #########################################################################################################
-  all_subj_df <- merge(all_subj_df, rr_df, by='Timestamp', all.y=T)   ## CHECK!!! - all vs. all.x
+  # all_subj_df <- merge(all_subj_df, rr_df, by='Timestamp', all.y=T)   ## CHECK!!! - all vs. all.x
+  all_subj_df <- merge(all_subj_df, rr_df, by='Timestamp')   ## CHECK!!! - all vs. all.x
   #########################################################################################################
+  # convert_to_csv(all_subj_df, file.path(curated_data_dir, physiological_data_dir, qc0_rr_file_name))
   convert_to_csv(all_subj_df, file.path(curated_data_dir, physiological_data_dir, qc0_rr_file_name))
-  # convert_to_csv(rr_df, file.path(curated_data_dir, physiological_data_dir, qc0_rr_file_name))
 }
 
 process_rr_data <- function() {
@@ -104,14 +101,14 @@ process_rr_data <- function() {
 
   subj_list <- custom_read_csv(file.path(curated_data_dir, utility_data_dir, subj_list_file_name))$Subject
   
-  # sapply(subj_list, function(subj) {
-  sapply(subj_list[1], function(subj) {
+  sapply(subj_list, function(subj) {
+  # sapply(subj_list[1], function(subj) {
   # sapply(c('T001', 'T003'), function(subj) {
     
     day_list <- get_dir_list(file.path(raw_data_dir, grp_dir, subj))
     
-    # sapply(day_list, function(day) {
-    sapply(day_list[1], function(day) {
+    sapply(day_list, function(day) {
+    # sapply(day_list[1], function(day) {
       
       tryCatch({
         write_log_msg(paste0('\n----------\n', subj, '-', day, "\n----------"), rr_log_file)
