@@ -27,8 +27,9 @@ library(data.table)
 #-------------------------#
 #-----GLOBAL VARIABLES----#
 #-------------------------#
-script_dir <- dirname(rstudioapi::getSourceEditorContext()$path)
-source(file.path(script_dir, 'us-common-functions.R'))
+# script_dir <- dirname(rstudioapi::getSourceEditorContext()$path)
+# source(file.path(script_dir, 'us-common-functions.R'))
+
 # source(file.path(script_dir, 'us-filter-pp.R'))
 # source(file.path(script_dir, 'us-down-sample-pp.R'))
 
@@ -743,7 +744,6 @@ curate_data <- function() {
 
 
 # curate_data()
-# Subject Day List
 # EDA Smooth - RB vs WS
 
 

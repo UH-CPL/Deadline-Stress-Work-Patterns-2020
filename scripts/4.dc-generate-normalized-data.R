@@ -104,7 +104,7 @@ get_shift_val <- function(df, signal) {
   shift_val <- 0 
   
   if (min(df[[signal]], na.rm = TRUE) <= 0) { 
-    shift_val <- abs(min(df[[signal]], na.rm = TRUE)) + 0.001 
+    shift_val <- abs(min(df[[signal]], na.rm = TRUE)) + delta_shift_val
   }
   
   # print(paste0(signal, ' - ', shift_val))
