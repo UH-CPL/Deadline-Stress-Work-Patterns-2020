@@ -16,3 +16,17 @@ project_dir <- dirname(script_dir)
 
 source(file.path(script_dir, 'us-common-functions.R'))
 
+
+
+
+#-------------------------#
+#---FUNCTION DEFINITION---#
+#-------------------------#
+
+
+
+
+
+#-------------------------#
+#-------Main Program------#
+#-------------------------#

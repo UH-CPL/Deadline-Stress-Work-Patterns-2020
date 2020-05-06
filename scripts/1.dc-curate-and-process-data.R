@@ -652,7 +652,7 @@ refactor_and_export_all_subj_data <- function(all_subj_df) {
            Application_QC1
     ) %>%
     
-    ###################################################################################
+  ###################################################################################
   ## Note: This is very important to understand this code
   ## We were some missing WS data.
   ## So, we merge all data, and based on WS start and end time we get all WS data
@@ -661,11 +661,12 @@ refactor_and_export_all_subj_data <- function(all_subj_df) {
   ###################################################################################
   
   
-  # mean_df <- all_subj_df %>%
-  #   select(-Timestamp, -Sinterface_Time, -TreatmentTime, -Activities, -Application, -Application_QC1) %>%
-  #   group_by(Participant_ID, Day, Treatment) %>%
-  #   summarize_all(mean, na.rm=T) %>%
-  #   ungroup()
+  # If we don't want eda smoothing, we will remove the smoothened column and rename the raw value to E4_EDA
+  if(!enable_eda_smoothing) {
+    all_subj_df <- all_subj_df %>%
+      select(-E4_EDA) %>% 
+      dplyr::rename(E4_EDA=Raw_E4_EDA)
+  }
   
   
   # View(all_subj_df)

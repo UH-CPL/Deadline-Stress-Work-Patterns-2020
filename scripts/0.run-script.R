@@ -17,6 +17,9 @@ baseline_parameter <- corresponding_baseline
 t_test_comparison <- day3_day4_ws_min
 
 
+enable_eda_smoothing <- TRUE
+
+
 enable_log_transformation <- TRUE
 delta_shift_val <- 0.01
 
