@@ -44,25 +44,59 @@ process_subj_day_rr <- function(subj, day) {
     ## The actual signal starts from 2nd row
     rr_df <- rr_df[-(1:1), ]
 
-    colnames(rr_df) <- c('Time', 'RR')
-    timestamp_vector <- c(base_time + as.double(rr_df$Time[1]))
+    colnames(rr_df) <- c('RR_Time', 'RR')
+    timestamp_vector <- c(base_time + as.double(rr_df$RR_Time[1]))
 
     ## Add a CovertedTime base_time
     for (i in 2:nrow(rr_df)) {
-      timestamp_vector <- c(timestamp_vector, base_time + as.double(rr_df$Time[i]))
+      timestamp_vector <- c(timestamp_vector, base_time + as.double(rr_df$RR_Time[i]))
     }
     
+    # rr_df$Timestamp <- convert_s_interface_date(strptime(substr(
+    #   as.POSIXct(timestamp_vector, origin='1970-01-01', tz='America/Chicago'), 1, 19))) # timestamp with Houston timezone
+    
+    
     rr_df$Timestamp <- as.POSIXct(timestamp_vector, origin='1970-01-01', tz='America/Chicago') # timestamp with Houston timezone
-    convert_to_csv(data.frame(rr_df), file.path(curated_data_dir, subj_data_dir,
-                                    paste0('Group1_', subj, '_', day, '_', 'RR.csv')))
+    print(rr_df$Timestamp[1])
+    rr_df$Timestamp <- convert_s_interface_date(rr_df$Timestamp) # timestamp with Houston timezone
+    print(rr_df$Timestamp[1])
+    
+    rr_df <- rr_df %>%
+      mutate(Timestamp=convert_s_interface_date(strptime(substr(Timestamp, 1, 19), 
+                                                         format='%Y-%m-%d %H:%M:%S')))
+                                                          # format='%a %b %d %Y %H:%M:%S')))
+    
+    # convert_s_interface_date(strptime(substr(Timestamp, 1, 24), 
+    #                                   format='%a %b %d %Y %H:%M:%S'))
+    # convert_to_csv(data.frame(rr_df), file.path(curated_data_dir, subj_data_dir,
+    #                                 paste0('Group1_', subj, '_', day, '_', 'RR.csv')))
 
   } else {
     rr_df <- custom_read_csv(file.path(curated_data_dir, subj_data_dir, processed_rr_file)) %>%
       mutate(Timestamp=as.POSIXct(Timestamp))
   }
 
-  
   rr_df
+}
+
+
+
+merge_with_other_channels <- function(rr_df) {
+  all_subj_df <- custom_read_csv(file.path(curated_data_dir, physiological_data_dir, qc0_final_file_name)) %>% 
+    select(-Raw_PP,	-PP,	-E4_HR,	-E4_EDA, -iWatch_HR)
+  
+  rr_df <- rr_df %>%
+    mutate(Timestamp=convert_s_interface_date(strptime(substr(Timestamp, 1, 19), 
+                                                       format='%Y-%m-%d %H:%M:%S')))
+  
+  print(all_subj_df$Timestamp[1])
+  print(rr_df$Timestamp[1])
+  
+  #########################################################################################################
+  all_subj_df <- merge(all_subj_df, rr_df, by='Timestamp', all.y=T)   ## CHECK!!! - all vs. all.x
+  #########################################################################################################
+  convert_to_csv(all_subj_df, file.path(curated_data_dir, physiological_data_dir, qc0_rr_file_name))
+  # convert_to_csv(rr_df, file.path(curated_data_dir, physiological_data_dir, qc0_rr_file_name))
 }
 
 process_rr_data <- function() {
@@ -85,8 +119,8 @@ process_rr_data <- function() {
         write_log_msg('Processing.....RR', rr_log_file)
         full_day_df <- process_subj_day_rr(subj, day)
         
-        # write_log_msg('Concating.....all subj data\n', rr_log_file)
-        # all_subj_rr_df <<- rbind.fill(all_subj_rr_df, full_day_df)
+        write_log_msg('Concating.....all subj data\n', rr_log_file)
+        all_subj_rr_df <<- rbind.fill(all_subj_rr_df, full_day_df)
         
       },
       error=function(err) {
@@ -96,12 +130,8 @@ process_rr_data <- function() {
     })
   })
   
-  
-  # write_log_msg('Merging.....all subj data\n', rr_log_file)
-  #########################################################################################################
-  # all_subj_df <- merge(all_subj_df, all_subj_rr_df, by='Timestamp', all.y=T)   ## CHECK!!! - all vs. all.x
-  #########################################################################################################
-  # onvert_to_csv(all_subj_df, file.path(curated_data_dir, physiological_data_dir, qc0_rr_file_name))
+  write_log_msg('Merging.....all subj data\n', rr_log_file)
+  merge_with_other_channels(all_subj_rr_df)
 }
 
 

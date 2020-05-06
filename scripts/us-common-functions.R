@@ -140,7 +140,7 @@ qc2_log_trans_mean_chunk_file_name <- 'qc2_log_trans_mean.csv'
 ## 2. Application -->  Extract whatever after the space of []     -->   (.*)
 mac_data_pattern <- '\\[(.*)\\] (.*)'
 
-s_interface_date_format <- '%a %b %d %H:%M:%S %Y'
+
 
 
 # qc0_ws_mean_file_name <- 'qc0_ws_mean.csv'
@@ -173,12 +173,23 @@ variance_test_chunk_mean_file_name <- 'variance_test_chunk_mean.csv'
 
 
 
+
+
+
+qc0_rr_file_name <- 'qc0_rr_data.csv' 
+qc1_rr_file_name <- 'qc1_rr_data.csv' 
+
+
+
+
+
+
+
 ## 1. Timestamp -->    Extract whatever inside []                 -->   \\[(.*)\\]
 ## 2. Application -->  Extract whatever after the space of []     -->   (.*)
 mac_data_pattern <- '\\[(.*)\\] (.*)'
 
 s_interface_date_format <- '%a %b %d %H:%M:%S %Y'
-
 
 decorator_hash <- '###########################################################'
 
