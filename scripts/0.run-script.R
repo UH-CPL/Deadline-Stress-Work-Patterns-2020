@@ -59,6 +59,11 @@ source(file.path(script_dir, '5.dc-generate-meta-data.R'))
 generate_treatment_mean_data()
 generate_daywise_mean_data()
 
+#-------------------------------------------------------------------------------------------- 6
+source(file.path(script_dir, '6.dc-process-rr-data.R'))
+process_rr_data()
+
+
 
 
 #-------------------------------------------------------------------------------------------- 7

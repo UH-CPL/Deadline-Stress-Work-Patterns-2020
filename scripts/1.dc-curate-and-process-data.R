@@ -679,7 +679,7 @@ refactor_and_export_all_subj_data <- function(all_subj_df) {
 
 
 curate_data <- function() {
-  full_day_df <- tibble()
+  all_subj_df <<- tibble()
   
   # subj_list <- get_dir_list(file.path(raw_data_dir, grp_dir))
   subj_list <- custom_read_csv(file.path(curated_data_dir, utility_data_dir, subj_list_file_name))$Subject

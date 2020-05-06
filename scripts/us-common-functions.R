@@ -40,6 +40,7 @@ activity_file_pattern <- '.*Activity.csv'
 mac_app_usage_file_pattern <- '.*Monitor.*log'
 win_app_usage_file_pattern <- '.*MonitorLog.csv'
 e4_file_pattern <- 'HR.csv|EDA.csv'
+rr_file_pattern <- 'IBI.csv'
 iWatch_file_pattern <- '.*iWatch.csv'
 
 
