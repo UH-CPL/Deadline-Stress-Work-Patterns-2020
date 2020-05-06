@@ -31,33 +31,33 @@ chunk_sizes <- c(5, 10, 15)
 
 
 #-------------------------------------------------------------------------------------------- 1
-source(file.path(script_dir, '1.dc-curate-and-process-data.R'))
-curate_data()
+# source(file.path(script_dir, '1.dc-curate-and-process-data.R'))
+# curate_data()
 
 
 
 #-------------------------------------------------------------------------------------------- 2
-source(file.path(script_dir, '2.dc-process-activity-app-usage-data.R'))
-format_activity_app_usage_data()
+# source(file.path(script_dir, '2.dc-process-activity-app-usage-data.R'))
+# format_activity_app_usage_data()
 
 
 
 #-------------------------------------------------------------------------------------------- 3
-source(file.path(script_dir, '3.dc-quality-control-phase-one.R'))
-process_quality_control()
-process_mean_data()
+# source(file.path(script_dir, '3.dc-quality-control-phase-one.R'))
+# process_quality_control()
+# process_mean_data()
 
 
 
 #-------------------------------------------------------------------------------------------- 4
-source(file.path(script_dir, '4.dc-generate-normalized-data.R'))
-process_normalize_data()
+# source(file.path(script_dir, '4.dc-generate-normalized-data.R'))
+# process_normalize_data()
 
 
 #-------------------------------------------------------------------------------------------- 5
-source(file.path(script_dir, '5.dc-generate-meta-data.R'))
-generate_treatment_mean_data()
-generate_daywise_mean_data()
+# source(file.path(script_dir, '5.dc-generate-meta-data.R'))
+# generate_treatment_mean_data()
+# generate_daywise_mean_data()
 
 #-------------------------------------------------------------------------------------------- 6
 source(file.path(script_dir, '6.dc-process-rr-data.R'))

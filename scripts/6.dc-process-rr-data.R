@@ -28,23 +28,41 @@ process_subj_day_rr <- function(subj, day) {
   day_dir <- file.path(raw_data_dir, grp_dir, subj, day)
 
   processed_rr_file <- get_matched_file_names(file.path(curated_data_dir, subj_data_dir), 
-                                                     paste0(paste0('Group1_', subj_name, '_', day_serial, '_'), 'IBI'))
+                                                     paste0('Group1_', subj, '_', day, '_', 'RR'))
   
+  # print(processed_rr_file)
+  # print(is_empty(processed_rr_file))
   
   if(is_empty(processed_rr_file)) {
     rr_file <- get_matched_file_names_recursively(day_dir, rr_file_pattern)
 
-    # convert_to_csv(e4_df, file.path(curated_data_dir, subj_data_dir, paste0('Group1_', subj_name, '_', day_serial, '_', sub('.csv', '', sub('.*/', '', e4_file_name)), '.csv')))
-    
-  } else {
+    rr_df <- read_csv(file.path(day_dir, rr_file), col_names=F, col_types = cols())
 
+    ## 1st row indicates the start time
+    base_time <- as.numeric(rr_df[1, 1])
+
+    ## The actual signal starts from 2nd row
+    rr_df <- rr_df[-(1:1), ]
+
+    colnames(rr_df) <- c('Time', 'RR')
+    timestamp_vector <- c(base_time + as.double(rr_df$Time[1]))
+
+    ## Add a CovertedTime base_time
+    for (i in 2:nrow(rr_df)) {
+      timestamp_vector <- c(timestamp_vector, base_time + as.double(rr_df$Time[i]))
+    }
+    
+    rr_df$Timestamp <- as.POSIXct(timestamp_vector, origin='1970-01-01', tz='America/Chicago') # timestamp with Houston timezone
+    convert_to_csv(data.frame(rr_df), file.path(curated_data_dir, subj_data_dir,
+                                    paste0('Group1_', subj, '_', day, '_', 'RR.csv')))
+
+  } else {
+    rr_df <- custom_read_csv(file.path(curated_data_dir, subj_data_dir, processed_rr_file)) %>%
+      mutate(Timestamp=as.POSIXct(Timestamp))
   }
+
   
-  ##############################################################################################
-  full_day_df <- merge(full_day_df, rr_df, by='Timestamp', all=T)   ## CHECK!!! - all vs. all.x
-  ##############################################################################################
-  
-  full_day_df
+  rr_df
 }
 
 process_rr_data <- function() {
@@ -52,14 +70,14 @@ process_rr_data <- function() {
 
   subj_list <- custom_read_csv(file.path(curated_data_dir, utility_data_dir, subj_list_file_name))$Subject
   
-  sapply(subj_list, function(subj) {
-    # sapply(subj_list[1], function(subj) {
-    # sapply(c('T001', 'T003'), function(subj) {
+  # sapply(subj_list, function(subj) {
+  sapply(subj_list[1], function(subj) {
+  # sapply(c('T001', 'T003'), function(subj) {
     
     day_list <- get_dir_list(file.path(raw_data_dir, grp_dir, subj))
     
-    sapply(day_list, function(day) {
-      # sapply(day_list[1], function(day) {
+    # sapply(day_list, function(day) {
+    sapply(day_list[1], function(day) {
       
       tryCatch({
         write_log_msg(paste0('\n----------\n', subj, '-', day, "\n----------"), rr_log_file)
@@ -67,8 +85,8 @@ process_rr_data <- function() {
         write_log_msg('Processing.....RR', rr_log_file)
         full_day_df <- process_subj_day_rr(subj, day)
         
-        write_log_msg('Merging.....all subj data\n', rr_log_file)
-        all_subj_rr_df <<- rbind.fill(all_subj_rr_df, full_day_df)
+        # write_log_msg('Concating.....all subj data\n', rr_log_file)
+        # all_subj_rr_df <<- rbind.fill(all_subj_rr_df, full_day_df)
         
       },
       error=function(err) {
@@ -77,6 +95,13 @@ process_rr_data <- function() {
       })
     })
   })
+  
+  
+  # write_log_msg('Merging.....all subj data\n', rr_log_file)
+  #########################################################################################################
+  # all_subj_df <- merge(all_subj_df, all_subj_rr_df, by='Timestamp', all.y=T)   ## CHECK!!! - all vs. all.x
+  #########################################################################################################
+  # onvert_to_csv(all_subj_df, file.path(curated_data_dir, physiological_data_dir, qc0_rr_file_name))
 }
 
 
