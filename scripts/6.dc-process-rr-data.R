@@ -21,7 +21,7 @@ file.create(rr_log_file)
 
 
 sd_outlier <- 2
-
+one_sec <- 1000
 
 
 #-------------------------#
@@ -69,7 +69,7 @@ merge_with_other_channels <- function(rr_df) {
   #########################################################################################################
   all_subj_rr_df <- merge(all_subj_df, rr_df, by='Timestamp') %>% 
     dplyr::rename(RR_Raw=RR) %>% 
-    mutate(RR=floor(as.numeric(RR_Raw)*1000)) %>% 
+    mutate(RR=floor(as.numeric(RR_Raw)*one_sec)) %>% 
     select(Participant_ID, Day, Treatment, Sinterface_Time, TreatmentTime, Timestamp, RR_Time, RR_Raw, RR, everything())
   
   convert_to_csv(all_subj_rr_df, file.path(curated_data_dir, physiological_data_dir, qc0_rr_file_name))
