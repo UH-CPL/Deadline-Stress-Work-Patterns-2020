@@ -347,21 +347,43 @@ draw_validation_plot <- function(df, signal) {
 
 
 generate_rr_validation_plot <- function() {
-  rr_df <<- read.csv(file.path(project_dir, curated_data_dir, physiological_data_dir, qc1_rr_file_name))
+  rr_df <- read.csv(file.path(project_dir, curated_data_dir, physiological_data_dir, qc1_rr_file_name))
+  print(head(rr_df, 5))
   
   mean_rr_df <- rr_df %>% 
     select(Participant_ID, Day, Treatment, RR) %>% 
     group_by(Participant_ID, Day, Treatment) %>% 
-    summarize(NN = mean(RR, na.rm = TRUE)) %>% 
-    spread(Session, NN) %>% 
+    dplyr::summarize(NN = mean(RR, na.rm = TRUE)) %>% 
+    spread(Treatment, NN) %>% 
     mutate(WS.RB = WS - RB) %>% 
-    gather(Comparison, Value, -Subject, -Group,
-           -RB, -ST, -PM, -DT, - PR) %>% 
-    mutate(Comparison = factor(Comparison, levels = comparison_levels)) %>% 
-    filter(!is.na(Comparison))
+    gather(Comparison, RR_Mean, -Participant_ID, -Day, -RB, -WS) %>% 
+    select(Participant_ID, Day, RR_Mean) %>% 
+    spread(Day, RR_Mean) %>% 
+    
+    mutate(Day3_Day4_Mean = case_when(
+      !is.na(Day3) & !is.na(Day4)~(Day3+Day4)/2,
+      !is.na(Day3)~Day3,
+      !is.na(Day4)~Day4,
+      TRUE~Day3)) %>%
+    mutate(Day3_Day4_Min = pmin(Day3, Day4, na.rm = TRUE))
+  
+    if (t_test_comparison==day3_day4_ws_mean) {
+      mean_rr_df <- mean_rr_df %>%
+        mutate(Day1_Normalize=Day1-Day3_Day4_Mean,
+               Day2_Normalize=Day2-Day3_Day4_Mean)
+      
+    } else if (t_test_comparison==day3_day4_ws_min) {
+      mean_rr_df <- mean_rr_df %>%
+        mutate(Day1_Normalize=Day1-Day3_Day4_Min,
+               Day2_Normalize=Day2-Day3_Day4_Min)
+    }
+    # mutate(Comparison = factor(Comparison, levels = comparison_levels)) %>% 
+    # filter(!is.na(Comparison))
   
   # convert_to_csv(mean_rr_df, file.path(data_dir, 'mean_rr_df_filtered.csv'))
-  draw_validation_plot(mean_rr_df, 'rr')
+  # draw_validation_plot(mean_rr_df, 'rr')
+  
+  print(head(mean_rr_df, 5))
 }
 
 
@@ -370,7 +392,7 @@ generate_rr_validation_plot <- function() {
 #-------------------------#
 # generate_rr_time_series_plot(test=T)
 # generate_rr_time_series_plot()
-generate_rr_validation_plot()
+# generate_rr_validation_plot()
 
 
 

@@ -83,7 +83,7 @@ chunk_sizes <- c(5, 10, 15)
 #-------------------------------------------------------------------------------------------- 7
 source(file.path(script_dir, 'vs-rr-plots.R'))
 # generate_rr_time_series_plot()
-generate_rr_validation_plot()
+# generate_rr_validation_plot()
 
 
 
@@ -121,6 +121,11 @@ generate_rr_validation_plot()
 
 
 
+
+#-------------------------------------------------------------------------------------------- 11
+# source(file.path(script_dir, 'vs-deadline-effect.R'))
+# generate_format_table_ws()
+# generate_format_table_rb()
 
 
 

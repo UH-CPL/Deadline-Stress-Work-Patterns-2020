@@ -12,16 +12,16 @@ library(webshot)
 
 customGreen0 = "#DeF7E9"
 customGreen = "#71CA97"
-
+customRed = "#ff7f7f"
 
 #-------------------------#
 #-----GLOBAL VARIABLES----#
 #-------------------------#
-script_dir <- dirname(rstudioapi::getSourceEditorContext()$path)
-project_dir <- dirname(script_dir)
-setwd(project_dir)
-
-source(file.path(script_dir, 'us-common-functions.R'))
+# script_dir <- dirname(rstudioapi::getSourceEditorContext()$path)
+# project_dir <- dirname(script_dir)
+# setwd(project_dir)
+# 
+# source(file.path(script_dir, 'us-common-functions.R'))
 
 
 
@@ -48,7 +48,7 @@ export_formattable <- function(f, file, width = "100%", height = NULL, backgroun
 generate_format_table_ws <- function() {
   df <- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, qc1_log_trans_mean_v2_file_name)) %>% 
     select(Participant_ID, Treatment, Signal, Day1_Normalize, Day2_Normalize) %>% 
-    rename(Day1=Day1_Normalize,
+    dplyr::rename(Day1=Day1_Normalize,
            Day2=Day2_Normalize) %>% 
     gather(Day, Normalize_Value, -Participant_ID, -Signal, -Treatment) %>% 
     spread(Signal, Normalize_Value) %>% 
@@ -81,16 +81,22 @@ generate_format_table_rb <- function() {
       !is.na(Day3)~Day3,
       !is.na(Day4)~Day4,
       TRUE~Day3)) %>%
-    mutate(Day3_Day4_Min = pmin(Day3, Day4, na.rm = TRUE)) %>% 
+    mutate(Day3_Day4_Min = pmin(Day3, Day4, na.rm = TRUE))
     
-    ###################################################################
-    #           Day3_Day4_Min OR Day3_Day4_Mean
-    ###################################################################
-    mutate(Day1_Normalize=Day1-Day3_Day4_Min,
-           Day2_Normalize=Day2-Day3_Day4_Min) %>% 
+    if (t_test_comparison==day3_day4_ws_mean) {
+      df <- df %>%
+        mutate(Day1_Normalize=Day1-Day3_Day4_Mean,
+               Day2_Normalize=Day2-Day3_Day4_Mean)
+      
+    } else if (t_test_comparison==day3_day4_ws_min) {
+      df <- df %>%
+        mutate(Day1_Normalize=Day1-Day3_Day4_Min,
+               Day2_Normalize=Day2-Day3_Day4_Min)
+    }
     
+  df <- df %>%
     select(Participant_ID, Treatment, Signal, Day1_Normalize, Day2_Normalize) %>% 
-    rename(Day1=Day1_Normalize,
+    dplyr::rename(Day1=Day1_Normalize,
            Day2=Day2_Normalize) %>%
     gather(Day, Normalize_Value, -Participant_ID, -Signal, -Treatment) %>%
     spread(Signal, Normalize_Value) %>% 
@@ -116,8 +122,8 @@ generate_format_table_rb <- function() {
 #-------------------------#
 #-------Main Program------#
 #-------------------------#
-generate_format_table_ws()
-generate_format_table_rb()
+# generate_format_table_ws()
+# generate_format_table_rb()
 
 
 
