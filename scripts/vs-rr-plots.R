@@ -262,91 +262,62 @@ generate_rr_time_series_plot <- function(test=F) {
 
 
 
-draw_validation_plot <- function(df, signal) {
+draw_rr_validation_plot <- function(mean_rr_df, signal_name) {
+  plot_list <- list()
   
-  plot_list <<- list()
-  significance_df <- data.frame()
+  plot_df <- mean_rr_df %>%
+    select(Participant_ID, Day1_Normalize, Day2_Normalize) %>%
+    # select(Participant_ID, Day1, Day2) %>% 
+    na.omit() %>% 
+    gather(Day, Value, -Participant_ID)
   
-  for (group in c('BH', 'BL', 'IH', 'IL')) {
-    
-    temp_df <- df %>% 
-      filter(Group==group)
-    
-    if (group == "IL" || group == "BL") {
-      break_cond <- "RV-RB"
-      plot_margin_left <- 1.5
-    } else {
-      break_cond <- "Stroop-RB"
-      plot_margin_left <- 0.5
-    }
-    
-    labels_vec <- gsub(".", "-", comparison_levels, fixed = TRUE)
-    # print(labels_vec)
-    # print(levels(factor(temp_df$Comparison)))
-    labels_vec <- replace(labels_vec, labels_vec=="SC-RB", break_cond)
-    labels_vec <- replace(labels_vec, labels_vec=="WB-RB", "ST-RB")
-    labels_vec <- replace(labels_vec, labels_vec=="P-RB", "PR-RB")
-    
-    for (comparison in comparison_levels) {
-      temp_comparison_df <- temp_df %>% 
-        filter(Comparison==comparison)
-      
-      if (is_normal(temp_comparison_df$Value)) {
-        test_type <- 't-test'
-        test <- t.test(temp_comparison_df$Value)
-      } else {
-        test_type <- 'wilcoxon'
-        test <- wilcox.test(temp_comparison_df$Value)
-      }
-      temp_significance_df <- data.frame( "Group" = group, 
-                                          "Treatment" = labels_vec[which(comparison == comparison_levels)],
-                                          "Test Type" = test_type,
-                                          "Significance" = get_significance(test$p.value),
-                                          "Subj_No" = nrow(temp_comparison_df))
-      significance_df <- rbind(significance_df, temp_significance_df)
-      
-      # print('')
-      # print(comparison)
-      # print(get_normality(temp_comparison_df$Value))
-      # print(test_type)
-      # print('----------------------------------------------------')
-    }
-    
-    group_significance_df <- significance_df %>% 
-      filter(Group==group)
-    
-    gg <- ggplot(temp_df, aes(x = Comparison, y = Value)) + 
-      geom_boxplot() + 
-      labs(title = figure_out_title(group), y = figure_out_labels(signal)) +
-      theme_bw(base_size = 18) +
-      theme(axis.title.x = element_blank(),
-            panel.grid.major = element_blank(),
-            panel.grid.minor = element_blank(),
-            axis.text.x=element_text(size=16, face='bold'),
-            plot.margin = unit(c(0.5, 0.5, 0.5, plot_margin_left), "lines"),  ##top, right, bottom, left
-            axis.line = element_line(colour = "black")) +
-      geom_hline(yintercept=0, linetype="dashed", color = "red", alpha = 0.6, size=1) +
-      scale_x_discrete(labels=labels_vec) +
-      stat_summary(fun.y = mean, color = "darkred", geom = "point", shape = 3, size = 4, show_guide = FALSE) +
-      stat_summary(fun.data = give.n, geom = "text", size = 6) +
-      scale_y_continuous(expand = c(0.15, 0, 0.15, 0)) +
-      annotate("text", x=1, y=Inf, label= group_significance_df$Significance[1], vjust = 1.2, size = 10) +
-      annotate("text", x=2, y=Inf, label= group_significance_df$Significance[2], vjust = 1.2, size = 10) +
-      annotate("text", x=3, y=Inf, label= group_significance_df$Significance[3], vjust = 1.2, size = 10) +
-      annotate("text", x=4, y=Inf, label= group_significance_df$Significance[4], vjust = 1.2, size = 10)
-    
-    plot_list[[length(plot_list) + 1]] <<- gg
-  }
+  # for (day in days) {
+  #   conduct_test(temp_mean_df, day, signal_name, test_type)
+  # }
+
+  # label <- get_label(signal_name) 
+  # title <- get_title(signal_name)
+  # 
+  # print_outliers(plot_df, signal_name, 'Day1')
+  # print_outliers(plot_df, signal_name, 'Day2')
   
-  grid_plot <- do.call("grid.arrange", c(plot_list, ncol=2))
-  plot_path <- file.path(plots_dir, paste0(signal, '-validation-plot'))
-  save_plot(plot_path, grid_plot)
   
+  plot <- ggplot(plot_df, aes(x = Day, y = Value)) + 
+    geom_boxplot() +
+    # geom_dotplot(binaxis='y', stackdir='center', dotsize=1) +
+    stat_summary(geom="text", 
+                 fun=quantile,
+                 aes(label=sprintf("%1.3f", ..y..)),
+                 # aes(label=Participant_ID),
+                 # aes(label=get_subj(plot_df, ..y..)),
+                 # aes(label=sprintf("%s", get_subj(plot_df, ..y..))),
+                 # aes(label='T001'),
+                 position=position_nudge(x=0.45), size=5.5) +
+    # labs(title = title, 
+    #      y = label) +
+    theme_bw(base_size = 18) + 
+    theme(axis.title.x = element_blank(),
+          panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(),
+          axis.text.x=element_text(size=16, face='bold'),
+          # plot.margin = unit(c(0.5, 0.5, 0.5, plot_margin_left), "lines"),  ##top, right, bottom, left
+          axis.line = element_line(colour = "black"),
+          plot.title = element_text(size=24, hjust = 0.5)) + 
+    geom_hline(yintercept=0, linetype="dashed", color = "red", alpha = 0.6, size=1) +
+    # scale_x_discrete(labels=labels_vec) + 
+    stat_summary(fun = mean, color = "darkred", geom = "point", shape = 3, size = 4, show.legend = FALSE) +
+    stat_summary(fun.data = get_n, geom = "text", size = 6) +
+    # annotate("text", x=1, y=Inf, label= sign[1], vjust = 1.2, size = 10) +
+    # annotate("text", x=2, y=Inf, label= sign[2], vjust = 1.2, size = 10) +
+    scale_y_continuous(expand = c(0.15, 0, 0.15, 0))
+  
+  # print(plot)
+  save_plot('rr_validation', plot)
   # convert_to_csv(significance_df, file.path(data_dir, 'rr_significance.csv'))
 }
 
 
-generate_rr_validation_plot <- function() {
+generate_rr_mean_data <- function() {
   rr_df <- read.csv(file.path(project_dir, curated_data_dir, physiological_data_dir, qc1_rr_file_name))
   print(head(rr_df, 5))
   
@@ -367,23 +338,23 @@ generate_rr_validation_plot <- function() {
       TRUE~Day3)) %>%
     mutate(Day3_Day4_Min = pmin(Day3, Day4, na.rm = TRUE))
   
-    if (t_test_comparison==day3_day4_ws_mean) {
-      mean_rr_df <- mean_rr_df %>%
-        mutate(Day1_Normalize=Day1-Day3_Day4_Mean,
-               Day2_Normalize=Day2-Day3_Day4_Mean)
-      
-    } else if (t_test_comparison==day3_day4_ws_min) {
-      mean_rr_df <- mean_rr_df %>%
-        mutate(Day1_Normalize=Day1-Day3_Day4_Min,
-               Day2_Normalize=Day2-Day3_Day4_Min)
-    }
-    # mutate(Comparison = factor(Comparison, levels = comparison_levels)) %>% 
-    # filter(!is.na(Comparison))
+  if (t_test_comparison==day3_day4_ws_mean) {
+    mean_rr_df <- mean_rr_df %>%
+      mutate(Day1_Normalize=Day1-Day3_Day4_Mean,
+             Day2_Normalize=Day2-Day3_Day4_Mean)
+    
+  } else if (t_test_comparison==day3_day4_ws_min) {
+    mean_rr_df <- mean_rr_df %>%
+      mutate(Day1_Normalize=Day1-Day3_Day4_Min,
+             Day2_Normalize=Day2-Day3_Day4_Min)
+  }
   
-  # convert_to_csv(mean_rr_df, file.path(data_dir, 'mean_rr_df_filtered.csv'))
-  # draw_validation_plot(mean_rr_df, 'rr')
-  
-  print(head(mean_rr_df, 5))
+  mean_rr_df
+}
+
+generate_rr_validation_plot <- function() {
+  mean_rr_df <- generate_rr_mean_data()
+  draw_rr_validation_plot(mean_rr_df, 'rr')
 }
 
 

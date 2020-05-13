@@ -179,7 +179,7 @@ variance_test_chunk_mean_file_name <- 'variance_test_chunk_mean.csv'
 qc0_rr_file_name <- 'qc0_rr_data.csv' 
 qc1_rr_file_name <- 'qc1_rr_data.csv' 
 
-
+qc1_rr_mean_file_name <- 'qc1_rr_mean.csv'
 
 
 
