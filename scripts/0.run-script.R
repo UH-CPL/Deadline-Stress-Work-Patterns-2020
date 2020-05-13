@@ -2,6 +2,9 @@
 #-----GLOBAL VARIABLES----#
 #-------------------------#
 script_dir <- dirname(rstudioapi::getSourceEditorContext()$path)
+project_dir <- dirname(script_dir)
+setwd(project_dir)
+
 source(file.path(script_dir, 'us-common-functions.R'))
 
 
@@ -31,33 +34,33 @@ chunk_sizes <- c(5, 10, 15)
 
 
 #-------------------------------------------------------------------------------------------- 1
-source(file.path(script_dir, '1.dc-curate-and-process-data.R'))
-curate_data()
+# source(file.path(script_dir, '1.dc-curate-and-process-data.R'))
+# curate_data()
 
 
 
 #-------------------------------------------------------------------------------------------- 2
-source(file.path(script_dir, '2.dc-process-activity-app-usage-data.R'))
-format_activity_app_usage_data()
+# source(file.path(script_dir, '2.dc-process-activity-app-usage-data.R'))
+# format_activity_app_usage_data()
 
 
 
 #-------------------------------------------------------------------------------------------- 3
-source(file.path(script_dir, '3.dc-quality-control-phase-one.R'))
-process_quality_control()
-process_mean_data()
+# source(file.path(script_dir, '3.dc-quality-control-phase-one.R'))
+# process_quality_control()
+# process_mean_data()
 
 
 
 #-------------------------------------------------------------------------------------------- 4
-source(file.path(script_dir, '4.dc-generate-normalized-data.R'))
-process_normalize_data()
+# source(file.path(script_dir, '4.dc-generate-normalized-data.R'))
+# process_normalize_data()
 
 
 #-------------------------------------------------------------------------------------------- 5
-source(file.path(script_dir, '5.dc-generate-meta-data.R'))
-generate_treatment_mean_data()
-generate_daywise_mean_data()
+# source(file.path(script_dir, '5.dc-generate-meta-data.R'))
+# generate_treatment_mean_data()
+# generate_daywise_mean_data()
 
 #-------------------------------------------------------------------------------------------- #
 #                      PLEASE REMOVE THE REPEATED CODE  3 & 5                                 #
@@ -67,9 +70,9 @@ generate_daywise_mean_data()
 
 
 #-------------------------------------------------------------------------------------------- 6
-source(file.path(script_dir, '6.dc-process-rr-data.R'))
-gather_rr_data()
-qc1_clean_rr_data()
+# source(file.path(script_dir, '6.dc-process-rr-data.R'))
+# gather_rr_data()
+# qc1_clean_rr_data()
 
 ### Remember after QC2, Based on the bad HR data from E4, RR should be removed also
 ### Check multi-modal-email-study/vs-validation-plot-hrv/clean_invalid_rr() method
@@ -78,11 +81,9 @@ qc1_clean_rr_data()
 
 
 #-------------------------------------------------------------------------------------------- 7
-source(file.path(script_dir, 'vs-time-series-plot-rr.R'))
-generate_rr_time_series_plot()
-
-# source(file.path(script_dir, 'vs-validation_plot-rr.R'))
-# draw_rr_validation_plot()
+source(file.path(script_dir, 'vs-rr-plots.R'))
+# generate_rr_time_series_plot()
+generate_rr_validation_plot()
 
 
 
