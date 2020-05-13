@@ -22,32 +22,17 @@ project_dir <- dirname(script_dir)
 
 source(file.path(script_dir, 'us-common-functions.R'))
 
-
 col_list <- c('Participant_ID', 'Treatment', 'TreatmentTime', 'RR')
-
-######################
-##       ****       ##
-######################
-axis_type <- 'normal'
-y_axis_label <- 'RR [ms]'
-
-
-######################
-##       ****       ##
-######################
-# axis_type <- 'log-based'
-# y_axis_label <- bquote(paste('log'[10], '(RR [ms])'))
-# y_axis_threshold <- 0
-
-plot_list <- list()
-
 
 treatment_atr <- 'all-session'
 # treatment_list <- c('RB')
 treatment_list <- c('RB', 'WS')
 
 
+significance_df <- tibble()
 
+axis_type <- 'normal'
+y_axis_label <- 'RR [ms]'
 
 
 #-------------------------#
@@ -78,6 +63,7 @@ read_data <- function() {
 }
 
 generate_rr_time_series_plot <- function(test=F) {
+  plot_list <- list()
   read_data()
   
   #####################################################
@@ -203,7 +189,7 @@ generate_rr_time_series_plot <- function(test=F) {
                  label=get_subj_no_label(get_total_subj_no(session_filtered_df)),
                  fontface = 'italic')
       
-      if (session_name != 'DT') {
+      if (session_name != 'WS') {
         filtered_data_plot <- filtered_data_plot + 
           theme_bw() +
           theme(axis.line = element_line(colour = "black"))
@@ -304,6 +290,141 @@ generate_rr_mean_data <- function() {
   mean_rr_df
 }
 
+conduct_test <- function(df, day) {
+  # print(df)
+  
+  col_name <- paste0(day, '_Normalize')
+  
+  # We calculate the p-value for this session difference
+  # if (test_type == "t" | test_type == "tt") {
+  #   p_val <- t.test(df[[col_name]], alternative='greater')$p.value
+  #   p_val_2 <- t.test(df[[day]], df$Day3_Day4_Mean, alternative='greater')$p.value
+  # } else if (test_type == "w") {
+  #   p_val <- wilcox.test(df[[col_name]])$p.value
+  #   p_val_2 <- wilcox.test(df[[day]], df$Day3_Day4_Mean)$p.value
+  # }
+  
+  p_val_one_sample_two_sided <- t.test(df[[col_name]])$p.value
+  p_val_one_sample_less  <- t.test(df[[col_name]], alternative='less')$p.value
+  p_val_one_sample_greater  <- t.test(df[[col_name]], alternative='greater')$p.value
+  
+  # p_val_two_sample_two_sided <- t.test(df[[day]], df$Day3_Day4_Mean, paired=TRUE)$p.value
+  # p_val_two_sample_greater <- t.test(df[[day]], df$Day3_Day4_Mean, paired=TRUE, alternative='greater')$p.value
+  
+  
+  w_val_one_sample_two_sided <- wilcox.test(df[[col_name]])$p.value
+  w_val_one_sample_less  <- wilcox.test(df[[col_name]], alternative='less')$p.value
+  w_val_one_sample_greater  <- wilcox.test(df[[col_name]], alternative='greater')$p.value
+  
+  # w_val_two_sample_two_sided <- wilcox.test(df[[day]], df$Day3_Day4_Mean, paired=TRUE)$p.value
+  # w_val_two_sample_greater <- wilcox.test(df[[day]], df$Day3_Day4_Mean, paired=TRUE, alternative='greater')$p.value
+  
+  
+  
+  # variance_val <- var.test(df[[day]], df$Day3_Day4_Mean, data=df)$p.value
+  # variance_greater_val <- var.test(df[[day]], df$Day3_Day4_Mean, data=df, alternative='greater')$p.value
+  # variance_less_val <- var.test(df[[day]], df$Day3_Day4_Mean, data=df, alternative='less')$p.value
+  
+  # We find the sign of our results (this is the '*' thing we put in our two plots way up above)
+  # sign <- get_significance_sign(p_val)
+  # print(paste(p_val, sign))
+  # print(paste('----------------------', sign))
+  
+  # Then we add EVERYTHING to that tibble we made earlier to hold it for us
+  significance_df <<- rbind.fill(significance_df, tibble(Signal = 'RR',
+                                                         Day = day,
+                                                         # Test_Type = test_type,
+                                                         n = nrow(df),
+                                                         
+                                                         # variance_val = variance_val,
+                                                         # variance_val_sig = get_significance_sign(variance_val),
+                                                         # 
+                                                         # variance_greater_val = variance_greater_val,
+                                                         # variance_greater_val_sig = get_significance_sign(variance_greater_val),
+                                                         # 
+                                                         # variance_less_val = variance_less_val,
+                                                         # variance_less_val_sig = get_significance_sign(variance_less_val),
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         p_val_one_sample_two_sided = p_val_one_sample_two_sided,
+                                                         p_val_one_sample_two_sided_sig = get_significance_sign(p_val_one_sample_two_sided),
+                                                         
+                                                         p_val_one_sample_less = p_val_one_sample_less,
+                                                         p_val_one_sample_less_sig = get_significance_sign(p_val_one_sample_less),
+                                                         
+                                                         p_val_one_sample_greater = p_val_one_sample_greater,
+                                                         p_val_one_sample_greater_sig = get_significance_sign(p_val_one_sample_greater),
+                                                         
+                                                         # p_val_two_sample_two_sided = p_val_two_sample_two_sided,
+                                                         # p_val_two_sample_two_sided_sig = get_significance_sign(p_val_two_sample_two_sided),
+                                                         # 
+                                                         # p_val_two_sample_greater = p_val_two_sample_greater,
+                                                         # p_val_two_sample_greater_sig = get_significance_sign(p_val_two_sample_greater),
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         w_val_one_sample_two_sided = w_val_one_sample_two_sided,
+                                                         w_val_one_sample_two_sided_sig = get_significance_sign(w_val_one_sample_two_sided),
+                                                         
+                                                         w_val_one_sample_less = w_val_one_sample_less,
+                                                         w_val_one_sample_less_sig = get_significance_sign(w_val_one_sample_less),
+                                                         
+                                                         w_val_one_sample_greater = w_val_one_sample_greater,
+                                                         w_val_one_sample_greater_sig = get_significance_sign(w_val_one_sample_greater),
+                                                         
+                                                         # w_val_two_sample_two_sided = w_val_two_sample_two_sided,
+                                                         # w_val_two_sample_two_sided_sig = get_significance_sign(w_val_two_sample_two_sided),
+                                                         # 
+                                                         # w_val_two_sample_greater = w_val_two_sample_greater,
+                                                         # w_val_two_sample_greater_sig = get_significance_sign(w_val_two_sample_greater),
+                                                         
+                                                         
+  ))
+  # print(paste("Day:", day, "Test Type:", test_type, "p-value:", p_val, "Significance:", sign))
+  # print(significance_df)
+}
+
+
+get_significance <- function(mean_rr_df) {
+  
+  # 't' = t-test 
+  # 'tt' = transformed t-test 
+  # 'w' = Wilcoxon test 
+  test_type <- "t" 
+  end_str <- NA 
+  
+  temp_mean_df <- mean_rr_df %>% 
+    select(Participant_ID, Day1_Normalize, Day2_Normalize) %>% 
+    na.omit()
+  
+  if (nrow(temp_mean_df) != 0) {
+    shapiro_result_day1 <- shapiro.test(temp_mean_df$Day1_Normalize) 
+    shapiro_result_day2 <- shapiro.test(temp_mean_df$Day2_Normalize) 
+    
+    # if (shapiro_test_results$p.value < 0.05) {
+    #   test_type <- "w"
+    # } else {
+    #   test_type <- "t"
+    # }
+    
+    days <- c('Day1', 'Day2')
+    
+    for (day in days) {
+      conduct_test(temp_mean_df, day)
+    }
+    
+    # print(significance_df)
+    convert_to_csv(significance_df, file.path(curated_data_dir, physiological_data_dir, significance_rr_file_name))
+  }
+  
+  significance_df
+}
+
+
 generate_rr_validation_plot <- function() {
   mean_rr_df <- generate_rr_mean_data()
   plot_list <- list()
@@ -317,9 +438,7 @@ generate_rr_validation_plot <- function() {
   
   # print(head(plot_df, 10))
   
-  # for (day in days) {
-  #   conduct_test(temp_mean_df, day, signal_name, test_type)
-  # }
+  # sign <- get_significance(mean_rr_df)$Significance
 
   # label <- get_label(signal_name) 
   # title <- get_title(signal_name)
@@ -339,7 +458,7 @@ generate_rr_validation_plot <- function() {
     #              # aes(label=sprintf("%s", get_subj(plot_df, ..y..))),
     #              # aes(label='T001'),
     #              position=position_nudge(x=0.45), size=5.5) +
-    labs(title = 'RR Validation - day3_day4_ws_min',
+    labs(title = paste0('RR Validation - ', t_test_comparison),
          y = expression(Delta~'NN [ms]')) +
     theme_bw(base_size = 18) + 
     theme(axis.title.x = element_blank(),

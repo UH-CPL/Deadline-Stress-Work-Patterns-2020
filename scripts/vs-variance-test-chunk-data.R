@@ -114,7 +114,7 @@ process_variance_test <- function(chunk_size_minute, signal) {
   # print(head(mean_df, 2))
   mean_df %>%
     filter(Mask==1,
-           Total_Non_NA_Rows>chunk_size_minute*60*discard_rate/100
+           Total_Non_NA_Rows>chunk_size_minute*60*discard_rate_chunk_mean/100
            ) %>%
     group_by(Participant_ID) %>%
     do(variance_test(., chunk_size_minute, signal))

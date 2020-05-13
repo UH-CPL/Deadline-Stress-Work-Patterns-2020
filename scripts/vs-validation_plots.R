@@ -271,7 +271,8 @@ draw_plots <- function() {
       gather(Day, Value, -Participant_ID) %>% 
       na.omit() ########### CHECK ME!!!!
     
-    sign <- significance_df$Significance 
+    # sign <- significance_df$Significance 
+    sign <- significance_df$p_val_one_sample_greater_sig 
     label <- get_label(signal_name) 
     title <- get_title(signal_name)
     

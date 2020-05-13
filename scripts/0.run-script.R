@@ -17,7 +17,7 @@ source(file.path(script_dir, 'us-common-functions.R'))
 #
 ##########################################################
 baseline_parameter <- corresponding_baseline
-t_test_comparison <- day3_day4_ws_min
+t_test_comparison <- day3_day4_ws_mean
 
 
 enable_eda_smoothing <- TRUE
@@ -27,7 +27,7 @@ enable_log_transformation <- TRUE
 delta_shift_val <- 0.01
 
 
-discard_rate <- 5  # in %
+discard_rate_chunk_mean <- 5  # in %
 chunk_sizes <- c(5, 10, 15)
 
 
@@ -81,9 +81,9 @@ chunk_sizes <- c(5, 10, 15)
 
 
 #-------------------------------------------------------------------------------------------- 7
-source(file.path(script_dir, 'vs-rr-plots.R'))
+# source(file.path(script_dir, 'vs-rr-plots.R'))
 # generate_rr_time_series_plot()
-generate_rr_validation_plot()
+# generate_rr_validation_plot()
 
 
 
@@ -102,7 +102,7 @@ generate_rr_validation_plot()
 #-------------------------------------------------------------------------------------------- 10
 # source(file.path(script_dir, '5.dc-generate-meta-data.R'))
 # generate_ws_chunk_mean_data()
-
+# 
 # source(file.path(script_dir, 'vs-variance-test-chunk-data.R'))
 # conduct_variance_tests_chunk_data()
 
@@ -122,10 +122,10 @@ generate_rr_validation_plot()
 
 
 
-#-------------------------------------------------------------------------------------------- 11
-# source(file.path(script_dir, 'vs-deadline-effect.R'))
-# generate_format_table_ws()
-# generate_format_table_rb()
+#-------------------------------------------------------------------------------------------- 12
+source(file.path(script_dir, 'vs-deadline-effect.R'))
+generate_format_table_ws()
+generate_format_table_rb()
 
 
 
