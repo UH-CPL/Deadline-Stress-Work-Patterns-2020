@@ -21,8 +21,6 @@ library(nlme)
 library(VGAM)
 library(MASS)
 library(caret)
-
-
 library(dplyr) # Some problem occured for loading the dplyr package at the beginning
 
 
@@ -35,6 +33,9 @@ library(dplyr) # Some problem occured for loading the dplyr package at the begin
 source(file.path(getwd(), 'us-common-functions.R'))
 project_dir <- dirname(getwd())
 setwd(project_dir)
+
+
+
 ``` 
 
 \newpage
@@ -57,23 +58,15 @@ read_data <- function() {
            E4_HR_Raw=E4_HR,
            E4_EDA_Raw=E4_EDA,
            iWatch_HR_Raw=iWatch_HR)
+  
+  raw_rb_mean_df <<- raw_mean_df %>% 
+    filter(Treatment=='RB')
 
   activity_state_nasa_df <- custom_read_csv(file.path(physiological_questionnaire_data_path, activity_state_nasa_file_name))
   trait_biographic_df <- custom_read_csv(file.path(physiological_questionnaire_data_path, trait_biographic_file_name))
   
   physiological_questionnaire_df <<- merge(mean_df, activity_state_nasa_df, by=c('Participant_ID', 'Day'))
   physiological_questionnaire_df <<- merge(physiological_questionnaire_df, trait_biographic_df, by='Participant_ID')
-  
-  # # print(head(physiological_questionnaire_df, 5))
-  # # print(head(activity_state_nasa_df, 5))
-  # # print(head(trait_biographic_df, 5))
-  
-  
-  # print(str(physiological_questionnaire_df))
-  # print(colnames(physiological_questionnaire_df))
-  # physiological_questionnaire_df$Day <<- factor(physiological_questionnaire_df$Day)
-  # physiological_questionnaire_df$Day <<- relevel(factor(physiological_questionnaire_df$Day, ordered=F), ref='Day4')
-  # print(str(physiological_questionnaire_df))
   
   physiological_questionnaire_df <<- physiological_questionnaire_df %>% 
     mutate(Day=relevel(factor(Day, ordered=F), ref='Day4'),
@@ -133,10 +126,8 @@ read_data()
 
 
 
-
-
 \newpage
-Linear Model - 2.1.1 -> Random Effect
+Linear Model - 1.1 -> Random Effect
 ------------------------------
 ```{r echo=FALSE, warning = FALSE, message = FALSE}
 # model = lme(PP ~ Day + Mental + Physical + Temporal + Performance + Effort + Frustration,
@@ -150,7 +141,7 @@ print(anova(model))
 
 
 \newpage
-Linear Model - 2.2.1 -> Random Effect
+Linear Model - 1.2 -> Random Effect
 ------------------------------
 ```{r echo=FALSE, warning = FALSE, message = FALSE}
 model = lme(E4_HR ~ Day + NASA_summative, 
@@ -163,7 +154,7 @@ print(anova(model))
 
 
 \newpage
-Linear Model - 2.3.1 -> Random Effect
+Linear Model - 1.3 -> Random Effect
 ------------------------------
 ```{r echo=FALSE, warning = FALSE, message = FALSE}
 model = lme(E4_EDA ~ Day + NASA_summative, 
@@ -176,7 +167,7 @@ print(anova(model))
 
 
 \newpage
-Linear Model - 2.4.1 -> Random Effect
+Linear Model - 1.4 -> Random Effect
 ------------------------------
 ```{r echo=FALSE, warning = FALSE, message = FALSE}
 model = lme(iWatch_HR ~ Day + NASA_summative, 
@@ -190,6 +181,60 @@ print(anova(model))
 
 
 
+
+
+
+
+\newpage
+Linear Model - 2.1 -> Resting Baseline
+------------------------------
+```{r echo=FALSE, warning = FALSE, message = FALSE}
+model = lme(PP_Raw ~ Day,
+            data=raw_rb_mean_df,
+            random=~1|Participant_ID,
+            na.action = na.omit)
+print(summary(model))
+print(anova(model))
+```
+
+
+\newpage
+Linear Model - 2.2 -> Resting Baseline
+------------------------------
+```{r echo=FALSE, warning = FALSE, message = FALSE}
+model = lme(E4_HR_Raw ~ Day, 
+            data=raw_rb_mean_df,
+            random=~1|Participant_ID,
+            na.action = na.omit)
+print(summary(model))
+print(anova(model))
+```
+
+
+\newpage
+Linear Model - 2.3 -> Resting Baseline
+------------------------------
+```{r echo=FALSE, warning = FALSE, message = FALSE}
+model = lme(E4_EDA_Raw ~ Day, 
+            data=raw_rb_mean_df,
+            random=~1|Participant_ID,
+            na.action = na.omit)
+print(summary(model))
+print(anova(model))
+```
+
+
+\newpage
+Linear Model - 2.4 -> Resting Baseline
+------------------------------
+```{r echo=FALSE, warning = FALSE, message = FALSE}
+model = lme(iWatch_HR_Raw ~ Day,
+            data=raw_rb_mean_df,
+            random=~1|Participant_ID,
+            na.action = na.omit)
+print(summary(model))
+print(anova(model))
+```
 
 
 
