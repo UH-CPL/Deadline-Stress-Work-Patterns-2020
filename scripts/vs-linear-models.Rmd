@@ -52,6 +52,13 @@ read_data <- function() {
                                         curated_data_dir, 
                                         physiological_questionnaire_data_dir)
   
+  rr_df <<- custom_read_csv(file.path(physiological_data_path, qc1_rr_mean_v1_file_name)) %>% 
+    rename(RR=RR_Mean)
+  
+  rr_rb_df <<- rr_df %>% 
+    filter(Treatment=='RB')
+  
+  
   mean_df <- custom_read_csv(file.path(physiological_data_path, qc1_log_trans_mean_v1_file_name))
   raw_mean_df <- custom_read_csv(file.path(physiological_data_path, qc1_raw_mean_v1_file_name)) %>% 
     rename(PP_Raw=PP,
@@ -72,6 +79,7 @@ read_data <- function() {
     mutate(Day=relevel(factor(Day, ordered=F), ref='Day4'),
            NASA_summative=Mental + Physical + Temporal + Performance + Effort + Frustration) %>%
     merge(raw_mean_df, by=c('Participant_ID', 'Day', 'Treatment')) %>%
+    merge(rr_df, by=c('Participant_ID', 'Day', 'Treatment')) %>%
     select(Participant_ID,
            Day,
            Treatment,
@@ -83,6 +91,7 @@ read_data <- function() {
            E4_EDA,
            iWatch_HR_Raw,
            iWatch_HR,
+           RR,
            NASA_summative,
            Mental,
            Physical,
@@ -178,7 +187,17 @@ print(summary(model))
 print(anova(model))
 ```
 
-
+\newpage
+Linear Model - 1.5 -> Random Effect
+------------------------------
+```{r echo=FALSE, warning = FALSE, message = FALSE}
+model = lme(RR ~ Day + NASA_summative, 
+            data=physiological_questionnaire_df,
+            random=~1|Participant_ID,
+            na.action = na.omit)
+print(summary(model))
+print(anova(model))
+```
 
 
 
@@ -236,6 +255,17 @@ print(summary(model))
 print(anova(model))
 ```
 
+\newpage
+Linear Model - 2.5 -> Resting Baseline
+------------------------------
+```{r echo=FALSE, warning = FALSE, message = FALSE}
+model = lme(RR ~ Day,
+            data=rr_rb_df,
+            random=~1|Participant_ID,
+            na.action = na.omit)
+print(summary(model))
+print(anova(model))
+```
 
 
 

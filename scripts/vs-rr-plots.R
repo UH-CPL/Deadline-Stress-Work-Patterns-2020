@@ -73,8 +73,8 @@ replace_dots <- function(str) {
 
 
 read_data <- function() {
-  raw_df <<- read.csv(file.path(project_dir, curated_data_dir, physiological_data_dir, qc0_rr_file_name))[, col_list]
-  filtered_df <<- read.csv(file.path(project_dir, curated_data_dir, physiological_data_dir, qc1_rr_file_name))[, col_list]
+  raw_df <<- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, qc0_rr_file_name))[, col_list]
+  filtered_df <<- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, qc1_rr_file_name))[, col_list]
 }
 
 generate_rr_time_series_plot <- function(test=F) {
@@ -262,7 +262,7 @@ generate_rr_time_series_plot <- function(test=F) {
 
 
 generate_rr_mean_data <- function() {
-  rr_df <- read.csv(file.path(project_dir, curated_data_dir, physiological_data_dir, qc1_rr_file_name))
+  rr_df <- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, qc1_rr_file_name))
   print(head(rr_df, 5))
   
   mean_rr_df <- rr_df %>% 
@@ -271,8 +271,15 @@ generate_rr_mean_data <- function() {
     dplyr::summarize(NN = mean(RR, na.rm = TRUE)) %>% 
     spread(Treatment, NN) %>% 
     mutate(WS.RB = WS - RB) %>% 
-    gather(Comparison, RR_Mean, -Participant_ID, -Day, -RB, -WS) %>% 
-    select(Participant_ID, Day, RR_Mean) %>% 
+    gather(Treatment, RR_Mean, -Participant_ID, -Day)
+    # gather(Comparison, RR_Mean, -Participant_ID, -Day, -RB, -WS) %>%
+    # select(Participant_ID, Day, Treatment, RR_Mean)
+    
+  # print(head(mean_rr_df, 2))
+  convert_to_csv(mean_rr_df, file.path(project_dir, curated_data_dir, physiological_data_dir, qc1_rr_mean_v1_file_name))
+  
+  mean_rr_df <- mean_rr_df %>%  
+    filter(Treatment=='WS.RB') %>% 
     spread(Day, RR_Mean) %>% 
     
     mutate(Day3_Day4_Mean = case_when(
@@ -293,6 +300,7 @@ generate_rr_mean_data <- function() {
              Day2_Normalize=Day2-Day3_Day4_Min)
   }
   
+  convert_to_csv(mean_rr_df, file.path(project_dir, curated_data_dir, physiological_data_dir, qc1_rr_mean_v2_file_name))
   mean_rr_df
 }
 
@@ -307,7 +315,7 @@ generate_rr_validation_plot <- function() {
     gather(Day, Value, -Participant_ID) %>% 
     na.omit()
   
-  print(head(plot_df, 10))
+  # print(head(plot_df, 10))
   
   # for (day in days) {
   #   conduct_test(temp_mean_df, day, signal_name, test_type)
@@ -323,14 +331,14 @@ generate_rr_validation_plot <- function() {
   plot <- ggplot(plot_df, aes(x = Day, y = Value)) + 
     geom_boxplot() +
     # geom_dotplot(binaxis='y', stackdir='center', dotsize=1) +
-    stat_summary(geom="text", 
-                 fun=quantile,
-                 aes(label=sprintf("%1.3f", ..y..)),
-                 # aes(label=Participant_ID),
-                 # aes(label=get_subj(plot_df, ..y..)),
-                 # aes(label=sprintf("%s", get_subj(plot_df, ..y..))),
-                 # aes(label='T001'),
-                 position=position_nudge(x=0.45), size=5.5) +
+    # stat_summary(geom="text", 
+    #              fun=quantile,
+    #              aes(label=sprintf("%1.3f", ..y..)),
+    #              # aes(label=Participant_ID),
+    #              # aes(label=get_subj(plot_df, ..y..)),
+    #              # aes(label=sprintf("%s", get_subj(plot_df, ..y..))),
+    #              # aes(label='T001'),
+    #              position=position_nudge(x=0.45), size=5.5) +
     labs(title = 'RR Validation - day3_day4_ws_min',
          y = expression(Delta~'NN [ms]')) +
     theme_bw(base_size = 18) + 
