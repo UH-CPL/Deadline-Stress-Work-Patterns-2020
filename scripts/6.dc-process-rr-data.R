@@ -20,6 +20,9 @@ rr_log_file <- file.path(log_dir, paste0('rr-log-', format(Sys.Date(), format='%
 file.create(rr_log_file)
 
 
+sd_outlier <- 2
+
+
 
 #-------------------------#
 #---FUNCTION DEFINITION---#
@@ -62,15 +65,17 @@ merge_with_other_channels <- function(rr_df) {
   print(rr_df$Timestamp[1])
   
   #########################################################################################################
-  # all_subj_df <- merge(all_subj_df, rr_df, by='Timestamp', all.y=T)   ## CHECK!!! - all vs. all.x
-  all_subj_df <- merge(all_subj_df, rr_df, by='Timestamp')
+  # all_subj_rr_df <- merge(all_subj_df, rr_df, by='Timestamp', all.y=T)   ## CHECK!!! - all vs. all.x
   #########################################################################################################
+  all_subj_rr_df <- merge(all_subj_df, rr_df, by='Timestamp') %>% 
+    dplyr::rename(RR_Raw=RR) %>% 
+    mutate(RR=floor(as.numeric(RR_Raw)*1000)) %>% 
+    select(Participant_ID, Day, Treatment, Sinterface_Time, TreatmentTime, Timestamp, RR_Time, RR_Raw, RR, everything())
   
-  # convert_to_csv(all_subj_df, file.path(curated_data_dir, physiological_data_dir, qc0_rr_file_name))
-  convert_to_csv(all_subj_df, file.path(curated_data_dir, physiological_data_dir, qc0_rr_file_name))
+  convert_to_csv(all_subj_rr_df, file.path(curated_data_dir, physiological_data_dir, qc0_rr_file_name))
 }
 
-process_rr_data <- function() {
+gather_rr_data <- function() {
   all_subj_rr_df <<- tibble()
 
   subj_list <- custom_read_csv(file.path(curated_data_dir, utility_data_dir, subj_list_file_name))$Subject
@@ -105,13 +110,65 @@ process_rr_data <- function() {
   merge_with_other_channels(all_subj_rr_df)
 }
 
+discard_outliers <- function(subj, sess, temp_rr_df) {
+  mean <- mean(temp_rr_df$RR)
+  sd <- sd(temp_rr_df$RR)
+  
+  print(paste('Filtering extremest points: ', subj, ', ', sess))
+  write(paste('Filtering extremest points: ', subj, ', ', sess), file=rr_log_file, append=TRUE)
+  # print(paste0('mean: ', mean, ', sd: ', sd))
+  
+  outliers <- temp_rr_df %>%
+    filter(temp_rr_df$RR < mean-sd_outlier*sd | temp_rr_df$RR > mean+sd_outlier*sd) %>%
+    select(RR) %>%
+    unlist()
+  
+  rr_df[rr_df$Participant_ID==subj &
+          rr_df$Treatment==sess &
+          rr_df$RR %in% as.list(outliers),
+        'RR'] <<- NA
+}
+
+qc1_clean_rr_data <- function() {
+  rr_df <<- custom_read_csv(file.path(curated_data_dir, physiological_data_dir, qc0_rr_file_name))
+  # print(head(rr_df))
+  
+  for (subj in levels(factor(rr_df$Participant_ID))) {
+    for (treatment in levels(factor(rr_df$Treatment))) {
+      temp_rr_df <- rr_df %>%
+        filter(Participant_ID == subj, Treatment == treatment)
+      
+      discard_outliers(subj, treatment, temp_rr_df)
+      
+      
+      # --------------   Don't delet. Need to check why this was done on email study    --------------#
+      # --------------   Check multi-modal-email-study/vs-validation-plot-hrv/filter_extreme_rr() method
+      # temp_qc2_filtered_subj_df <- qc2_filtered_subj_df %>% 
+      #   filter(Subject == subj, Session == sess)
+      # 
+      # if (nrow(temp_qc2_filtered_subj_df)>0 & nrow(temp_rr_df)==0) { 
+      #   write(paste('Missing rr data for: ', subj, ', ', sess), file=log.file, append=TRUE)
+      # } else if (nrow(temp_qc2_filtered_subj_df)==0 & nrow(temp_rr_df)>0) { 
+      #   write(paste('Invalid rr data for: ', subj, ', ', sess), file=log.file, append=TRUE)
+      # } else {
+      #   discard_outliers(subj, sess, temp_rr_df)
+      # }
+      # -------------------------------------------------------------------------------------------- #
+      
+    }
+  }
+  
+  convert_to_csv(rr_df, file.path(curated_data_dir, physiological_data_dir, qc1_rr_file_name))
+}
 
 
 
 #-------------------------#
 #-------Main Program------#
 #-------------------------#
-process_rr_data()
+# gather_rr_data()
+# remove_bad_sensor_rr_data()
+# qc1_clean_rr_data()
 
 
 

@@ -59,31 +59,6 @@ chunk_sizes <- c(5, 10, 15)
 # generate_treatment_mean_data()
 # generate_daywise_mean_data()
 
-#-------------------------------------------------------------------------------------------- 6
-source(file.path(script_dir, '6.dc-process-rr-data.R'))
-process_rr_data()
-
-
-
-
-#-------------------------------------------------------------------------------------------- 7
-# source(file.path(script_dir, 'vs-validation_plots.R'))
-# draw_validation_plots()
-
-
-#-------------------------------------------------------------------------------------------- 8
-# source(file.path(script_dir, 'vs-variance-test.R'))
-# conduct_variance_tests()
-
-
-#-------------------------------------------------------------------------------------------- 9
-# source(file.path(script_dir, '5.dc-generate-meta-data.R'))
-# generate_ws_chunk_mean_data()
-
-# source(file.path(script_dir, 'vs-variance-test-chunk-data.R'))
-# conduct_variance_tests_chunk_data()
-
-
 #-------------------------------------------------------------------------------------------- #
 #                      PLEASE REMOVE THE REPEATED CODE  3 & 5                                 #
 #-------------------------------------------------------------------------------------------- #
@@ -91,10 +66,55 @@ process_rr_data()
 
 
 
+#-------------------------------------------------------------------------------------------- 6
+source(file.path(script_dir, '6.dc-process-rr-data.R'))
+# gather_rr_data()
+# qc1_clean_rr_data()
 
+### Remember after QC2, Based on the bad HR data from E4, RR should be removed also
+### Check multi-modal-email-study/vs-validation-plot-hrv/clean_invalid_rr() method
+# remove_bad_sensor_rr_data()  
+
+
+
+#-------------------------------------------------------------------------------------------- 7
+source(file.path(script_dir, 'vs-time-series-plot-rr.R'))
+generate_rr_time_series_plot()
+
+# source(file.path(script_dir, 'vs-validation_plot-rr.R'))
+# draw_rr_validation_plot()
+
+
+
+
+
+#-------------------------------------------------------------------------------------------- 8
+# source(file.path(script_dir, 'vs-validation_plots.R'))
+# draw_validation_plots()
+
+
+#-------------------------------------------------------------------------------------------- 9
+# source(file.path(script_dir, 'vs-variance-test.R'))
+# conduct_variance_tests()
 
 
 #-------------------------------------------------------------------------------------------- 10
+# source(file.path(script_dir, '5.dc-generate-meta-data.R'))
+# generate_ws_chunk_mean_data()
+
+# source(file.path(script_dir, 'vs-variance-test-chunk-data.R'))
+# conduct_variance_tests_chunk_data()
+
+
+
+
+
+
+
+
+
+
+#-------------------------------------------------------------------------------------------- 11
 # source(file.path(script_dir, 'vs-linear-models.Rmd'))
 # conduct_linear_modeling()
 
