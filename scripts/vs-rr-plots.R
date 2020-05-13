@@ -303,8 +303,11 @@ generate_rr_validation_plot <- function() {
   plot_df <- mean_rr_df %>%
     select(Participant_ID, Day1_Normalize, Day2_Normalize) %>%
     # select(Participant_ID, Day1, Day2) %>% 
-    na.omit() %>% 
-    gather(Day, Value, -Participant_ID)
+    # na.omit() %>% 
+    gather(Day, Value, -Participant_ID) %>% 
+    na.omit()
+  
+  print(head(plot_df, 10))
   
   # for (day in days) {
   #   conduct_test(temp_mean_df, day, signal_name, test_type)
@@ -328,8 +331,8 @@ generate_rr_validation_plot <- function() {
                  # aes(label=sprintf("%s", get_subj(plot_df, ..y..))),
                  # aes(label='T001'),
                  position=position_nudge(x=0.45), size=5.5) +
-    # labs(title = title, 
-    #      y = label) +
+    labs(title = 'RR Validation - day3_day4_ws_min',
+         y = expression(Delta~'NN [ms]')) +
     theme_bw(base_size = 18) + 
     theme(axis.title.x = element_blank(),
           panel.grid.major = element_blank(),

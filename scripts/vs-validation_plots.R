@@ -267,8 +267,9 @@ draw_plots <- function() {
       filter(Signal==signal_name) %>% 
       select(Participant_ID, Day1_Normalize, Day2_Normalize) %>%
       # select(Participant_ID, Day1, Day2) %>% 
-      na.omit() %>% 
-      gather(Day, Value, -Participant_ID)
+      na.omit() %>% ########### CHECK ME!!!!
+      gather(Day, Value, -Participant_ID) %>% 
+      na.omit() ########### CHECK ME!!!!
     
     sign <- significance_df$Significance 
     label <- get_label(signal_name) 
