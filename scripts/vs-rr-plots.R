@@ -261,8 +261,43 @@ generate_rr_time_series_plot <- function(test=F) {
 }
 
 
+generate_rr_mean_data <- function() {
+  rr_df <- read.csv(file.path(project_dir, curated_data_dir, physiological_data_dir, qc1_rr_file_name))
+  print(head(rr_df, 5))
+  
+  mean_rr_df <- rr_df %>% 
+    select(Participant_ID, Day, Treatment, RR) %>% 
+    group_by(Participant_ID, Day, Treatment) %>% 
+    dplyr::summarize(NN = mean(RR, na.rm = TRUE)) %>% 
+    spread(Treatment, NN) %>% 
+    mutate(WS.RB = WS - RB) %>% 
+    gather(Comparison, RR_Mean, -Participant_ID, -Day, -RB, -WS) %>% 
+    select(Participant_ID, Day, RR_Mean) %>% 
+    spread(Day, RR_Mean) %>% 
+    
+    mutate(Day3_Day4_Mean = case_when(
+      !is.na(Day3) & !is.na(Day4)~(Day3+Day4)/2,
+      !is.na(Day3)~Day3,
+      !is.na(Day4)~Day4,
+      TRUE~Day3)) %>%
+    mutate(Day3_Day4_Min = pmin(Day3, Day4, na.rm = TRUE))
+  
+  if (t_test_comparison==day3_day4_ws_mean) {
+    mean_rr_df <- mean_rr_df %>%
+      mutate(Day1_Normalize=Day1-Day3_Day4_Mean,
+             Day2_Normalize=Day2-Day3_Day4_Mean)
+    
+  } else if (t_test_comparison==day3_day4_ws_min) {
+    mean_rr_df <- mean_rr_df %>%
+      mutate(Day1_Normalize=Day1-Day3_Day4_Min,
+             Day2_Normalize=Day2-Day3_Day4_Min)
+  }
+  
+  mean_rr_df
+}
 
-draw_rr_validation_plot <- function(mean_rr_df, signal_name) {
+generate_rr_validation_plot <- function() {
+  mean_rr_df <- generate_rr_mean_data()
   plot_list <- list()
   
   plot_df <- mean_rr_df %>%
@@ -314,47 +349,6 @@ draw_rr_validation_plot <- function(mean_rr_df, signal_name) {
   # print(plot)
   save_plot('rr_validation', plot)
   # convert_to_csv(significance_df, file.path(data_dir, 'rr_significance.csv'))
-}
-
-
-generate_rr_mean_data <- function() {
-  rr_df <- read.csv(file.path(project_dir, curated_data_dir, physiological_data_dir, qc1_rr_file_name))
-  print(head(rr_df, 5))
-  
-  mean_rr_df <- rr_df %>% 
-    select(Participant_ID, Day, Treatment, RR) %>% 
-    group_by(Participant_ID, Day, Treatment) %>% 
-    dplyr::summarize(NN = mean(RR, na.rm = TRUE)) %>% 
-    spread(Treatment, NN) %>% 
-    mutate(WS.RB = WS - RB) %>% 
-    gather(Comparison, RR_Mean, -Participant_ID, -Day, -RB, -WS) %>% 
-    select(Participant_ID, Day, RR_Mean) %>% 
-    spread(Day, RR_Mean) %>% 
-    
-    mutate(Day3_Day4_Mean = case_when(
-      !is.na(Day3) & !is.na(Day4)~(Day3+Day4)/2,
-      !is.na(Day3)~Day3,
-      !is.na(Day4)~Day4,
-      TRUE~Day3)) %>%
-    mutate(Day3_Day4_Min = pmin(Day3, Day4, na.rm = TRUE))
-  
-  if (t_test_comparison==day3_day4_ws_mean) {
-    mean_rr_df <- mean_rr_df %>%
-      mutate(Day1_Normalize=Day1-Day3_Day4_Mean,
-             Day2_Normalize=Day2-Day3_Day4_Mean)
-    
-  } else if (t_test_comparison==day3_day4_ws_min) {
-    mean_rr_df <- mean_rr_df %>%
-      mutate(Day1_Normalize=Day1-Day3_Day4_Min,
-             Day2_Normalize=Day2-Day3_Day4_Min)
-  }
-  
-  mean_rr_df
-}
-
-generate_rr_validation_plot <- function() {
-  mean_rr_df <- generate_rr_mean_data()
-  draw_rr_validation_plot(mean_rr_df, 'rr')
 }
 
 
