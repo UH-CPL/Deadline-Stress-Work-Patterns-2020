@@ -122,49 +122,12 @@ generate_daywise_mean_data <- function(treatment_mean_df) {
 }
 
 
-
-generate_mean_df <- function(df) {
-  mean_df <- df %>%
-    # select(-Timestamp, -Sinterface_Time, -TreatmentTime) %>%
-    select(Participant_ID,	Day, Treatment, Mask, PP, E4_HR, E4_EDA, iWatch_HR) %>%
-    group_by(Participant_ID,	Day, Treatment) %>%
-    filter(Mask==1) %>%
-    summarize_all(mean, na.rm=T) %>%
-    ungroup() %>% 
-    select(-Mask)
-  
-  return(mean_df)
-}
-
-
 generate_mean_data <- function(input_file_name, output_log_file_name, output_file_name) {
   df <- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, input_file_name))
-  
-  # if (enable_log_transformation==TRUE) {
-  #   pp_shift_val <- 0 
-  #   eda_shift_val <- 0 
-  #   
-  #   if (min(df['PP'], na.rm = TRUE) <= 0) { 
-  #     pp_shift_val <- min(df['PP'], na.rm = TRUE) + 0.001 
-  #   }
-  #   
-  #   if (min(df['E4_EDA'], na.rm = TRUE) <= 0) { 
-  #     eda_shift_val <- min(df['E4_EDA'], na.rm = TRUE) + 0.001 
-  #   }
-  #   
-  #   # print(head(df, 2))
-  #   df <- df %>% 
-  #     mutate(PP=log(PP)+pp_shift_val, 
-  #            E4_EDA=log(E4_EDA)+eda_shift_val) 
-  #   # print(head(df, 2))
-  #   
-  #   convert_to_csv(df, file.path(project_dir, curated_data_dir, physiological_data_dir, output_log_file_name))
-  # }
-  
   mean_df <- generate_mean_df(df)
   convert_to_csv(mean_df, file.path(project_dir, curated_data_dir, physiological_data_dir, output_file_name))
   
-  return(mean_df)
+  mean_df
 }
 
 

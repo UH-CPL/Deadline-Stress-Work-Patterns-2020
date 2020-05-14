@@ -336,3 +336,30 @@ get_significance_sign <- function(p_value) {
   } 
 }
 
+
+
+
+
+
+#-----------------------------#
+#--- Deadline Stress Study ---#
+#-----------------------------#
+generate_mean_df <- function(df) {
+  mean_df <- df %>%
+    # select(-Timestamp, -Sinterface_Time, -TreatmentTime) %>%
+    select(Participant_ID,	Day, Treatment, Mask, PP, E4_HR, E4_EDA, iWatch_HR) %>%
+    group_by(Participant_ID,	Day, Treatment) %>%
+    filter(Mask==1) %>%
+    summarize_all(mean, na.rm=T) %>%
+    ungroup() %>% 
+    select(-Mask)
+  
+  return(mean_df)
+}
+
+
+
+
+
+
+
