@@ -35,54 +35,25 @@ get_signal_val <- function(df, day, signal_name) {
   return(df[df$Day==day, signal_name])
 }
 
-get_day3_day4_mean_val <- function(df, signal_name) {
-  day3_val = get_signal_val(df, 'Day3', signal_name)
-  day4_val = get_signal_val(df, 'Day4', signal_name)
-  
-  # print(paste('day3_val: ', day3_val, 'day4_val: ' , day4_val))
-  
-  if(!is_null(day3_val) & !is_null(day3_val)) {
-    return(vanilla_day_mean_val=(day3_val+day4_val)/2)
-  } else if(!is_null(day3_val)) {
-    return(day3_val)
-  } else if(!is_null(day4_val)) {
-    return(day4_val)
-  }
-  
-  return(NaN)
-}
+# get_day3_day4_mean_val <- function(df, signal_name) {
+#   day3_val = get_signal_val(df, 'Day3', signal_name)
+#   day4_val = get_signal_val(df, 'Day4', signal_name)
+#   
+#   # print(paste('day3_val: ', day3_val, 'day4_val: ' , day4_val))
+#   
+#   if(!is_null(day3_val) & !is_null(day3_val)) {
+#     return(vanilla_day_mean_val=(day3_val+day4_val)/2)
+#   } else if(!is_null(day3_val)) {
+#     return(day3_val)
+#   } else if(!is_null(day4_val)) {
+#     return(day4_val)
+#   }
+#   
+#   return(NaN)
+# }
 
 
-generate_daywise_mean_data <- function(mean_df, output_v2_file_name) {
-  # print(head(qc1_mean_v1_df, 2))
-  
-  mean_long_df <- mean_df %>%
-    # filter(Treatment == 'WS') %>%
-    gather(Signal, Mean_Value, -Participant_ID, -Day, -Treatment) %>% 
-    spread(Day, Mean_Value) %>%
-    mutate(Day3_Day4_Mean = case_when(
-      !is.na(Day3) & !is.na(Day4)~(Day3+Day4)/2,
-      !is.na(Day3)~Day3,
-      !is.na(Day4)~Day4,
-      TRUE~Day3)) %>%  # it's creating problem for NA. Anyhow Day3 or Day4 is NA, so default NA
-    mutate(Day3_Day4_Min = pmin(Day3, Day4, na.rm = TRUE))
-  
-  if (t_test_comparison==day3_day4_ws_mean) {
-    mean_long_df <- mean_long_df %>%
-      mutate(Day1_Normalize=Day1-Day3_Day4_Mean,
-             Day2_Normalize=Day2-Day3_Day4_Mean)
-
-  } else if (t_test_comparison==day3_day4_ws_min) {
-    mean_long_df <- mean_long_df %>%
-      mutate(Day1_Normalize=Day1-Day3_Day4_Min,
-             Day2_Normalize=Day2-Day3_Day4_Min)
-  }
-
-  convert_to_csv(mean_long_df, file.path(curated_data_dir, physiological_data_dir, output_v2_file_name))
-  
-}
-
-process_normalized_mean_data <- function() {
+process_normalized_qc1_mean_data <- function() {
   # generate_mean_data(qc0_final_file_name, qc0_raw_mean_v1_file_name)
   generate_mean_data(input_file_name=qc1_log_trans_file_name, 
                      output_v1_file_name=qc1_log_trans_mean_v1_file_name, 
@@ -185,7 +156,7 @@ generate_ws_chunk_mean_data <- function() {
 #-------------------------#
 #-------Main Program------#
 #-------------------------#
-# process_normalized_mean_data()
+# process_normalized_qc1_mean_data()
 
 
 

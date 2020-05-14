@@ -60,7 +60,7 @@ chunk_sizes <- c(5, 10, 15)
 
 #-------------------------------------------------------------------------------------------- 5
 # source(file.path(script_dir, '5.dc-generate-meta-data.R'))
-# process_normalized_mean_data()
+# process_normalized_qc1_mean_data()
 
 
 
