@@ -17,11 +17,11 @@ library(plyr)
 #-------------------------#
 #-----GLOBAL VARIABLES----#
 #-------------------------#
-script_dir <- dirname(rstudioapi::getSourceEditorContext()$path)
-project_dir <- dirname(script_dir)
-# setwd(project_dir)
-
-source(file.path(script_dir, 'us-common-functions.R'))
+# script_dir <- dirname(rstudioapi::getSourceEditorContext()$path)
+# project_dir <- dirname(script_dir)
+# # setwd(project_dir)
+# 
+# source(file.path(script_dir, 'us-common-functions.R'))
 
 # validation_log_file <- file.path(project_dir, log_dir, paste0('validation-log-', format(Sys.Date(), format='%m-%d-%y'), '.txt'))
 # file.create(validation_log_file)

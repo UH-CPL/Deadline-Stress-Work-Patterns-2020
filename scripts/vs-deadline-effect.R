@@ -17,11 +17,6 @@ customRed = "#ff7f7f"
 #-------------------------#
 #-----GLOBAL VARIABLES----#
 #-------------------------#
-# script_dir <- dirname(rstudioapi::getSourceEditorContext()$path)
-# project_dir <- dirname(script_dir)
-# setwd(project_dir)
-# 
-# source(file.path(script_dir, 'us-common-functions.R'))
 
 
 
@@ -71,30 +66,32 @@ generate_format_table_ws <- function() {
 
 
 generate_format_table_rb <- function() {
-  df <- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, qc1_raw_mean_v1_file_name)) %>%
+  # df <- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, qc1_raw_mean_v1_file_name)) %>%
+  #   filter(Treatment=='RB') %>% 
+  #   
+  #   gather(Signal, Mean_Value, -Participant_ID, -Day, -Treatment) %>% 
+  #   spread(Day, Mean_Value) %>%
+  #   mutate(Day3_Day4_Mean = case_when(
+  #     !is.na(Day3) & !is.na(Day4)~(Day3+Day4)/2,
+  #     !is.na(Day3)~Day3,
+  #     !is.na(Day4)~Day4,
+  #     TRUE~Day3)) %>%
+  #   mutate(Day3_Day4_Min = pmin(Day3, Day4, na.rm = TRUE))
+  #   
+  #   if (t_test_comparison==day3_day4_ws_mean) {
+  #     df <- df %>%
+  #       mutate(Day1_Normalize=Day1-Day3_Day4_Mean,
+  #              Day2_Normalize=Day2-Day3_Day4_Mean)
+  #     
+  #   } else if (t_test_comparison==day3_day4_ws_min) {
+  #     df <- df %>%
+  #       mutate(Day1_Normalize=Day1-Day3_Day4_Min,
+  #              Day2_Normalize=Day2-Day3_Day4_Min)
+  #   }
+  
+  df <- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, qc1_raw_mean_v2_file_name)) %>%
     filter(Treatment=='RB') %>% 
-    
-    gather(Signal, Mean_Value, -Participant_ID, -Day, -Treatment) %>% 
-    spread(Day, Mean_Value) %>%
-    mutate(Day3_Day4_Mean = case_when(
-      !is.na(Day3) & !is.na(Day4)~(Day3+Day4)/2,
-      !is.na(Day3)~Day3,
-      !is.na(Day4)~Day4,
-      TRUE~Day3)) %>%
-    mutate(Day3_Day4_Min = pmin(Day3, Day4, na.rm = TRUE))
-    
-    if (t_test_comparison==day3_day4_ws_mean) {
-      df <- df %>%
-        mutate(Day1_Normalize=Day1-Day3_Day4_Mean,
-               Day2_Normalize=Day2-Day3_Day4_Mean)
-      
-    } else if (t_test_comparison==day3_day4_ws_min) {
-      df <- df %>%
-        mutate(Day1_Normalize=Day1-Day3_Day4_Min,
-               Day2_Normalize=Day2-Day3_Day4_Min)
-    }
-    
-  df <- df %>%
+  # df <- df %>%
     select(Participant_ID, Treatment, Signal, Day1_Normalize, Day2_Normalize) %>% 
     dplyr::rename(Day1=Day1_Normalize,
            Day2=Day2_Normalize) %>%

@@ -37,9 +37,6 @@ source(file.path(script_dir, 'us-downsample-pp.R'))
 source(file.path(script_dir, 'us-denoise-pp.R'))
 
 
-# current_dir <- dirname(script_dir)
-# setwd(current_dir)
-
 curation_log_file <- file.path(log_dir, paste0('curation-log-', format(Sys.Date(), format='%m-%d-%y'), '.txt'))
 file.create(curation_log_file)
 

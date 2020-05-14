@@ -346,7 +346,6 @@ get_significance_sign <- function(p_value) {
 #-----------------------------#
 generate_daywise_mean_data <- function(mean_df, output_v2_file_name) {
   daywise_mean_df <- mean_df %>%
-    # filter(Treatment == 'WS') %>%
     gather(Signal, Mean_Value, -Participant_ID, -Day, -Treatment) %>% 
     spread(Day, Mean_Value) %>%
     mutate(Day3_Day4_Mean = case_when(
