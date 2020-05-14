@@ -81,6 +81,17 @@ remove_data_out_of_range <- function() {
 }
 
 
+log_transform_linear_model <- function() {
+  qc1_lm_df <- qc1_df %>%
+    mutate(PP=log(PP+get_shift_val(qc1_df, 'PP')), 
+           E4_EDA=log(E4_EDA+get_shift_val(qc1_df, 'E4_EDA')),
+           E4_HR=log(E4_HR+get_shift_val(qc1_df, 'E4_HR')),
+           iWatch_HR=log(iWatch_HR+get_shift_val(qc1_df, 'iWatch_HR')),
+    )
+  
+  convert_to_csv(qc1_lm_df, file.path(project_dir, curated_data_dir, physiological_data_dir, qc1_lm_file_name))
+}
+
 
 #--- CHANGE HERE ---#
 process_quality_control_phase_one <- function() {
@@ -98,11 +109,11 @@ process_qc1_mean_data <- function() {
                      output_v2_file_name=qc1_raw_mean_v2_file_name)
 }
 
-# process_lm_mean_data <- function() {
-#   generate_mean_data(input_file_name=qc1_file_name,
-#                      output_v1_file_name=qc1_raw_mean_v1_file_name,
-#                      output_v2_file_name=qc1_raw_mean_v2_file_name)
-# }
+process_lm_mean_data <- function() {
+  generate_mean_data(input_file_name=qc1_lm_file_name,
+                     output_v1_file_name=qc1_lm_mean_v1_file_name,
+                     output_v2_file_name=qc1_lm_mean_v2_file_name)
+}
 
 #-------------------------#
 #-------Main Program------#

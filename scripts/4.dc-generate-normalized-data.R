@@ -99,17 +99,6 @@ get_rb <- function(df, signal) {
   rb_val
 }
 
-get_shift_val <- function(df, signal) {
-  shift_val <- 0 
-  
-  if (min(df[[signal]], na.rm = TRUE) <= 0) { 
-    shift_val <- abs(min(df[[signal]], na.rm = TRUE)) + delta_shift_val
-  }
-  
-  # print(paste0(signal, ' - ', shift_val))
-  shift_val
-}
-
 normalize_data <- function() {
   
   # if (baseline_parameter==corresponding_baseline) {

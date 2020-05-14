@@ -99,6 +99,7 @@ qc1_filtered_data_file_name <- 'qc1_bad_filtered_data.csv'
 qc1_raw_mean_v1_file_name <- 'qc1_raw_mean_v1.csv'
 qc1_raw_mean_v2_file_name <- 'qc1_raw_mean_v2.csv'
 
+qc1_lm_file_name <- 'qc1_lm_data.csv'
 qc1_lm_mean_v1_file_name <- 'qc1_lm_mean_v1.csv'
 qc1_lm_mean_v2_file_name <- 'qc1_lm_mean_v2.csv'
 
@@ -318,6 +319,20 @@ get_significance_sign <- function(p_value) {
 #-----------------------------#
 #--- Deadline Stress Study ---#
 #-----------------------------#
+get_shift_val <- function(df, signal) {
+  shift_val <- 0 
+  
+  if (min(df[[signal]], na.rm = TRUE) <= 0) { 
+    shift_val <- abs(min(df[[signal]], na.rm = TRUE)) + delta_shift_val
+  }
+  
+  # print(paste0(signal, ' - ', shift_val))
+  shift_val
+}
+
+
+
+
 generate_daywise_mean_data <- function(mean_df, output_v2_file_name) {
   daywise_mean_df <- mean_df %>%
     gather(Signal, Mean_Value, -Participant_ID, -Day, -Treatment) %>% 
