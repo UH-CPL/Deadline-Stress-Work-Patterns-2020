@@ -344,7 +344,15 @@ get_significance_sign <- function(p_value) {
 #-----------------------------#
 #--- Deadline Stress Study ---#
 #-----------------------------#
-generate_mean_df <- function(df) {
+generate_mean_data <- function(input_file_name, output_v1_file_name, output_v2_file_name) {
+  df <- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, input_file_name))
+  mean_df <- generate_treatment_mean_data(df)
+  convert_to_csv(mean_df, file.path(project_dir, curated_data_dir, physiological_data_dir, output_v1_file_name))
+  
+  generate_daywise_mean_data(mean_df, output_v2_file_name)
+}
+
+generate_treatment_mean_data <- function(df) {
   mean_df <- df %>%
     # select(-Timestamp, -Sinterface_Time, -TreatmentTime) %>%
     select(Participant_ID,	Day, Treatment, Mask, PP, E4_HR, E4_EDA, iWatch_HR) %>%

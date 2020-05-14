@@ -80,12 +80,7 @@ remove_data_out_of_range <- function() {
   convert_to_csv(filtered_df, file.path(project_dir, curated_data_dir, physiological_data_dir, qc1_filtered_data_file_name))
 }
 
-
-generate_mean_data <- function(input_file_name, output_v1_file_name, output_v2_file_name) {
-  df <- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, input_file_name))
-  mean_df <- generate_mean_df(df)
-  convert_to_csv(mean_df, file.path(project_dir, curated_data_dir, physiological_data_dir, output_file_name))
-  
+generate_daywise_mean_data <- function(mean_df, output_v2_file_name) {
   daywise_mean_df <- mean_df %>%
     gather(Signal, Mean_Value, -Participant_ID, -Day, -Treatment) %>% 
     spread(Day, Mean_Value) %>%
@@ -94,11 +89,13 @@ generate_mean_data <- function(input_file_name, output_v1_file_name, output_v2_f
       !is.na(Day3)~Day3,
       !is.na(Day4)~Day4,
       TRUE~Day3)) %>%  # it's creating problem for NA. Anyhow Day3 or Day4 is NA, so default NA
-    mutate(Day3_Day4_Min = pmin(Day3, Day4, na.rm = TRUE)) %>% 
-    mutate(Four_Day_Min = pmin(Day1, Day2, Day3, Day4, na.rm = TRUE))
+    mutate(Day3_Day4_Min = pmin(Day3, Day4, na.rm = TRUE)) 
+  # %>% 
+  #   mutate(Four_Day_Min = pmin(Day1, Day2, Day3, Day4, na.rm = TRUE))
   
   convert_to_csv(daywise_mean_df, file.path(project_dir, curated_data_dir, physiological_data_dir, output_v2_file_name))
 }
+
 
 
 
