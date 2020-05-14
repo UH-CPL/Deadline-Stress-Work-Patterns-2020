@@ -48,31 +48,8 @@ get_valid_range <- function(signal) {
     return(c(4, 40))
   } 
   
-  # else if (grepl('BR', signal)) {
-  #   filtered_df <- filtered_df %>% filter(filtered_df[[signal]] < 4 | filtered_df[[signal]] > 40)
-  # } else {
-  #   filtered_df <- filtered_df[filtered_df[[signal]] == 0, ]
-  # }
-  
   return(c(0, 100))
-  
 }
-
-# get_out_of_range_data <- function(signal) {
-#   range_list <- get_valid_range(signal)
-#   # print(paste(range_list, range_list[1], range_list[2]))
-#   temp_filtered_df <- qc1_df %>% 
-#     select(Participant_ID, Day, Treatment, TreatmentTime, !!signal) %>% 
-#     filter(qc1_df[[signal]] < range_list[1] | qc1_df[[signal]] > range_list[2]) %>% 
-#     gather(Signal_Name, Value, !!signal)
-#   
-#   if (nrow(temp_filtered_df)>0) {
-#     qc1_df[[signal]][qc1_df[[signal]] < range_list[1] | qc1_df[[signal]] > range_list[2]] <<- NA
-#   }
-#   
-#   return(temp_filtered_df)
-# }
-
 
 #--- CHANGE HERE ---#
 remove_data_out_of_range <- function() {
@@ -114,8 +91,6 @@ generate_daywise_mean_data <- function(treatment_mean_df) {
     mutate(Day3_Day4_Min = pmin(Day3, Day4, na.rm = TRUE)) %>% 
     mutate(Four_Day_Min = pmin(Day1, Day2, Day3, Day4, na.rm = TRUE))
     
-  
-    
   convert_to_csv(daywise_mean_df, file.path(project_dir, curated_data_dir, physiological_data_dir, qc1_raw_mean_v2_file_name))
   
   daywise_mean_df
@@ -140,12 +115,12 @@ generate_treatment_mean_data <- function() {
 }
 
 #--- CHANGE HERE ---#
-process_quality_control <- function() {
+process_quality_control_phase_one <- function() {
   read_data()
   remove_data_out_of_range()
 }
 
-process_mean_data <- function() {
+process_qc1_mean_data <- function() {
   treatment_mean_df <- generate_treatment_mean_data()
   daywise_mean_df <- generate_daywise_mean_data(treatment_mean_df)
 }
@@ -154,9 +129,10 @@ process_mean_data <- function() {
 #-------------------------#
 #-------Main Program------#
 #-------------------------#
-# process_quality_control()
+# process_quality_control_phase_one()
+# process_qc1_mean_data()
 
-# process_mean_data()
+
 # ------------------------------------------------
 # lowest_baseline="lowest_baseline"
 # corresponding_baseline="corresponding_baseline"

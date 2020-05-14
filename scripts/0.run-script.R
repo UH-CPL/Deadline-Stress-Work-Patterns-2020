@@ -47,8 +47,8 @@ chunk_sizes <- c(5, 10, 15)
 
 #-------------------------------------------------------------------------------------------- 3
 # source(file.path(script_dir, '3.dc-quality-control-phase-one.R'))
-# process_quality_control()
-# process_mean_data()
+# process_quality_control_phase_one()
+# process_qc1_mean_data()
 
 
 
@@ -60,12 +60,7 @@ chunk_sizes <- c(5, 10, 15)
 
 #-------------------------------------------------------------------------------------------- 5
 # source(file.path(script_dir, '5.dc-generate-meta-data.R'))
-# generate_treatment_mean_data()
-# generate_daywise_mean_data()
-
-#-------------------------------------------------------------------------------------------- #
-#                      PLEASE REMOVE THE REPEATED CODE  3 & 5                                 #
-#-------------------------------------------------------------------------------------------- #
+# process_normalized_mean_data()
 
 
 

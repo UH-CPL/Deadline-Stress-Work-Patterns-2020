@@ -35,29 +35,11 @@ chunk_mean_file_name <- remove_rigth_substr(qc1_log_trans_mean_chunk_file_name, 
 #-------------------------#
 #---FUNCTION DEFINITION---#
 #-------------------------#
-
-
-
-
-
 generate_treatment_mean_data <- function() {
   df <- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, input_file_name))
   mean_df <<- generate_mean_df(df)
   convert_to_csv(mean_df, file.path(project_dir, curated_data_dir, physiological_data_dir, treatement_mean_file_name))
 }
-
-
-# generate_treatment_mean_data <- function() {
-#   qc1_mean_v1_df <<- generate_mean_data(qc1_log_trans_file_name, qc1_log_trans_mean_v1_file_name)
-# }
-
-
-
-# read_treatment_mean_files <- function() {
-#   qc1_mean_v1_df <<- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, qc1_normalized_mean_v1_file_name))
-#   # print_msg(colnames(qC1_df))  # "Participant_ID" "Day" "Treatment" "Timestamp" "Sinterface_Time" "TreatmentTime" "Raw_PP" "PP" "E4_HR" "E4_EDA" "iWatch_HR"
-#   # print_msg(head(qc1_df, 2))
-# }
 
 get_signal_val <- function(df, day, signal_name) {
   # print(df[df$Day==day, signal_name])
@@ -80,7 +62,6 @@ get_day3_day4_mean_val <- function(df, signal_name) {
   
   return(NaN)
 }
-
 
 
 generate_daywise_mean_data <- function() {
@@ -189,8 +170,6 @@ generate_chunk_mean_df <- function(df, chunk_size_minute, signal) {
   chunk_mean_df 
 }
 
-# input_file_name <- qc1_log_trans_file_name 
-# chunk_mean_file_name <- qc1_log_trans_mean_chunk_file_name
 generate_ws_chunk_mean_data <- function() {
   df <- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, input_file_name))
   
@@ -206,11 +185,17 @@ generate_ws_chunk_mean_data <- function() {
   
 }
 
+
+process_normalized_mean_data <- function() {
+  generate_treatment_mean_data()
+  generate_daywise_mean_data()
+}
+
 #-------------------------#
 #-------Main Program------#
 #-------------------------#
-# generate_treatment_mean_data()
-# generate_daywise_mean_data()
+# process_normalized_mean_data()
+
 
 
 # chunk_sizes <- c(1)
