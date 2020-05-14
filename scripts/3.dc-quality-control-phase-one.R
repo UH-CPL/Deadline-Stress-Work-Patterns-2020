@@ -19,8 +19,6 @@ qc1_log_file <- file.path(project_dir, log_dir, paste0('quality-control-phase-on
 file.create(qc1_log_file)
 
 
-
-
 qc0_df <- tibble()
 qc1_df <- tibble()
 
@@ -29,6 +27,11 @@ qc1_df <- tibble()
 signal_name_list <- c('PP', 'E4_HR', 'E4_EDA', 'iWatch_HR')
 
 
+
+
+#-------------------------#
+#------  Functions  ------#
+#-------------------------#
 #--- CHANGE HERE ---#
 read_data <- function() {
   qc0_df <<- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, qc0_final_file_name)) %>% 
@@ -78,9 +81,12 @@ remove_data_out_of_range <- function() {
 }
 
 
-generate_daywise_mean_data <- function(treatment_mean_df) {
+generate_mean_data <- function(input_file_name, output_v1_file_name, output_v2_file_name) {
+  df <- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, input_file_name))
+  mean_df <- generate_mean_df(df)
+  convert_to_csv(mean_df, file.path(project_dir, curated_data_dir, physiological_data_dir, output_file_name))
   
-  daywise_mean_df <<- treatment_mean_df %>%
+  daywise_mean_df <- mean_df %>%
     gather(Signal, Mean_Value, -Participant_ID, -Day, -Treatment) %>% 
     spread(Day, Mean_Value) %>%
     mutate(Day3_Day4_Mean = case_when(
@@ -90,29 +96,12 @@ generate_daywise_mean_data <- function(treatment_mean_df) {
       TRUE~Day3)) %>%  # it's creating problem for NA. Anyhow Day3 or Day4 is NA, so default NA
     mutate(Day3_Day4_Min = pmin(Day3, Day4, na.rm = TRUE)) %>% 
     mutate(Four_Day_Min = pmin(Day1, Day2, Day3, Day4, na.rm = TRUE))
-    
-  convert_to_csv(daywise_mean_df, file.path(project_dir, curated_data_dir, physiological_data_dir, qc1_raw_mean_v2_file_name))
   
-  daywise_mean_df
+  convert_to_csv(daywise_mean_df, file.path(project_dir, curated_data_dir, physiological_data_dir, output_v2_file_name))
 }
 
 
-generate_mean_data <- function(input_file_name, output_log_file_name, output_file_name) {
-  df <- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, input_file_name))
-  mean_df <- generate_mean_df(df)
-  convert_to_csv(mean_df, file.path(project_dir, curated_data_dir, physiological_data_dir, output_file_name))
-  
-  mean_df
-}
 
-
-#--- CHANGE HERE ---#
-generate_treatment_mean_data <- function() {
-  # treatment_mean_df <<- generate_mean_data(qc0_final_file_name, qc0_log_transformed_v1_file_name, qc0_raw_mean_v1_file_name)
-  treatment_mean_df <- generate_mean_data(qc1_file_name, qc1_log_transformed_v1_file_name, qc1_raw_mean_v1_file_name)
-  
-  treatment_mean_df
-}
 
 #--- CHANGE HERE ---#
 process_quality_control_phase_one <- function() {
@@ -120,11 +109,13 @@ process_quality_control_phase_one <- function() {
   remove_data_out_of_range()
 }
 
+#--- CHANGE HERE ---#
 process_qc1_mean_data <- function() {
-  treatment_mean_df <- generate_treatment_mean_data()
-  daywise_mean_df <- generate_daywise_mean_data(treatment_mean_df)
+  # generate_mean_data(qc0_final_file_name, qc0_raw_mean_v1_file_name)
+  generate_mean_data(input_file_name=qc1_file_name, 
+                     output_v1_file_name=qc1_raw_mean_v1_file_name, 
+                     output_v2_file_name=qc1_raw_mean_v2_file_name)
 }
-
 
 #-------------------------#
 #-------Main Program------#
