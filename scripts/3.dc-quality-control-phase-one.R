@@ -80,15 +80,18 @@ remove_data_out_of_range <- function() {
   convert_to_csv(filtered_df, file.path(project_dir, curated_data_dir, physiological_data_dir, qc1_filtered_data_file_name))
 }
 
+
+
 #--- CHANGE HERE ---#
 process_quality_control_phase_one <- function() {
   read_data()
   remove_data_out_of_range()
 }
 
+
+
 #--- CHANGE HERE ---#
 process_qc1_mean_data <- function() {
-  # generate_mean_data(qc0_final_file_name, qc0_raw_mean_v1_file_name)
   generate_mean_data(input_file_name=qc1_file_name, 
                      output_v1_file_name=qc1_raw_mean_v1_file_name, 
                      output_v2_file_name=qc1_raw_mean_v2_file_name)

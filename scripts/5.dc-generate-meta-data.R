@@ -53,14 +53,6 @@ get_signal_val <- function(df, day, signal_name) {
 # }
 
 
-process_normalized_qc1_mean_data <- function() {
-  # generate_mean_data(qc0_final_file_name, qc0_raw_mean_v1_file_name)
-  generate_mean_data(input_file_name=qc1_log_trans_file_name, 
-                     output_v1_file_name=qc1_log_trans_mean_v1_file_name, 
-                     output_v2_file_name=qc1_log_trans_mean_v2_file_name)
-}
-
-
 generate_chunk_mean_df <- function(df, chunk_size_minute, signal) {
   chunk_mean_df <- tibble()
   chunk_size_sec <- chunk_size_minute*60
@@ -150,6 +142,18 @@ generate_ws_chunk_mean_data <- function() {
     }
   }
 }
+
+
+
+process_normalized_qc1_mean_data <- function() {
+  # generate_mean_data(qc0_final_file_name, qc0_raw_mean_v1_file_name)
+  generate_mean_data(input_file_name=qc1_log_trans_file_name, 
+                     output_v1_file_name=qc1_log_trans_mean_v1_file_name, 
+                     output_v2_file_name=qc1_log_trans_mean_v2_file_name)
+}
+
+
+
 
 
 

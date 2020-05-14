@@ -344,18 +344,7 @@ get_significance_sign <- function(p_value) {
 #-----------------------------#
 #--- Deadline Stress Study ---#
 #-----------------------------#
-generate_mean_data <- function(input_file_name, output_v1_file_name, output_v2_file_name) {
-  df <- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, input_file_name))
-  mean_df <- generate_treatment_mean_data(df)
-  convert_to_csv(mean_df, file.path(project_dir, curated_data_dir, physiological_data_dir, output_v1_file_name))
-  
-  generate_daywise_mean_data(mean_df, output_v2_file_name)
-}
-
-
 generate_daywise_mean_data <- function(mean_df, output_v2_file_name) {
-  # print(head(qc1_mean_v1_df, 2))
-  
   daywise_mean_df <- mean_df %>%
     # filter(Treatment == 'WS') %>%
     gather(Signal, Mean_Value, -Participant_ID, -Day, -Treatment) %>% 
@@ -383,7 +372,6 @@ generate_daywise_mean_data <- function(mean_df, output_v2_file_name) {
 
 generate_treatment_mean_data <- function(df) {
   mean_df <- df %>%
-    # select(-Timestamp, -Sinterface_Time, -TreatmentTime) %>%
     select(Participant_ID,	Day, Treatment, Mask, PP, E4_HR, E4_EDA, iWatch_HR) %>%
     group_by(Participant_ID,	Day, Treatment) %>%
     filter(Mask==1) %>%
@@ -392,6 +380,17 @@ generate_treatment_mean_data <- function(df) {
     select(-Mask)
   
   return(mean_df)
+}
+
+
+generate_mean_data <- function(input_file_name, output_v1_file_name, output_v2_file_name) {
+  physiological_data_dir_path <- file.path(project_dir, curated_data_dir, physiological_data_dir)
+  
+  df <- custom_read_csv(file.path(physiological_data_dir_path, input_file_name))
+  mean_df <- generate_treatment_mean_data(df)
+  convert_to_csv(mean_df, file.path(physiological_data_dir_path, output_v1_file_name))
+  
+  generate_daywise_mean_data(mean_df, output_v2_file_name)
 }
 
 
