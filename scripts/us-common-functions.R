@@ -354,7 +354,8 @@ generate_daywise_mean_data <- function(mean_df, output_v2_file_name) {
       !is.na(Day3)~Day3,
       !is.na(Day4)~Day4,
       TRUE~Day3)) %>%  # it's creating problem for NA. Anyhow Day3 or Day4 is NA, so default NA
-    mutate(Day3_Day4_Min = pmin(Day3, Day4, na.rm = TRUE))
+    mutate(Day3_Day4_Min = pmin(Day3, Day4, na.rm = TRUE)) %>% 
+    mutate(Four_Day_Min = pmin(Day1, Day2, Day3, Day4, na.rm = TRUE))
   
   if (t_test_comparison==day3_day4_ws_mean) {
     daywise_mean_df <- daywise_mean_df %>%

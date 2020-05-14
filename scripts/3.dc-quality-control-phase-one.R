@@ -104,12 +104,6 @@ process_qc1_mean_data <- function() {
 # process_qc1_mean_data()
 
 
-# ------------------------------------------------
-# lowest_baseline="lowest_baseline"
-# corresponding_baseline="corresponding_baseline"
-# day3_day4_ws_mean="day3_day4_ws_mean"
-# ------------------------------------------------
-
 
 
 
