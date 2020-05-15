@@ -58,9 +58,7 @@ read_data <- function() {
   rr_rb_df <<- rr_df %>% 
     filter(Treatment=='RB')
   
-  
-  mean_df <- custom_read_csv(file.path(physiological_data_path, qc1_log_trans_mean_v1_file_name))
-  raw_mean_df <- custom_read_csv(file.path(physiological_data_path, qc1_raw_mean_v1_file_name)) %>% 
+  raw_mean_df <- custom_read_csv(file.path(physiological_data_path, qc1_lm_mean_v1_file_name)) %>% 
     rename(PP_Raw=PP,
            E4_HR_Raw=E4_HR,
            E4_EDA_Raw=E4_EDA,
@@ -72,6 +70,8 @@ read_data <- function() {
   activity_state_nasa_df <- custom_read_csv(file.path(physiological_questionnaire_data_path, activity_state_nasa_file_name))
   trait_biographic_df <- custom_read_csv(file.path(physiological_questionnaire_data_path, trait_biographic_file_name))
   
+  
+  mean_df <- custom_read_csv(file.path(physiological_data_path, qc1_log_trans_mean_v1_file_name))
   physiological_questionnaire_df <<- merge(mean_df, activity_state_nasa_df, by=c('Participant_ID', 'Day'))
   physiological_questionnaire_df <<- merge(physiological_questionnaire_df, trait_biographic_df, by='Participant_ID')
   
