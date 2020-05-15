@@ -82,7 +82,7 @@ remove_data_out_of_range <- function() {
 
 
 log_transform_linear_model <- function() {
-  qc1_lm_df <- qc1_df %>%
+  qc1_lm_df <- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, qc1_file_name)) %>%
     mutate(PP=log(PP+get_shift_val(qc1_df, 'PP')), 
            E4_EDA=log(E4_EDA+get_shift_val(qc1_df, 'E4_EDA')),
            E4_HR=log(E4_HR+get_shift_val(qc1_df, 'E4_HR')),
@@ -97,9 +97,7 @@ log_transform_linear_model <- function() {
 process_quality_control_phase_one <- function() {
   read_data()
   remove_data_out_of_range()
-  log_transform_linear_model()
 }
-
 
 
 #--- CHANGE HERE ---#
@@ -110,6 +108,8 @@ process_qc1_mean_data <- function() {
 }
 
 process_lm_mean_data <- function() {
+  log_transform_linear_model()
+  
   generate_mean_data(input_file_name=qc1_lm_file_name,
                      output_v1_file_name=qc1_lm_mean_v1_file_name,
                      output_v2_file_name=qc1_lm_mean_v2_file_name)
