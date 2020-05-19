@@ -100,32 +100,6 @@ get_rb <- function(df, signal) {
 }
 
 normalize_data <- function() {
-  
-  # if (baseline_parameter==corresponding_baseline) {
-  #   
-  #   normalized_df <<- full_df %>% 
-  #     filter(Treatment=='WS') %>% 
-  #     group_by(Participant_ID, Day) %>%
-  #     do(mutate(., 
-  #               PP=PP-get_rb(., 'PP'),
-  #               E4_EDA=E4_EDA-get_rb(., 'E4_EDA'),
-  #               E4_HR=E4_HR-get_rb(., 'E4_HR'),
-  #               iWatch_HR=iWatch_HR-get_rb(., 'iWatch_HR'),
-  #     ))
-  #   
-  # } else {
-  #   
-  #   normalized_df <<- full_df %>% 
-  #     filter(Treatment=='WS') %>% 
-  #     group_by(Participant_ID) %>%
-  #     do(mutate(., 
-  #               PP=PP-get_rb(., 'PP'),
-  #               E4_EDA=E4_EDA-get_rb(., 'E4_EDA'),
-  #               E4_HR=E4_HR-get_rb(., 'E4_HR'),
-  #               iWatch_HR=iWatch_HR-get_rb(., 'iWatch_HR'),
-  #     ))
-  # }
-  
   ws_df <- full_df %>% 
     filter(Treatment=='WS')
   
