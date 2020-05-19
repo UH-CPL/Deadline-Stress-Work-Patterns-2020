@@ -53,8 +53,8 @@ chunk_sizes <- c(5, 10, 15)
 
 
 #-------------------------------------------------------------------------------------------- 4
-# source(file.path(script_dir, '4.dc-generate-normalized-data.R'))
-# process_normalize_data()
+source(file.path(script_dir, '4.dc-generate-normalized-data.R'))
+process_normalize_data()
 
 
 

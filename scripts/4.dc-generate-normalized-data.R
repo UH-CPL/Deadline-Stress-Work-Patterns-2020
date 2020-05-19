@@ -36,8 +36,8 @@ mean_v2_df <- tibble()
 #-------------------------#
 read_data <- function() {
   full_df <<- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, qc1_file_name))
-  mean_v1_df <<- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, qc1_raw_mean_v1_file_name))
-  mean_v2_df <<- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, qc1_raw_mean_v2_file_name))
+  # mean_v1_df <<- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, qc1_raw_mean_v1_file_name))
+  # mean_v2_df <<- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, qc1_raw_mean_v2_file_name))
 }
 
 process_rb_data <- function(df, signal) {
@@ -149,19 +149,20 @@ normalize_data <- function() {
 }
 
 log_transfer_data <- function() {
-
+  
   if (enable_log_transformation==TRUE) {
-    log_transformed_df <<- normalized_df %>% 
-      mutate(PP=log(PP+get_shift_val(normalized_df, 'PP')), 
-             E4_EDA=log(E4_EDA+get_shift_val(normalized_df, 'E4_EDA')),
-             E4_HR=log(E4_HR+get_shift_val(normalized_df, 'E4_HR')),
-             iWatch_HR=log(iWatch_HR+get_shift_val(normalized_df, 'iWatch_HR')),
+    log_transformed_df <<- full_df %>% 
+      mutate(PP=log(PP), 
+             E4_EDA=log(E4_EDA),
+             E4_HR=log(E4_HR),
+             iWatch_HR=log(iWatch_HR),
       )
-    # mutate(PP=log(PP) + get_shift_val(normalized_df, 'PP'),
-    #        E4_EDA=log(E4_EDA) + get_shift_val(normalized_df, 'E4_EDA'),
-    #        E4_HR=log(E4_HR) + get_shift_val(normalized_df, 'E4_HR'),
-    #        iWatch_HR=log(iWatch_HR) + get_shift_val(normalized_df, 'iWatch_HR'),
-    #        )
+      # ------------------ Don't Delete ------------------ #
+      # mutate(PP=log(PP+get_shift_val(normalized_df, 'PP')), 
+      #        E4_EDA=log(E4_EDA+get_shift_val(normalized_df, 'E4_EDA')),
+      #        E4_HR=log(E4_HR+get_shift_val(normalized_df, 'E4_HR')),
+      #        iWatch_HR=log(iWatch_HR+get_shift_val(normalized_df, 'iWatch_HR')),
+      # )
     
     convert_to_csv(log_transformed_df, file.path(project_dir, curated_data_dir, physiological_data_dir, qc1_log_trans_file_name))
   }
@@ -170,9 +171,10 @@ log_transfer_data <- function() {
 
 process_normalize_data <-  function() {
   read_data()
+  log_transfer_data()
   process_rb_data()
   normalize_data()
-  log_transfer_data()
+  
 }
 
 
