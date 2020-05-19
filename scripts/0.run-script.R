@@ -49,7 +49,6 @@ chunk_sizes <- c(5, 10, 15)
 # source(file.path(script_dir, '3.dc-quality-control-phase-one.R'))
 # process_quality_control_phase_one()
 # process_qc1_mean_data()
-# process_lm_mean_data()
 
 
 
