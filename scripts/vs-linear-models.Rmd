@@ -56,7 +56,8 @@ read_data <- function() {
     rename(RR=RR_Mean)
   
   rr_rb_df <<- rr_df %>% 
-    filter(Treatment=='RB')
+    filter(Treatment=='RB') %>% 
+    mutate(Day=relevel(factor(Day, ordered=F), ref='Day4'))
   
   raw_mean_df <- custom_read_csv(file.path(physiological_data_path, qc1_lm_mean_v1_file_name)) %>% 
     rename(PP_Raw=PP,
@@ -65,7 +66,8 @@ read_data <- function() {
            iWatch_HR_Raw=iWatch_HR)
   
   raw_rb_mean_df <<- raw_mean_df %>% 
-    filter(Treatment=='RB')
+    filter(Treatment=='RB') %>% 
+    mutate(Day=relevel(factor(Day, ordered=F), ref='Day4'))
 
   activity_state_nasa_df <- custom_read_csv(file.path(physiological_questionnaire_data_path, activity_state_nasa_file_name))
   trait_biographic_df <- custom_read_csv(file.path(physiological_questionnaire_data_path, trait_biographic_file_name))
