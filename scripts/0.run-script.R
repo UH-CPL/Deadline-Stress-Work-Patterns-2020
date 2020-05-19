@@ -52,12 +52,13 @@ chunk_sizes <- c(5, 10, 15)
 
 
 #-------------------------------------------------------------------------------------------- 4
-# source(file.path(script_dir, '4.dc-generate-normalized-data.R'))
-# process_normalize_data()
+source(file.path(script_dir, '4.dc-generate-normalized-data.R'))
+process_normalize_data()
 
-source(file.path(script_dir, 'vs-qq-plot.R'))
-# draw_qq_plots(test_input=TRUE)
-draw_qq_plots()
+# source(file.path(script_dir, 'vs-qq-plot.R'))
+# draw_qq_plots()
+
+### draw_qq_plots(test_input=TRUE)
 
 
 
