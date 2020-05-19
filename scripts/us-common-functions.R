@@ -93,26 +93,38 @@ qc0_raw_file_name <- 'qc0_raw_data.csv'        # all raw data - generates from d
 qc0_final_file_name <- 'qc0_final_data.csv'    # masked and manifested ontologies & activities data - generates from dc-curate-and-process-data.R file
 
 qc1_file_name <- 'qc1_data.csv'
-qc1_normalized_file_name <- 'qc1_normalized_data.csv'
 qc1_filtered_data_file_name <- 'qc1_bad_filtered_data.csv'
 
-qc1_raw_mean_v1_file_name <- 'qc1_raw_mean_v1.csv'
-qc1_raw_mean_v2_file_name <- 'qc1_raw_mean_v2.csv'
-
-qc1_lm_file_name <- 'qc1_lm_data.csv'
-qc1_lm_mean_v1_file_name <- 'qc1_lm_mean_v1.csv'
-qc1_lm_mean_v2_file_name <- 'qc1_lm_mean_v2.csv'
 
 
 
 
 
-qc1_log_trans_file_name <- 'qc1_log_trans_data.csv'
 
-qc1_log_trans_mean_v1_file_name <- 'qc1_log_trans_mean_v1.csv'
-qc1_log_trans_mean_v2_file_name <- 'qc1_log_trans_mean_v2.csv'
 
-qc1_log_trans_mean_chunk_file_name <- 'qc1_log_trans_mean.csv'
+
+
+
+# qc1_raw_mean_v1_file_name <- 'qc1_raw_mean_v1.csv'
+# qc1_raw_mean_v2_file_name <- 'qc1_raw_mean_v2.csv'
+
+
+# qc1_normalized_file_name <- 'qc1_normalized_data.csv'
+
+# qc1_lm_file_name <- 'qc1_lm_data.csv'
+# qc1_lm_mean_v1_file_name <- 'qc1_lm_mean_v1.csv'
+# qc1_lm_mean_v2_file_name <- 'qc1_lm_mean_v2.csv'
+
+
+# qc1_log_trans_file_name <- 'qc1_log_trans_data.csv'
+# 
+# qc1_log_trans_mean_v1_file_name <- 'qc1_log_trans_mean_v1.csv'
+# qc1_log_trans_mean_v2_file_name <- 'qc1_log_trans_mean_v2.csv'
+# 
+# qc1_log_trans_mean_chunk_file_name <- 'qc1_log_trans_mean.csv'
+
+
+
 
 
 ## 1. Timestamp -->    Extract whatever inside []                 -->   \\[(.*)\\]
@@ -127,13 +139,13 @@ mac_data_pattern <- '\\[(.*)\\] (.*)'
 # qc2_ws_mean_file_name <- 'qc2_ws_mean.csv'
 
 
-qc0_deadline_mean_file_name <- 'qc0_deadline_mean.csv'
-qc1_deadline_mean_file_name <- 'qc1_deadline_mean.csv'
-
-qc0_activity_mean_file_name <- 'qc0_activity_mean.csv'
-qc1_activity_mean_file_name <- 'qc1_activity_mean.csv'
-
-qc1_deadline_mean_file_name <- 'qc1_deadline_mean.csv'
+# qc0_deadline_mean_file_name <- 'qc0_deadline_mean.csv'
+# qc1_deadline_mean_file_name <- 'qc1_deadline_mean.csv'
+# 
+# qc0_activity_mean_file_name <- 'qc0_activity_mean.csv'
+# qc1_activity_mean_file_name <- 'qc1_activity_mean.csv'
+# 
+# qc1_deadline_mean_file_name <- 'qc1_deadline_mean.csv'
 
 
 ## We don't know until now how many filtering we will do :P

@@ -101,11 +101,11 @@ process_quality_control_phase_one <- function() {
 
 
 #--- CHANGE HERE ---#
-process_qc1_mean_data <- function() {
-  generate_mean_data(input_file_name=qc1_file_name, 
-                     output_v1_file_name=qc1_raw_mean_v1_file_name, 
-                     output_v2_file_name=qc1_raw_mean_v2_file_name)
-}
+# process_qc1_mean_data <- function() {
+#   generate_mean_data(input_file_name=qc1_file_name, 
+#                      output_v1_file_name=qc1_raw_mean_v1_file_name, 
+#                      output_v2_file_name=qc1_raw_mean_v2_file_name)
+# }
 
 # process_lm_mean_data <- function() {
 #   log_transform_linear_model()
@@ -119,8 +119,11 @@ process_qc1_mean_data <- function() {
 #-------Main Program------#
 #-------------------------#
 # process_quality_control_phase_one()
-# process_qc1_mean_data()
-# process_lm_mean_data
+
+
+
+### process_qc1_mean_data()
+### process_lm_mean_data
 
 
 

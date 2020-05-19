@@ -163,6 +163,7 @@ log_transfer_data <- function() {
       #        E4_HR=log(E4_HR+get_shift_val(normalized_df, 'E4_HR')),
       #        iWatch_HR=log(iWatch_HR+get_shift_val(normalized_df, 'iWatch_HR')),
       # )
+
     
     convert_to_csv(log_transformed_df, file.path(project_dir, curated_data_dir, physiological_data_dir, qc1_log_trans_file_name))
   }
@@ -174,7 +175,6 @@ process_normalize_data <-  function() {
   log_transfer_data()
   process_rb_data()
   normalize_data()
-  
 }
 
 
