@@ -15,9 +15,6 @@ index_data_dir <- 'index-data'
 final_data_dir <- 'final-data'
 
 
-log_tansformed_parameter <- 'log_transformed'
-raw_parameter <- 'raw'
-
 default_plot_width <- 12
 default_plot_height <- 10
 
@@ -92,8 +89,9 @@ day3_day4_ws_mean="day3_day4_ws_mean"
 day3_day4_ws_min="day3_day4_ws_min"
 
 
-
-
+raw_parameter <- 'raw'
+log_transformation <- 'log'
+boxcox_transformation <- 'boxcox'
 
 
 
@@ -111,7 +109,7 @@ qc0_final_file_name <- 'qc0_final_data.csv'    # masked and manifested ontologie
 qc1_file_name <- 'qc1_data.csv'
 qc1_filtered_data_file_name <- 'qc1_bad_filtered_data.csv'
 
-qc1_log_transformed_file_name <- 'qc1_log_transformed_data.csv'
+qc1_transformed_file_name <- 'qc1_transformed_data.csv'
 
 
 

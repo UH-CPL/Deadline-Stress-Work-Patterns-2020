@@ -122,10 +122,10 @@ read_data <- function() {
 #   convert_to_csv(normalized_df, file.path(curated_data_dir, physiological_data_dir, qc1_normalized_file_name))
 # }
 
-log_transfer_data <- function() {
+transfer_data <- function() {
   
-  if (enable_log_transformation==TRUE) {
-    log_transformed_df <<- full_df %>% 
+  if (transformation_parameter==log_transformation) {
+    normalized_df <<- full_df %>% 
       mutate(PP=log(PP), 
              E4_EDA=log(E4_EDA),
              E4_HR=log(E4_HR),
@@ -137,17 +137,24 @@ log_transfer_data <- function() {
       #        E4_HR=log(E4_HR+get_shift_val(normalized_df, 'E4_HR')),
       #        iWatch_HR=log(iWatch_HR+get_shift_val(normalized_df, 'iWatch_HR')),
       # )
-
     
-    convert_to_csv(log_transformed_df, file.path(project_dir, curated_data_dir, physiological_data_dir, qc1_log_transformed_file_name))
+  } else if (transformation_parameter==boxcox_transformation) {
+    normalized_df <<- full_df %>% 
+      mutate(PP=boxcox(PP), 
+             E4_EDA=boxcox(E4_EDA),
+             E4_HR=boxcox(E4_HR),
+             iWatch_HR=boxcox(iWatch_HR),
+      )
   }
+  
+  convert_to_csv(normalized_df, file.path(project_dir, curated_data_dir, physiological_data_dir, qc1_transformed_file_name))
 }
 
 
 process_normalize_data <-  function() {
   read_data()
-  log_transfer_data()
-  process_mean_data()
+  transfer_data()
+  # process_mean_data()
   ##### process_rb_data()
   ##### normalize_data()
 }
