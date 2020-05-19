@@ -3,14 +3,7 @@
 #-------------------------#
 library(tidyverse) 
 library(plyr) 
-# library(knitr) 
-# library(grid) 
-# library(gridExtra)
-# library(ggpubr) 
-# library(kableExtra) 
-# library(gsubfn)
 library(cowplot)
-
 
 
 
@@ -36,10 +29,8 @@ distribution_plot_list <- list()
 # signal_list <- c('PP')
 signal_list <- c('PP', 'E4_HR', 'E4_EDA', 'iWatch_HR')
 
-
 test <- FALSE # TRUE FALSE
-sample_size <- 100
-
+sample_size <- 1000
 
 #-------------------------#
 #---FUNCTION DEFINITION---#
@@ -58,12 +49,12 @@ read_data <- function() {
 #   }
 # }
 
-generate_qq_plot <- function(df, signal, log=FALSE) {
+generate_qq_plot <- function(df, signal) {
   if (test==TRUE) {
     df <- df %>%
       select(!!signal) %>% 
       na.omit() %>% 
-      slice(1:1000)
+      slice(1:sample_size)
   }
   
   plot <- ggplot(df, aes(sample = .data[[signal]])) +
@@ -79,12 +70,12 @@ generate_qq_plot <- function(df, signal, log=FALSE) {
 }
 
 
-generate_distribution_plot <- function(df, signal, log=FALSE) {
+generate_distribution_plot <- function(df, signal) {
   if (test==TRUE) {
     df <- df %>%
       select(!!signal) %>% 
       na.omit() %>% 
-      slice(1:1000)
+      slice(1:sample_size)
   }
   
   plot <- ggplot(df, aes(x=.data[[signal]])) +
@@ -112,21 +103,27 @@ draw_plots <- function(df, transformations_parameter) {
     # generate_treatment_qq_plot(signal)
   }
   
-  qq_grid_plot <<- plot_grid(plotlist=qq_plot_list, align='v', ncol=2)
-  distribution_grid_plot <<- plot_grid(plotlist=distribution_plot_list, align='v', ncol=2)
+  qq_grid_plot <- plot_grid(plotlist=qq_plot_list, align='v', ncol=2)
+  distribution_grid_plot <- plot_grid(plotlist=distribution_plot_list, align='v', ncol=2)
   
   save_plot(paste0(transformations_parameter, '_qq_plot'), qq_grid_plot)
   save_plot(paste0(transformations_parameter, '_distribution_plot'), distribution_grid_plot)
 
 }
 
+draw_qq_plots <- function(test_input=FALSE) {
+  test <<- test_input
+  
+  read_data()
+  draw_plots(qc1_df, raw_parameter)
+  draw_plots(qc1_log_transformed_df, log_tansformed_parameter)
+}
+
 
 #-------------------------#
 #-------Main Program------#
 #-------------------------#
-read_data()
-draw_plots(qc1_df, raw_parameter)
-draw_plots(qc1_log_transformed_df, log_tansformed_parameter)
+# draw_qq_plots()
 
 
 

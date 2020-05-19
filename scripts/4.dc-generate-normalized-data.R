@@ -125,7 +125,7 @@ normalize_data <- function() {
 log_transfer_data <- function() {
   
   if (enable_log_transformation==TRUE) {
-    log_transformed_df <<- full_df %>% 
+    log_transformed_df <- full_df %>% 
       mutate(PP=log(PP), 
              E4_EDA=log(E4_EDA),
              E4_HR=log(E4_HR),
@@ -139,7 +139,7 @@ log_transfer_data <- function() {
       # )
 
     
-    convert_to_csv(log_transformed_df, file.path(project_dir, curated_data_dir, physiological_data_dir, qc1_log_trans_file_name))
+    convert_to_csv(log_transformed_df, file.path(project_dir, curated_data_dir, physiological_data_dir, qc1_log_transformed_file_name))
   }
 }
 
@@ -157,7 +157,7 @@ process_normalize_data <-  function() {
 #-------------------------#
 #-------Main Program------#
 #-------------------------#
-process_normalize_data()
+# process_normalize_data()
 
 
 
