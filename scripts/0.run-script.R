@@ -23,8 +23,8 @@ t_test_comparison <- day3_day4_ws_mean
 enable_eda_smoothing <- TRUE
 
 
-enable_log_transformation <- TRUE
-delta_shift_val <- 0.01
+# enable_log_transformation <- TRUE
+# delta_shift_val <- 0.01
 
 
 discard_rate_chunk_mean <- 5  # in %
@@ -52,13 +52,22 @@ chunk_sizes <- c(5, 10, 15)
 
 
 #-------------------------------------------------------------------------------------------- 4
+##########################################################
+#
+# log_transformation <- 'log'
+# boxcox_transformation <- 'boxcox'
+#
+##########################################################
+transformation_parameter <- log_transformation
+
+
 source(file.path(script_dir, '4.dc-generate-normalized-data.R'))
 process_normalize_data()
 
-# source(file.path(script_dir, 'vs-qq-plot.R'))
-# draw_qq_plots()
+source(file.path(script_dir, 'vs-qq-plot.R'))
+draw_qq_plots()
 
-### draw_qq_plots(test_input=TRUE)
+# draw_qq_plots(test_input=TRUE)
 
 
 

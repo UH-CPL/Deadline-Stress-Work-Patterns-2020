@@ -37,7 +37,7 @@ sample_size <- 1000
 #-------------------------#
 read_data <- function() {
   qc1_df <<- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, qc1_file_name))
-  qc1_log_transformed_df <<- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, qc1_log_transformed_file_name))
+  qc1_transformed_df <<- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, qc1_transformed_file_name))
 }
 
 # get_shapiro_result <- function(data) {
@@ -116,7 +116,7 @@ draw_qq_plots <- function(test_input=FALSE) {
   
   read_data()
   draw_plots(qc1_df, raw_parameter)
-  draw_plots(qc1_log_transformed_df, log_tansformed_parameter)
+  draw_plots(qc1_transformed_df, transformation_parameter)
 }
 
 
