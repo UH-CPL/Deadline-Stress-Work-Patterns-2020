@@ -15,8 +15,8 @@ index_data_dir <- 'index-data'
 final_data_dir <- 'final-data'
 
 
-log_tansformed_dir <- 'log-transformed'
-non_log_tansformed_dir <- 'non-log-transformed'
+log_tansformed_parameter <- 'log_transformed'
+raw_parameter <- 'raw'
 
 default_plot_width <- 12
 default_plot_height <- 10
@@ -24,12 +24,13 @@ default_plot_height <- 10
 one_hour_sec <- 3600
 
 
-subj_list_file_name <- 'subj_list.csv'
+
 
 
 grp_dir <- 'Group1'
 session_list <- c('Baseline', 'WorkingSession')
 signal_list <- c('PP', 'E4_HR', 'E4_EDA', 'iWatch_HR')
+
 
 
 pp_file_pattern <- '.*_pp.csv'
@@ -66,6 +67,22 @@ VI='C - Talking Skype & others|Virtual Interaction VI'
 
 
 
+
+## 1. Timestamp -->    Extract whatever inside []                 -->   \\[(.*)\\]
+## 2. Application -->  Extract whatever after the space of []     -->   (.*)
+mac_data_pattern <- '\\[(.*)\\] (.*)'
+
+
+s_interface_date_format <- '%a %b %d %H:%M:%S %Y'
+
+decorator_hash <- '###########################################################'
+
+
+
+
+
+
+
 ###############################################################
 # Baseline Parameter
 ###############################################################
@@ -77,12 +94,11 @@ day3_day4_ws_min="day3_day4_ws_min"
 
 
 
-activity_state_nasa_file_name <- 'activity_state_nasa.csv'
-trait_biographic_file_name <- 'trait_biographic.csv'
 
 
-physiological_questionnaire_file_name <- 'physiological_questionnaire.csv'
 
+
+subj_list_file_name <- 'subj_list.csv'
 
 
 ###############################################################
@@ -95,9 +111,7 @@ qc0_final_file_name <- 'qc0_final_data.csv'    # masked and manifested ontologie
 qc1_file_name <- 'qc1_data.csv'
 qc1_filtered_data_file_name <- 'qc1_bad_filtered_data.csv'
 
-
-
-
+qc1_log_transformed_file_name <- 'qc1_log_transformed_data.csv'
 
 
 
@@ -127,37 +141,9 @@ qc1_filtered_data_file_name <- 'qc1_bad_filtered_data.csv'
 
 
 
-## 1. Timestamp -->    Extract whatever inside []                 -->   \\[(.*)\\]
-## 2. Application -->  Extract whatever after the space of []     -->   (.*)
-mac_data_pattern <- '\\[(.*)\\] (.*)'
-
-
-
-
-# qc0_ws_mean_file_name <- 'qc0_ws_mean.csv'
-# qc1_ws_mean_file_name <- 'qc1_ws_mean.csv'
-# qc2_ws_mean_file_name <- 'qc2_ws_mean.csv'
-
-
-# qc0_deadline_mean_file_name <- 'qc0_deadline_mean.csv'
-# qc1_deadline_mean_file_name <- 'qc1_deadline_mean.csv'
-# 
-# qc0_activity_mean_file_name <- 'qc0_activity_mean.csv'
-# qc1_activity_mean_file_name <- 'qc1_activity_mean.csv'
-# 
-# qc1_deadline_mean_file_name <- 'qc1_deadline_mean.csv'
-
-
-## We don't know until now how many filtering we will do :P
-## Hope it doesn't exixts 99 filtering
-# qc99_file_name <- 'qc0_all_data.csv'
-
-
 significance_file_name <- 'significance.csv'
 variance_test_file_name <- 'variance_test.csv'
 variance_test_chunk_mean_file_name <- 'variance_test_chunk_mean.csv'
-
-
 
 
 
@@ -173,13 +159,13 @@ significance_rr_file_name <- 'significance_rr.csv'
 
 
 
-## 1. Timestamp -->    Extract whatever inside []                 -->   \\[(.*)\\]
-## 2. Application -->  Extract whatever after the space of []     -->   (.*)
-mac_data_pattern <- '\\[(.*)\\] (.*)'
 
-s_interface_date_format <- '%a %b %d %H:%M:%S %Y'
 
-decorator_hash <- '###########################################################'
+activity_state_nasa_file_name <- 'activity_state_nasa.csv'
+trait_biographic_file_name <- 'trait_biographic.csv'
+
+physiological_questionnaire_file_name <- 'physiological_questionnaire.csv'
+
 
 
 

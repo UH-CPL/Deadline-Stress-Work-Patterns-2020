@@ -147,8 +147,8 @@ log_transfer_data <- function() {
 process_normalize_data <-  function() {
   read_data()
   log_transfer_data()
-  process_rb_data()
-  normalize_data()
+  # process_rb_data()
+  # normalize_data()
 }
 
 

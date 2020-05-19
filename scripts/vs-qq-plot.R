@@ -8,8 +8,9 @@ library(plyr)
 # library(gridExtra)
 # library(ggpubr) 
 # library(kableExtra) 
-library(cowplot)
 # library(gsubfn)
+library(cowplot)
+
 
 
 
@@ -48,14 +49,14 @@ read_data <- function() {
   qc1_log_transformed_df <<- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, qc1_log_transformed_file_name))
 }
 
-get_shapiro_result <- function(data) {
-  test_val = shapiro.test(data)
-  if (test_val > 0.05) {
-    print('Distribution is normal')
-  } else {
-    print('Distribution is not normal')
-  }
-}
+# get_shapiro_result <- function(data) {
+#   test_val = shapiro.test(data)
+#   if (test_val > 0.05) {
+#     print('Distribution is normal')
+#   } else {
+#     print('Distribution is not normal')
+#   }
+# }
 
 generate_qq_plot <- function(df, signal, log=FALSE) {
   if (test==TRUE) {
@@ -65,7 +66,6 @@ generate_qq_plot <- function(df, signal, log=FALSE) {
       slice(1:1000)
   }
   
-
   plot <- ggplot(df, aes(sample = .data[[signal]])) +
     stat_qq() +
     stat_qq_line() +
@@ -100,7 +100,7 @@ generate_distribution_plot <- function(df, signal, log=FALSE) {
   distribution_plot_list[[length(distribution_plot_list)+1]] <<- plot
 }
 
-draw_plots <- function(df, dir) {
+draw_plots <- function(df, transformations_parameter) {
   
   qq_plot_list <<- list()
   distribution_plot_list <<- list()
@@ -112,13 +112,11 @@ draw_plots <- function(df, dir) {
     # generate_treatment_qq_plot(signal)
   }
   
-  
   qq_grid_plot <<- plot_grid(plotlist=qq_plot_list, align='v', ncol=2)
   distribution_grid_plot <<- plot_grid(plotlist=distribution_plot_list, align='v', ncol=2)
   
-  
-  save_plot(paste0(dir, '_qq_plot'), qq_grid_plot)
-  save_plot(paste0(dir, '_distribution_plot'), distribution_grid_plot)
+  save_plot(paste0(transformations_parameter, '_qq_plot'), qq_grid_plot)
+  save_plot(paste0(transformations_parameter, '_distribution_plot'), distribution_grid_plot)
 
 }
 
@@ -127,9 +125,8 @@ draw_plots <- function(df, dir) {
 #-------Main Program------#
 #-------------------------#
 read_data()
-
-draw_plots(qc1_df, non_log_tansformed_dir)
-draw_plots(qc1_log_transformed_df, log_tansformed_dir)
+draw_plots(qc1_df, raw_parameter)
+draw_plots(qc1_log_transformed_df, log_tansformed_parameter)
 
 
 
