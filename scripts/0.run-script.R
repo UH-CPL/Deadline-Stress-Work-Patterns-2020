@@ -69,8 +69,8 @@ transformation_parameter <- log_transformation
 
 
 #-------------------------------------------------------------------------------------------- 4
-source(file.path(script_dir, '4.dc-generate-transformed-data.R'))
-transform_data()
+# source(file.path(script_dir, '4.dc-generate-transformed-data.R'))
+# transform_data()
 
 # source(file.path(script_dir, 'vs-qq-plot.R'))
 # draw_qq_plots()
@@ -80,8 +80,8 @@ transform_data()
 
 
 #-------------------------------------------------------------------------------------------- 5
-source(file.path(script_dir, '5.dc-generate-normalized-data.R'))
-normalize_data()
+# source(file.path(script_dir, '5.dc-generate-normalized-data.R'))
+# normalize_data()
 
 
 
@@ -107,8 +107,8 @@ normalize_data()
 
 
 #-------------------------------------------------------------------------------------------- 8
-# source(file.path(script_dir, 'vs-validation_plots.R'))
-# draw_validation_plots()
+source(file.path(script_dir, 'vs-validation_plots.R'))
+draw_validation_plots()
 
 
 #-------------------------------------------------------------------------------------------- 9

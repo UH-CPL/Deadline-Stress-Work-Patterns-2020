@@ -24,7 +24,7 @@ file.create(mean_log_file)
 signal_name_list <- c('PP', 'E4_HR', 'E4_EDA', 'iWatch_HR')
 
 
-chunk_mean_file_name <- remove_rigth_substr(qc1_log_trans_mean_chunk_file_name, 4)
+chunk_mean_file_name <- remove_rigth_substr(qc1_mean_chunk_file_name, 4)
 
 #-------------------------#
 #---FUNCTION DEFINITION---#
