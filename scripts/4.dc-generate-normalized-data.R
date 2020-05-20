@@ -154,7 +154,9 @@ transfer_data <- function() {
 process_normalize_data <-  function() {
   read_data()
   transfer_data()
-  # process_mean_data()
+  generate_mean_data(input_file_name=full_df_file_name, 
+                     output_v1_file_name=mean_v1_file_name, 
+                     output_v2_file_name=mean_v2_file_name)
   ##### process_rb_data()
   ##### normalize_data()
 }

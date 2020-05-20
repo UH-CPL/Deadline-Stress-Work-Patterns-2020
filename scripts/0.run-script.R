@@ -8,6 +8,20 @@ setwd(project_dir)
 source(file.path(script_dir, 'us-common-functions.R'))
 
 
+
+
+##########################################################
+enable_eda_smoothing <- TRUE
+
+
+# enable_log_transformation <- TRUE
+# delta_shift_val <- 0.01
+
+
+discard_rate_chunk_mean <- 5  # in %
+chunk_sizes <- c(5, 10, 15)
+
+
 ##########################################################
 #
 # lowest_baseline="lowest_baseline"
@@ -20,15 +34,18 @@ baseline_parameter <- corresponding_baseline
 t_test_comparison <- day3_day4_ws_mean
 
 
-enable_eda_smoothing <- TRUE
 
 
-# enable_log_transformation <- TRUE
-# delta_shift_val <- 0.01
+##########################################################
+#
+# log_transformation <- 'log'
+# boxcox_transformation <- 'boxcox'
+#
+##########################################################
+transformation_parameter <- log_transformation
 
 
-discard_rate_chunk_mean <- 5  # in %
-chunk_sizes <- c(5, 10, 15)
+
 
 
 
@@ -52,28 +69,19 @@ chunk_sizes <- c(5, 10, 15)
 
 
 #-------------------------------------------------------------------------------------------- 4
-##########################################################
-#
-# log_transformation <- 'log'
-# boxcox_transformation <- 'boxcox'
-#
-##########################################################
-transformation_parameter <- log_transformation
+# source(file.path(script_dir, '4.dc-generate-normalized-data.R'))
+# process_normalize_data()
+# 
+# source(file.path(script_dir, 'vs-qq-plot.R'))
+# draw_qq_plots()
 
-
-source(file.path(script_dir, '4.dc-generate-normalized-data.R'))
-process_normalize_data()
-
-source(file.path(script_dir, 'vs-qq-plot.R'))
-draw_qq_plots()
-
-# draw_qq_plots(test_input=TRUE)
+## draw_qq_plots(test_input=TRUE)
 
 
 
 #-------------------------------------------------------------------------------------------- 5
-# source(file.path(script_dir, '5.dc-generate-meta-data.R'))
-# process_normalized_qc1_mean_data()
+source(file.path(script_dir, '5.dc-generate-meta-data.R'))
+normalize_transformed_data()
 
 
 

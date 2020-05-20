@@ -4,6 +4,7 @@
 library(tidyverse) 
 library(plyr) 
 library(cowplot)
+library(EnvStats)
 
 
 
@@ -49,7 +50,7 @@ read_data <- function() {
 #   }
 # }
 
-generate_qq_plot <- function(df, signal) {
+generate_qq_plot <- function(df, signal, transformations_parameter) {
   if (test==TRUE) {
     df <- df %>%
       select(!!signal) %>% 
@@ -67,10 +68,12 @@ generate_qq_plot <- function(df, signal) {
 
   # print(plot)
   qq_plot_list[[length(qq_plot_list)+1]] <<- plot
+  
+  save_plot(paste0(signal, '_', transformations_parameter, '_qq_plot'), plot)
 }
 
 
-generate_distribution_plot <- function(df, signal) {
+generate_distribution_plot <- function(df, signal, transformations_parameter) {
   if (test==TRUE) {
     df <- df %>%
       select(!!signal) %>% 
@@ -89,6 +92,8 @@ generate_distribution_plot <- function(df, signal) {
   
   # print(plot)
   distribution_plot_list[[length(distribution_plot_list)+1]] <<- plot
+  
+  save_plot(paste0(signal, '_', transformations_parameter, '_distribution_plot'), plot)
 }
 
 draw_plots <- function(df, transformations_parameter) {
@@ -97,8 +102,8 @@ draw_plots <- function(df, transformations_parameter) {
   distribution_plot_list <<- list()
   
   for (signal in signal_list) {
-    generate_qq_plot(df, signal)
-    generate_distribution_plot(df, signal)
+    generate_qq_plot(df, signal, transformations_parameter)
+    generate_distribution_plot(df, signal, transformations_parameter)
     
     # generate_treatment_qq_plot(signal)
   }
@@ -108,7 +113,6 @@ draw_plots <- function(df, transformations_parameter) {
   
   save_plot(paste0(transformations_parameter, '_qq_plot'), qq_grid_plot)
   save_plot(paste0(transformations_parameter, '_distribution_plot'), distribution_grid_plot)
-
 }
 
 draw_qq_plots <- function(test_input=FALSE) {
