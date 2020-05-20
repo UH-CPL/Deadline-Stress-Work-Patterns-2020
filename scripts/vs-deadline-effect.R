@@ -73,19 +73,21 @@ generate_format_table <- function() {
   #                                treatment='WS',
   #                                output_file_parameter='raw')
   
-  generate_specific_format_table(input_file=qc1_log_trans_mean_v2_file_name,
+  # generate_specific_format_table(input_file=qc1_raw_mean_v2_file_name,
+  #                                treatment='RB',
+  #                                output_file_parameter='raw')
+  
+  
+  
+  
+  generate_specific_format_table(input_file=qc1_transformed_mean_v2_file_name,
                                  treatment='WS',
-                                 output_file_parameter='log_transformed')
+                                 output_file_parameter='transformed')
   
   
-  
-  generate_specific_format_table(input_file=qc1_raw_mean_v2_file_name,
+  generate_specific_format_table(input_file=qc1_transformed_mean_v2_file_name,
                                  treatment='RB',
-                                 output_file_parameter='raw')
-  
-  generate_specific_format_table(input_file=qc1_lm_mean_v2_file_name,
-                                 treatment='RB',
-                                 output_file_parameter='lm')
+                                 output_file_parameter='transformed')
 }
 
 

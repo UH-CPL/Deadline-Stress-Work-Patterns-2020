@@ -133,19 +133,21 @@ generate_chunk_mean_df <- function(df, chunk_size_minute, signal) {
   chunk_mean_df 
 }
 
-generate_ws_chunk_mean_data <- function() {
-  df <- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, input_file_name))
-  
-  for (signal in signal_name_list) {
-    for (chunk_size in chunk_sizes) {
-      mean_chunk_df <- generate_chunk_mean_df(df, chunk_size, signal)
-      convert_to_csv(mean_chunk_df, file.path(project_dir, 
-                                              curated_data_dir, 
-                                              physiological_data_dir, 
-                                              paste0(chunk_mean_file_name, '_', signal, '_', chunk_size, '_minute.csv')))
-    }
-  }
-}
+
+#----------------- Don't Delete -----------------#
+# generate_ws_chunk_mean_data <- function() {
+#   df <- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, input_file_name))
+#   
+#   for (signal in signal_name_list) {
+#     for (chunk_size in chunk_sizes) {
+#       mean_chunk_df <- generate_chunk_mean_df(df, chunk_size, signal)
+#       convert_to_csv(mean_chunk_df, file.path(project_dir, 
+#                                               curated_data_dir, 
+#                                               physiological_data_dir, 
+#                                               paste0(chunk_mean_file_name, '_', signal, '_', chunk_size, '_minute.csv')))
+#     }
+#   }
+# }
 
 
 

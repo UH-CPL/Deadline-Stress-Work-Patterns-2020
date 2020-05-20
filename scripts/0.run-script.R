@@ -107,8 +107,8 @@ transformation_parameter <- log_transformation
 
 
 #-------------------------------------------------------------------------------------------- 8
-source(file.path(script_dir, 'vs-validation_plots.R'))
-draw_validation_plots()
+# source(file.path(script_dir, 'vs-validation_plots.R'))
+# draw_validation_plots()
 
 
 #-------------------------------------------------------------------------------------------- 9
@@ -133,15 +133,15 @@ draw_validation_plots()
 
 
 #-------------------------------------------------------------------------------------------- 11
-# source(file.path(script_dir, 'vs-linear-models.Rmd'))
-# conduct_linear_modeling()
+#### source(file.path(script_dir, 'vs-linear-models.Rmd'))
+#### conduct_linear_modeling()
 
 
 
 
 #-------------------------------------------------------------------------------------------- 12
-# source(file.path(script_dir, 'vs-deadline-effect.R'))
-# generate_format_table()
+source(file.path(script_dir, 'vs-deadline-effect.R'))
+generate_format_table()
 
 
 
