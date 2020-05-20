@@ -59,13 +59,13 @@ read_data <- function() {
     filter(Treatment=='RB') %>% 
     mutate(Day=relevel(factor(Day, ordered=F), ref='Day4'))
   
-  raw_mean_df <- custom_read_csv(file.path(physiological_data_path, qc1_lm_mean_v1_file_name)) %>% 
-    rename(PP_Raw=PP,
-           E4_HR_Raw=E4_HR,
-           E4_EDA_Raw=E4_EDA,
-           iWatch_HR_Raw=iWatch_HR)
+  transformed_mean_df <- custom_read_csv(file.path(physiological_data_path, qc1_transformed_mean_v1_file_name)) %>% 
+    rename(PP_Log=PP,
+           E4_HR_Log=E4_HR,
+           E4_EDA_Log=E4_EDA,
+           iWatch_HR_Log=iWatch_HR)
   
-  raw_rb_mean_df <<- raw_mean_df %>% 
+  transformed_rb_mean_df <<- transformed_mean_df %>% 
     filter(Treatment=='RB') %>% 
     mutate(Day=relevel(factor(Day, ordered=F), ref='Day4'))
 
@@ -73,25 +73,25 @@ read_data <- function() {
   trait_biographic_df <- custom_read_csv(file.path(physiological_questionnaire_data_path, trait_biographic_file_name))
   
   
-  mean_df <- custom_read_csv(file.path(physiological_data_path, qc1_log_trans_mean_v1_file_name))
-  physiological_questionnaire_df <<- merge(mean_df, activity_state_nasa_df, by=c('Participant_ID', 'Day'))
+  normalized_mean_df <- custom_read_csv(file.path(physiological_data_path, qc1_normalized_mean_v1_file_name))
+  physiological_questionnaire_df <<- merge(normalized_mean_df, activity_state_nasa_df, by=c('Participant_ID', 'Day'))
   physiological_questionnaire_df <<- merge(physiological_questionnaire_df, trait_biographic_df, by='Participant_ID')
   
   physiological_questionnaire_df <<- physiological_questionnaire_df %>% 
     mutate(Day=relevel(factor(Day, ordered=F), ref='Day4'),
            NASA_summative=Mental + Physical + Temporal + Performance + Effort + Frustration) %>%
-    merge(raw_mean_df, by=c('Participant_ID', 'Day', 'Treatment')) %>%
+    merge(transformed_mean_df, by=c('Participant_ID', 'Day', 'Treatment')) %>%
     merge(rr_df, by=c('Participant_ID', 'Day', 'Treatment')) %>%
     select(Participant_ID,
            Day,
            Treatment,
-           PP_Raw,
+           PP_Log,
            PP,
-           E4_HR_Raw,
+           E4_HR_Log,
            E4_HR,
-           E4_EDA_Raw,
+           E4_EDA_Log,
            E4_EDA,
-           iWatch_HR_Raw,
+           iWatch_HR_Log,
            iWatch_HR,
            RR,
            NASA_summative,
@@ -210,8 +210,8 @@ print(anova(model))
 Linear Model - 2.1 -> Resting Baseline
 ------------------------------
 ```{r echo=FALSE, warning = FALSE, message = FALSE}
-model = lme(PP_Raw ~ Day,
-            data=raw_rb_mean_df,
+model = lme(PP_Log ~ Day,
+            data=transformed_rb_mean_df,
             random=~1|Participant_ID,
             na.action = na.omit)
 print(summary(model))
@@ -223,8 +223,8 @@ print(anova(model))
 Linear Model - 2.2 -> Resting Baseline
 ------------------------------
 ```{r echo=FALSE, warning = FALSE, message = FALSE}
-model = lme(E4_HR_Raw ~ Day, 
-            data=raw_rb_mean_df,
+model = lme(E4_HR_Log ~ Day, 
+            data=transformed_rb_mean_df,
             random=~1|Participant_ID,
             na.action = na.omit)
 print(summary(model))
@@ -236,8 +236,8 @@ print(anova(model))
 Linear Model - 2.3 -> Resting Baseline
 ------------------------------
 ```{r echo=FALSE, warning = FALSE, message = FALSE}
-model = lme(E4_EDA_Raw ~ Day, 
-            data=raw_rb_mean_df,
+model = lme(E4_EDA_Log ~ Day, 
+            data=transformed_rb_mean_df,
             random=~1|Participant_ID,
             na.action = na.omit)
 print(summary(model))
@@ -249,8 +249,8 @@ print(anova(model))
 Linear Model - 2.4 -> Resting Baseline
 ------------------------------
 ```{r echo=FALSE, warning = FALSE, message = FALSE}
-model = lme(iWatch_HR_Raw ~ Day,
-            data=raw_rb_mean_df,
+model = lme(iWatch_HR_Log ~ Day,
+            data=transformed_rb_mean_df,
             random=~1|Participant_ID,
             na.action = na.omit)
 print(summary(model))

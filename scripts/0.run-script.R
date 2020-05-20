@@ -72,8 +72,8 @@ transformation_parameter <- log_transformation
 # source(file.path(script_dir, '4.dc-generate-transformed-data.R'))
 # transform_data()
 
-# source(file.path(script_dir, 'vs-qq-plot.R'))
-# draw_qq_plots()
+source(file.path(script_dir, 'vs-qq-plot.R'))
+draw_qq_plots()
 
 ## draw_qq_plots(test_input=TRUE)
 
@@ -140,8 +140,8 @@ transformation_parameter <- log_transformation
 
 
 #-------------------------------------------------------------------------------------------- 12
-source(file.path(script_dir, 'vs-deadline-effect.R'))
-generate_format_table()
+# source(file.path(script_dir, 'vs-deadline-effect.R'))
+# generate_format_table()
 
 
 
