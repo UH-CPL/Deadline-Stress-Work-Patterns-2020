@@ -69,9 +69,9 @@ transformation_parameter <- log_transformation
 
 
 #-------------------------------------------------------------------------------------------- 4
-# source(file.path(script_dir, '4.dc-generate-normalized-data.R'))
-# process_normalize_data()
-# 
+source(file.path(script_dir, '4.dc-generate-transformed-data.R'))
+transform_data()
+
 # source(file.path(script_dir, 'vs-qq-plot.R'))
 # draw_qq_plots()
 
@@ -80,8 +80,8 @@ transformation_parameter <- log_transformation
 
 
 #-------------------------------------------------------------------------------------------- 5
-source(file.path(script_dir, '5.dc-generate-meta-data.R'))
-normalize_transformed_data()
+source(file.path(script_dir, '5.dc-generate-normalized-data.R'))
+normalize_data()
 
 
 

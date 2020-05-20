@@ -29,6 +29,11 @@ chunk_mean_file_name <- remove_rigth_substr(qc1_log_trans_mean_chunk_file_name, 
 #-------------------------#
 #---FUNCTION DEFINITION---#
 #-------------------------#
+read_data <- function() {
+  mean_v1_df <<- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, qc1_transformed_mean_v1_file_name))
+  mean_v2_df <<- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, qc1_transformed_mean_v2_file_name))
+}
+
 get_signal_val <- function(df, day, signal_name) {
   # print(df[df$Day==day, signal_name])
   return(df[df$Day==day, signal_name])
@@ -201,7 +206,7 @@ get_rb <- function(df, signal) {
   rb_val
 }
 
-normalize_data <- function() {
+process_normalize_data <- function() {
   ws_df <- mean_v1_df %>%
     filter(Treatment=='WS')
 
@@ -225,16 +230,13 @@ normalize_data <- function() {
   generate_daywise_mean_data(normalized_df, qc1_normalized_mean_v2_file_name)
 }
 
-read_data <- function() {
-  mean_v1_df <<- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, qc1_transformed_mean_v1_file_name))
-  mean_v2_df <<- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, qc1_transformed_mean_v2_file_name))
-}
 
 
-normalize_transformed_data <- function() {
+
+normalize_data <- function() {
   read_data()
   process_rb_data()
-  normalized_data()
+  process_normalize_data()
 }
 
 
