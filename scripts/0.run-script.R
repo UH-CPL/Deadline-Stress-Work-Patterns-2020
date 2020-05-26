@@ -63,8 +63,8 @@ transformation_parameter <- log_transformation
 
 
 #-------------------------------------------------------------------------------------------- 3
-# source(file.path(script_dir, '3.dc-quality-control-phase-one.R'))
-# process_quality_control_phase_one()
+source(file.path(script_dir, '3.dc-quality-control-phase-one.R'))
+process_quality_control_phase_one()
 
 
 
@@ -72,8 +72,8 @@ transformation_parameter <- log_transformation
 # source(file.path(script_dir, '4.dc-generate-transformed-data.R'))
 # transform_data()
 
-source(file.path(script_dir, 'vs-qq-plot.R'))
-draw_qq_plots()
+# source(file.path(script_dir, 'vs-qq-plot.R'))
+# draw_qq_plots()
 
 ## draw_qq_plots(test_input=TRUE)
 

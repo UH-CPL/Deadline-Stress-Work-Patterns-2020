@@ -109,8 +109,9 @@ qc0_final_file_name <- 'qc0_final_data.csv'    # masked and manifested ontologie
 qc1_file_name <- 'qc1_data.csv'
 qc1_filtered_data_file_name <- 'qc1_bad_filtered_data.csv'
 
-# qc1_raw_mean_v1_file_name <- 'qc1_raw_mean_v1.csv'
-# qc1_raw_mean_v2_file_name <- 'qc1_raw_mean_v2.csv'
+qc1_raw_mean_v1_file_name <- 'qc1_raw_mean_v1.csv'
+qc1_raw_mean_v2_file_name <- 'qc1_raw_mean_v2.csv'
+
 
 qc1_transformed_file_name <- 'qc1_transformed_data.csv'
 
