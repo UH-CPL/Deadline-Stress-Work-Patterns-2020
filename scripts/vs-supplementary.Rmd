@@ -52,10 +52,10 @@ merge_data <- function() {
   #                             This might be QC1 or QC2
   ############################################################################################
   qc_df <- custom_read_csv(file.path(physiological_data_path, qc1_file_name)) %>% 
-    select(TreatmentTime, PP, E4_HR, E4_EDA, iWatch_HR, Mask)
+    select(Participant_ID, Day, Treatment, TreatmentTime, PP, E4_HR, E4_EDA, iWatch_HR, Mask)
     
   transformed_df <- custom_read_csv(file.path(physiological_data_path, qc1_transformed_file_name)) %>% 
-    select(TreatmentTime, PP, E4_HR, E4_EDA, iWatch_HR) %>% 
+    select(Participant_ID, Day, Treatment, TreatmentTime, PP, E4_HR, E4_EDA, iWatch_HR) %>% 
     dplyr::rename(
       Trans_PP=PP,
       Trans_E4_HR=E4_HR,
@@ -65,8 +65,8 @@ merge_data <- function() {
   ############################################################################################
     
   full_df <- transformed_df %>%   
-    merge(qc0_df, by='TreatmentTime', all=T) %>% 
-    merge(qc_df, by='TreatmentTime', all=T) %>%
+    merge(qc0_df, by=c('Participant_ID', 'Day', 'Treatment', 'TreatmentTime'), all=T) %>% 
+    merge(qc_df, by=c('Participant_ID', 'Day', 'Treatment', 'TreatmentTime'), all=T) %>%
     select(
       Participant_ID,
       Day,
@@ -165,7 +165,7 @@ draw_plots <- function() {
 
 \newpage
 ```{r echo=FALSE, warning = FALSE, message = FALSE}
-### merge_data()
+merge_data()
 read_data()
 ```
 

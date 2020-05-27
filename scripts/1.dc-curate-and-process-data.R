@@ -5,13 +5,13 @@
 # library(scales)
 # library(ggplot2)
 
-library(dplyr)
 library(plyr)      ## for func rbind.fill()
 library(readr)
 library(magrittr)  ## for func set_colnames()
 library(gsubfn)    ## for func read.pattern()
 library(zoo)       ## for func na.locf()
 library(data.table)
+library(dplyr)     ## load it after loading all other libraries
 
 
 # require(xlsx)
