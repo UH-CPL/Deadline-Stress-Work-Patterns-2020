@@ -122,7 +122,22 @@ get_signal_data <- function(signal) {
 
 
 draw_signal_plots <- function(signal_df, signal) {
-  
+  for (subj in unique(signal_df$Participant_ID)) {
+    subj_df <- signal_df %>% filter(Participant_ID==subj)
+    
+    for (day in unique(subj_df$Day)) {
+      day_df <- subj_df %>% filter(Day==day) 
+      
+      for (treatment in unique(day_df$Treatment)) {
+        treatment_df <- day_df %>% filter(Day==day) 
+        
+        print(paste(subj, day, treatment))
+        
+        
+        
+      }
+    }
+  }
 }
 
 draw_plots <- function() {
