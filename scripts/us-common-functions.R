@@ -238,6 +238,10 @@ trim <- function( x ) {
   gsub("(^[[:space:]]+|[[:space:]]+$)", "", x)
 }
 
+specify_decimal <- function(x, k) {
+  trimws(format(round(x, k), nsmall=k))
+}
+
 is_null <- function(cell_val) {
   # print(cell_val)
   if (length(trim(cell_val))==0) {

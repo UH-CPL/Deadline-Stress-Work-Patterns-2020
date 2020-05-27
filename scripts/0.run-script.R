@@ -63,8 +63,13 @@ transformation_parameter <- log_transformation
 
 
 #-------------------------------------------------------------------------------------------- 3
-source(file.path(script_dir, '3.dc-quality-control-phase-one.R'))
-process_quality_control_phase_one()
+# source(file.path(script_dir, '3.dc-quality-control-phase-one.R'))
+# process_quality_control_phase_one()
+
+
+source(file.path(script_dir, 'vs-regression-plot.R'))
+draw_regression_plots()
+
 
 
 
