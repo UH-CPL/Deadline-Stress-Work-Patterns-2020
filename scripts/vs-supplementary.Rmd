@@ -41,7 +41,13 @@ read_data <- function() {
   physiological_data_path <- file.path(project_dir, curated_data_dir, physiological_data_dir)
   
   full_df <<- custom_read_csv(file.path(physiological_data_path, qc1_file_name))
-  transformed_df <<- custom_read_csv(file.path(physiological_data_path, qc1_transformed_file_name))
+  transformed_df <<- custom_read_csv(file.path(physiological_data_path, qc1_transformed_file_name)) %>% 
+    dplyr::rename(
+      
+    )
+  
+  print(message(colnames(full_df)))
+  print(message(colnames(transformed_df)))
   
   # convert_to_csv(physiological_questionnaire_df, file.path(physiological_questionnaire_data_path,
   # physiological_questionnaire_file_name))
@@ -53,7 +59,7 @@ read_data <- function() {
 
 \newpage
 ```{r echo=FALSE, warning = FALSE, message = FALSE}
-
+read_data()
 ```
 
 
