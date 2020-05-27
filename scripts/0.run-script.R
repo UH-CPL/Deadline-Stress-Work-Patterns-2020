@@ -57,8 +57,8 @@ transformation_parameter <- log_transformation
 
 
 #-------------------------------------------------------------------------------------------- 2
-# source(file.path(script_dir, '2.dc-process-activity-app-usage-data.R'))
-# format_activity_app_usage_data()
+source(file.path(script_dir, '2.dc-process-activity-app-usage-data.R'))
+format_activity_app_usage_data()
 
 
 

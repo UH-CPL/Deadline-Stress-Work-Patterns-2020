@@ -230,8 +230,10 @@ format_activity_app_usage_data <- function() {
            Raw_PP,
            PP,
            
-           E4_HR,
+           Raw_E4_EDA,
            E4_EDA,
+           
+           E4_HR,
            iWatch_HR,
            
            
