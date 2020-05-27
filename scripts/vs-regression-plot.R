@@ -63,29 +63,29 @@ draw_regression_plot <- function(df, file_type) {
                         ", r = ", specify_decimal(cor_test$estimate, 3))
   
   
-  # myPalette <- colorRampPalette(rev(brewer.pal(11, "Spectral")))
-  # sc <- scale_colour_gradientn(colours = myPalette(100), limits=c(1, 8))
+  outlier_df <- df[df$Is_Outlier==1,]
   
-  plot <- df %>%
-    ggplot(aes(df[[x_col]], df[[y_col]], color=df$Is_Outlier)) +
-    geom_point(size = 3) +
-    geom_smooth(method = "lm") +
+  # plot <- df %>%
+  #   # ggplot(aes(df[[x_col]], df[[y_col]], color=df$Is_Outlier, label = ID)) +
+  #   ggplot(aes(df[[x_col]], df[[y_col]])) +
+    
+    
+    plot <- ggplot() +
+    geom_point(data=df, aes(df[[x_col]], df[[y_col]]), size = 3) +
+    geom_point(data=outlier_df, aes(outlier_df[[x_col]], outlier_df[[y_col]]), color='red', size = 3.5) +
+    geom_text(data=outlier_df, 
+              aes(outlier_df[[x_col]], outlier_df[[y_col]], label = ID),
+              # color = 'red', 
+              vjust = 2,
+              # hjust = -0.2,
+              size = 6
+              ) +
+    geom_smooth(data=df, aes(df[[x_col]], df[[y_col]]), method = "lm") +
     ggtitle(capitalize(file_type)) +
     theme_bw() + 
     xlab(x_col) +
     ylab(y_col) +
-    scale_colour_gradient(
-      low = "#132B43",
-      high = "#bf0b0b") +
-    # scale_colour_gradient2(
-    #   low = "blue",
-    #   high = "red") +
-    # scale_colour_gradientn(colours = myPalette(100), limits=c(0, 1)) +
-    # scale_color_manual(values=c("red", "blue")) +
-    # scale_color_manual(values = c("y" = "red", "n" = "blue")) +
-    # scale_x_continuous(limits = c(min(qc1_mean_df$N.HR), max(qc1_mean_df$N.HR))) +
-    # scale_y_continuous(limits = c(min(qc1_mean_df$HR), max(qc1_mean_df$HR)),
-    #                    expand = c(0.2, 0, 0.2, 0)) +
+    # scale_colour_gradient(low = "#132B43", high = "#bf0b0b") +
     annotate("text",
              x=max(df[[x_col]]),
              y=Inf,
@@ -107,19 +107,30 @@ draw_regression_plot <- function(df, file_type) {
   plot_list[[length(plot_list)+1]] <<- plot
 }
 
-draw_regression_plots <- function() {
-  
+draw_regression_plots_treatment <- function(treatment) {
   plot_list <<- list()
-  file_types <- c("raw", "transformed", "normalized")
+  
+  file_types <- c("raw", "transformed")
+  if (treatment=='WS') {
+    file_types <- c(file_types, "normalized")
+  }
   
   for (file_type in file_types) {
     mean_df <- read_files(file_type)
-    # print(head(mean_df, 2))
-    draw_regression_plot(mean_df, file_type)
+    draw_regression_plot(mean_df, paste0(treatment, ' - ', file_type))
   }
   
-  save_plot('hr_regression', plot_grid(plotlist=plot_list, ncol=2), 28, 20)
-  
+  save_plot(paste0('hr_', tolower(treatment), '_regression'), 
+            plot_grid(plotlist=plot_list, ncol=2), 
+            30, 
+            length(file_types)*12/2)
+}
+
+
+draw_regression_plots <- function() {
+  for (treatment in c('RB', 'WS')) {
+    draw_regression_plots_treatment(treatment)
+  }
 }
 
 
@@ -128,10 +139,6 @@ draw_regression_plots <- function() {
 #-------------------------#
 # draw_regression_plots()
 
-# library(dplyr)
-# df <- data.frame(x = 5:1)
-# idx <- c(2, 4)
-# df %>% mutate(x = ifelse(row_number(.) %in% idx, x+1, x))
 
 
 
