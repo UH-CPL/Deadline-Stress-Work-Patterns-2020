@@ -5,6 +5,7 @@ library(ggplot2)
 library(cowplot)
 library(dplyr)
 library(tidyverse)
+library(Hmisc)
 
 
 
@@ -41,11 +42,15 @@ round_p_value <- function(p_value) {
 draw_regression_plot <- function(df, file_type) {
   df <- df %>%
     filter(Treatment=='WS') %>%
-    select(E4_HR, iWatch_HR) %>% 
-    na.omit()
-  # %>% 
-    # dplyr::rename(Non_Dominant_HR=E4_HR,
-    #               Dominant_HR=iWatch_HR)
+    select(Participant_ID,	Day, E4_HR, iWatch_HR) %>%
+    na.omit() %>% 
+    mutate(Diff_HR=abs(E4_HR-iWatch_HR),
+           ID=paste0(Participant_ID, '-', Day)) %>% 
+    arrange(desc(Diff_HR)) %>% 
+    # mutate(Is_Outlier = ifelse(rownames(.) %in% c(seq(1, 5)), "y", "n")) 
+    mutate(Is_Outlier = ifelse(rownames(.) %in% c(seq(1, 5)), 1, 0)) 
+  
+  print(head(df, 7))
   
   x_col <- 'E4_HR'
   y_col <- 'iWatch_HR'
@@ -57,14 +62,27 @@ draw_regression_plot <- function(df, file_type) {
                         ", p = ", round_p_value(cor_test$p.value), 
                         ", r = ", specify_decimal(cor_test$estimate, 3))
   
+  
+  # myPalette <- colorRampPalette(rev(brewer.pal(11, "Spectral")))
+  # sc <- scale_colour_gradientn(colours = myPalette(100), limits=c(1, 8))
+  
   plot <- df %>%
-    ggplot(aes(df[[x_col]], df[[y_col]])) +
+    ggplot(aes(df[[x_col]], df[[y_col]], color=df$Is_Outlier)) +
     geom_point(size = 3) +
     geom_smooth(method = "lm") +
-    ggtitle(file_type) +
+    ggtitle(capitalize(file_type)) +
     theme_bw() + 
     xlab(x_col) +
     ylab(y_col) +
+    scale_colour_gradient(
+      low = "#132B43",
+      high = "#bf0b0b") +
+    # scale_colour_gradient2(
+    #   low = "blue",
+    #   high = "red") +
+    # scale_colour_gradientn(colours = myPalette(100), limits=c(0, 1)) +
+    # scale_color_manual(values=c("red", "blue")) +
+    # scale_color_manual(values = c("y" = "red", "n" = "blue")) +
     # scale_x_continuous(limits = c(min(qc1_mean_df$N.HR), max(qc1_mean_df$N.HR))) +
     # scale_y_continuous(limits = c(min(qc1_mean_df$HR), max(qc1_mean_df$HR)),
     #                    expand = c(0.2, 0, 0.2, 0)) +
@@ -79,6 +97,8 @@ draw_regression_plot <- function(df, file_type) {
     theme_bw() +
     theme(text = element_text(size=22),
           axis.text = element_text(size = 18),
+          plot.title = element_text(hjust = 0.5),
+          legend.position = "none",
           plot.margin = unit(c(1, 0.5, 1, 0.5), "lines"),  ##top, right, bottom, left
           panel.grid.major = element_blank(),
           panel.grid.minor = element_blank(),
@@ -98,8 +118,7 @@ draw_regression_plots <- function() {
     draw_regression_plot(mean_df, file_type)
   }
   
-  save_plot('hr_regression', plot_grid(plotlist=plot_list,
-                                       ncol=2))
+  save_plot('hr_regression', plot_grid(plotlist=plot_list, ncol=2), 28, 20)
   
 }
 
@@ -109,7 +128,10 @@ draw_regression_plots <- function() {
 #-------------------------#
 # draw_regression_plots()
 
-
+# library(dplyr)
+# df <- data.frame(x = 5:1)
+# idx <- c(2, 4)
+# df %>% mutate(x = ifelse(row_number(.) %in% idx, x+1, x))
 
 
 
