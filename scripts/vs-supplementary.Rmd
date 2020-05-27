@@ -17,7 +17,7 @@ geometry: top=3.5cm, bottom=3cm
 #--------LIBRARIES--------#
 #-------------------------#
 
-
+library(ggplot2)
 library(dplyr) # Some problem occured for loading the dplyr package at the beginning
 
 
@@ -30,6 +30,9 @@ library(dplyr) # Some problem occured for loading the dplyr package at the begin
 source(file.path(getwd(), 'us-common-functions.R'))
 project_dir <- dirname(getwd())
 setwd(project_dir)
+
+
+full_df <<- tibble()
 
 ``` 
 
@@ -104,16 +107,16 @@ read_data <- function() {
 # iWatch_HR, Trans_iWatch_HR,  Mask
 get_signal_data <- function(signal) {
   if (signal=='PP') {
-    signal_df <-full_df %>% 
+    signal_df <- full_df %>% 
       select(Participant_ID, Day, Treatment, TreatmentTime, Raw_PP, PP, Trans_PP)
   } else if (signal=='E4_EDA') {
-    signal_df <-full_df %>% 
+    signal_df <- full_df %>% 
       select(Participant_ID, Day, Treatment, TreatmentTime, Raw_E4_EDA, E4_EDA, Trans_E4_EDA)
   } else if (signal=='E4_HR') {
-    signal_df <-full_df %>% 
+    signal_df <- full_df %>% 
       select(Participant_ID, Day, Treatment, TreatmentTime, E4_HR, Trans_E4_HR)
   } else if (signal=='iWatch_HR') {
-    signal_df <-full_df %>% 
+    signal_df <- full_df %>% 
       select(Participant_ID, Day, Treatment, TreatmentTime, iWatch_HR, Trans_iWatch_HR)
   }
 
@@ -122,26 +125,32 @@ get_signal_data <- function(signal) {
 
 
 draw_signal_plots <- function(signal_df, signal) {
-  for (subj in unique(signal_df$Participant_ID)) {
+  # for (subj in unique(signal_df$Participant_ID)) {
+  for (subj in c('T003')) {
     subj_df <- signal_df %>% filter(Participant_ID==subj)
     
-    for (day in unique(subj_df$Day)) {
+    # for (day in unique(subj_df$Day)) {
+    for (day in c('Day1')) {
       day_df <- subj_df %>% filter(Day==day) 
       
       for (treatment in unique(day_df$Treatment)) {
-        treatment_df <- day_df %>% filter(Day==day) 
+        treatment_df <- day_df %>% filter(Treatment==treatment) 
         
         print(paste(subj, day, treatment))
-        
-        
-        
+        plot <- ggplot() + 
+          geom_line(data=treatment_df,
+                    aes_string('TreatmentTime', signal),
+                    color='blue',
+                    alpha = 0.7)
+        print(plot)
       }
     }
   }
 }
 
 draw_plots <- function() {
-  signal_list <- c('PP', 'E4_HR', 'E4_EDA', 'iWatch_HR')
+  # signal_list <- c('PP', 'E4_HR', 'E4_EDA', 'iWatch_HR')
+  signal_list <- c('PP')
 
   for (signal in signal_list) {
     signal_df <- get_signal_data(signal)
