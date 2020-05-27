@@ -1,0 +1,67 @@
+---
+title: "Supplementary Plots"
+header-includes:
+- \usepackage{booktabs}
+- \usepackage{sectsty} \sectionfont{\centering}
+output:
+  pdf_document: default
+  html_document: default
+geometry: top=3.5cm, bottom=3cm
+---
+
+
+
+
+```{r echo = FALSE, warning = FALSE, message = FALSE, results='hide'} 
+#-------------------------#
+#--------LIBRARIES--------#
+#-------------------------#
+
+
+library(dplyr) # Some problem occured for loading the dplyr package at the beginning
+
+
+
+
+#-------------------------#
+#-----GLOBAL VARIABLES----#
+#-------------------------#
+## CHANGE this path if needed
+source(file.path(getwd(), 'us-common-functions.R'))
+project_dir <- dirname(getwd())
+setwd(project_dir)
+``` 
+
+\newpage
+```{r echo=FALSE, warning = FALSE, message = FALSE}
+#-------------------------#
+#-----   FUNCTIONS    ----#
+#-------------------------#
+read_data <- function() {
+  physiological_data_path <- file.path(project_dir, curated_data_dir, physiological_data_dir)
+  
+  full_df <<- custom_read_csv(file.path(physiological_data_path, qc1_file_name))
+  transformed_df <<- custom_read_csv(file.path(physiological_data_path, qc1_transformed_file_name))
+  
+  # convert_to_csv(physiological_questionnaire_df, file.path(physiological_questionnaire_data_path,
+  # physiological_questionnaire_file_name))
+}
+```
+
+
+
+
+\newpage
+```{r echo=FALSE, warning = FALSE, message = FALSE}
+
+```
+
+
+
+\newpage
+Page Title
+------------------------------
+```{r echo=FALSE, warning = FALSE, message = FALSE}
+
+```
+

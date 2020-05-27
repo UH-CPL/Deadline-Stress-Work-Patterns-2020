@@ -77,10 +77,13 @@ transformation_parameter <- log_transformation
 # source(file.path(script_dir, '4.dc-generate-transformed-data.R'))
 # transform_data()
 
+
+#-------------------------------------------------#
 # source(file.path(script_dir, 'vs-qq-plot.R'))
 # draw_qq_plots()
 
 ## draw_qq_plots(test_input=TRUE)
+#-------------------------------------------------#
 
 
 
@@ -98,8 +101,16 @@ transformation_parameter <- log_transformation
 
 
 
-
 #-------------------------------------------------------------------------------------------- 7
+# linear modeling
+# supplementary plots
+
+
+
+
+
+
+#-------------------------------------------------------------------------------------------- 10.1
 # source(file.path(script_dir, '6.dc-process-rr-data.R'))
 # gather_rr_data()
 # qc1_clean_rr_data()
@@ -110,7 +121,7 @@ transformation_parameter <- log_transformation
 
 
 
-#-------------------------------------------------------------------------------------------- 8
+#-------------------------------------------------------------------------------------------- 10.2
 # source(file.path(script_dir, 'vs-rr-plots.R'))
 # generate_rr_time_series_plot()
 # generate_rr_validation_plot()
@@ -119,17 +130,17 @@ transformation_parameter <- log_transformation
 
 
 
-#-------------------------------------------------------------------------------------------- 8
+#-------------------------------------------------------------------------------------------- 10.3
 # source(file.path(script_dir, 'vs-validation_plots.R'))
 # draw_validation_plots()
 
 
-#-------------------------------------------------------------------------------------------- 10
+#-------------------------------------------------------------------------------------------- 10.4
 # source(file.path(script_dir, 'vs-variance-test.R'))
 # conduct_variance_tests()
 
 
-#-------------------------------------------------------------------------------------------- 11
+#-------------------------------------------------------------------------------------------- 10.5
 # source(file.path(script_dir, '5.dc-generate-meta-data.R'))
 # generate_ws_chunk_mean_data()
 # 
