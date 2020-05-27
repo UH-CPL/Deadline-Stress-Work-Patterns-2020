@@ -57,8 +57,8 @@ transformation_parameter <- log_transformation
 
 
 #-------------------------------------------------------------------------------------------- 2
-source(file.path(script_dir, '2.dc-process-activity-app-usage-data.R'))
-format_activity_app_usage_data()
+# source(file.path(script_dir, '2.dc-process-activity-app-usage-data.R'))
+# format_activity_app_usage_data()
 
 
 
@@ -67,8 +67,8 @@ format_activity_app_usage_data()
 # process_quality_control_phase_one()
 
 
-source(file.path(script_dir, 'vs-regression-plot.R'))
-draw_regression_plots()
+# source(file.path(script_dir, 'vs-regression-plot.R'))
+# draw_regression_plots()
 
 
 
@@ -90,8 +90,16 @@ draw_regression_plots()
 
 
 
-
 #-------------------------------------------------------------------------------------------- 6
+# source(file.path(script_dir, 'vs-deadline-effect.R'))
+# generate_format_table()
+
+
+
+
+
+
+#-------------------------------------------------------------------------------------------- 7
 # source(file.path(script_dir, '6.dc-process-rr-data.R'))
 # gather_rr_data()
 # qc1_clean_rr_data()
@@ -102,7 +110,7 @@ draw_regression_plots()
 
 
 
-#-------------------------------------------------------------------------------------------- 7
+#-------------------------------------------------------------------------------------------- 8
 # source(file.path(script_dir, 'vs-rr-plots.R'))
 # generate_rr_time_series_plot()
 # generate_rr_validation_plot()
@@ -116,12 +124,12 @@ draw_regression_plots()
 # draw_validation_plots()
 
 
-#-------------------------------------------------------------------------------------------- 9
+#-------------------------------------------------------------------------------------------- 10
 # source(file.path(script_dir, 'vs-variance-test.R'))
 # conduct_variance_tests()
 
 
-#-------------------------------------------------------------------------------------------- 10
+#-------------------------------------------------------------------------------------------- 11
 # source(file.path(script_dir, '5.dc-generate-meta-data.R'))
 # generate_ws_chunk_mean_data()
 # 
@@ -137,16 +145,10 @@ draw_regression_plots()
 
 
 
-#-------------------------------------------------------------------------------------------- 11
-#### source(file.path(script_dir, 'vs-linear-models.Rmd'))
-#### conduct_linear_modeling()
 
 
 
 
-#-------------------------------------------------------------------------------------------- 12
-# source(file.path(script_dir, 'vs-deadline-effect.R'))
-# generate_format_table()
 
 
 
