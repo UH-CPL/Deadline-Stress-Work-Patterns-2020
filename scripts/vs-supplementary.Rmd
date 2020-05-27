@@ -136,12 +136,26 @@ draw_signal_plots <- function(signal_df, signal) {
       for (treatment in unique(day_df$Treatment)) {
         treatment_df <- day_df %>% filter(Treatment==treatment) 
         
-        print(paste(subj, day, treatment))
-        plot <- ggplot() + 
-          geom_line(data=treatment_df,
-                    aes_string('TreatmentTime', signal),
+        message(paste(subj, day, treatment))
+        
+        plot <- ggplot(data=treatment_df, aes(x=TreatmentTime)) +
+          geom_line(aes_string(y=paste0('Raw_', signal)),
+                    color='gray',
+                    alpha = 0.6) +
+          geom_line(aes_string(y=signal),
                     color='blue',
-                    alpha = 0.7)
+                    alpha = 0.8) +
+          ggtitle(paste0(subj, ' - ', day, ' - ', treatment))
+          xlab('Time [s]') +
+          ylab(signal) +
+          theme_bw() +
+          theme(
+                panel.grid.major = element_blank(),
+                panel.grid.minor = element_blank(),
+                axis.line = element_line(colour = "black"),
+                
+                )
+        
         print(plot)
       }
     }
@@ -165,7 +179,7 @@ draw_plots <- function() {
 
 \newpage
 ```{r echo=FALSE, warning = FALSE, message = FALSE}
-merge_data()
+# merge_data()
 read_data()
 ```
 

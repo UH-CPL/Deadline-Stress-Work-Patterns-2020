@@ -51,8 +51,8 @@ transformation_parameter <- log_transformation
 
 
 #-------------------------------------------------------------------------------------------- 1
-source(file.path(script_dir, '1.dc-curate-and-process-data.R'))
-curate_data()
+# source(file.path(script_dir, '1.dc-curate-and-process-data.R'))
+# curate_data()
 
 
 
