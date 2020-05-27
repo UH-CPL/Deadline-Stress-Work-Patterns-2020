@@ -130,6 +130,16 @@ qc1_mean_chunk_file_name <- 'qc1_mean_chunk.csv'
 
 
 
+
+
+
+full_df_file_name <- 'full_df.csv'
+
+
+
+
+
+
 # qc1_lm_file_name <- 'qc1_lm_data.csv'
 # qc1_lm_mean_v1_file_name <- 'qc1_lm_mean_v1.csv'
 # qc1_lm_mean_v2_file_name <- 'qc1_lm_mean_v2.csv'

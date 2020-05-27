@@ -30,6 +30,7 @@ library(dplyr) # Some problem occured for loading the dplyr package at the begin
 source(file.path(getwd(), 'us-common-functions.R'))
 project_dir <- dirname(getwd())
 setwd(project_dir)
+
 ``` 
 
 \newpage
@@ -37,20 +38,101 @@ setwd(project_dir)
 #-------------------------#
 #-----   FUNCTIONS    ----#
 #-------------------------#
-read_data <- function() {
+merge_data <- function() {
   physiological_data_path <- file.path(project_dir, curated_data_dir, physiological_data_dir)
   
-  full_df <<- custom_read_csv(file.path(physiological_data_path, qc1_file_name))
-  transformed_df <<- custom_read_csv(file.path(physiological_data_path, qc1_transformed_file_name)) %>% 
+  qc0_df <- custom_read_csv(file.path(physiological_data_path, qc0_final_file_name)) %>% 
+    select(Participant_ID, Day, Treatment, TreatmentTime, Raw_PP, Raw_E4_EDA)
+    
+  
+  ############################################################################################
+  #                             This might be QC1 or QC2
+  ############################################################################################
+  qc_df <- custom_read_csv(file.path(physiological_data_path, qc1_file_name)) %>% 
+    select(TreatmentTime, PP, E4_HR, E4_EDA, iWatch_HR, Mask)
+    
+  transformed_df <- custom_read_csv(file.path(physiological_data_path, qc1_transformed_file_name)) %>% 
+    select(TreatmentTime, PP, E4_HR, E4_EDA, iWatch_HR) %>% 
     dplyr::rename(
-      
+      Trans_PP=PP,
+      Trans_E4_HR=E4_HR,
+      Trans_E4_EDA=E4_EDA,
+      Trans_iWatch_HR=iWatch_HR
+    )
+  ############################################################################################
+    
+  full_df <- transformed_df %>%   
+    merge(qc0_df, by='TreatmentTime', all=T) %>% 
+    merge(qc_df, by='TreatmentTime', all=T) %>%
+    select(
+      Participant_ID,
+      Day,
+      Treatment,
+      TreatmentTime,
+
+      Raw_PP,
+      PP,
+      Trans_PP,
+
+      Raw_E4_EDA,
+      E4_EDA,
+      Trans_E4_EDA,
+
+      E4_HR,
+      Trans_E4_HR,
+
+      iWatch_HR,
+      Trans_iWatch_HR,
+
+      Mask
     )
   
-  print(message(colnames(full_df)))
-  print(message(colnames(transformed_df)))
+  print_msg(colnames(full_df))
+  convert_to_csv(full_df, file.path(physiological_data_path, full_df_file_name))
+}
+
+read_data <- function() {
+  full_df <<- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, full_df_file_name))
+  # print_msg(colnames(full_df))
+}
+
+
+# Participant_ID, Day, Treatment, TreatmentTime,  
+# Raw_PP, PP, Trans_PP,  
+# Raw_E4_EDA, E4_EDA, Trans_E4_EDA,  
+# E4_HR, Trans_E4_HR,  
+# iWatch_HR, Trans_iWatch_HR,  Mask
+get_signal_data <- function(signal) {
+  if (signal=='PP') {
+    signal_df <-full_df %>% 
+      select(Participant_ID, Day, Treatment, TreatmentTime, Raw_PP, PP, Trans_PP)
+  } else if (signal=='E4_EDA') {
+    signal_df <-full_df %>% 
+      select(Participant_ID, Day, Treatment, TreatmentTime, Raw_E4_EDA, E4_EDA, Trans_E4_EDA)
+  } else if (signal=='E4_HR') {
+    signal_df <-full_df %>% 
+      select(Participant_ID, Day, Treatment, TreatmentTime, E4_HR, Trans_E4_HR)
+  } else if (signal=='iWatch_HR') {
+    signal_df <-full_df %>% 
+      select(Participant_ID, Day, Treatment, TreatmentTime, iWatch_HR, Trans_iWatch_HR)
+  }
+
+  signal_df
+}
+
+
+draw_signal_plots <- function(signal_df, signal) {
   
-  # convert_to_csv(physiological_questionnaire_df, file.path(physiological_questionnaire_data_path,
-  # physiological_questionnaire_file_name))
+}
+
+draw_plots <- function() {
+  signal_list <- c('PP', 'E4_HR', 'E4_EDA', 'iWatch_HR')
+
+  for (signal in signal_list) {
+    signal_df <- get_signal_data(signal)
+    # print_msg(colnames(signal_df))
+    draw_signal_plots(signal_df, signal)
+  }
 }
 ```
 
@@ -59,15 +141,16 @@ read_data <- function() {
 
 \newpage
 ```{r echo=FALSE, warning = FALSE, message = FALSE}
+### merge_data()
 read_data()
 ```
 
 
 
 \newpage
-Page Title
+<!-- Plots -->
 ------------------------------
 ```{r echo=FALSE, warning = FALSE, message = FALSE}
-
+draw_plots()
 ```
 
