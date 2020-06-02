@@ -496,69 +496,50 @@ get_decay <- function(treatment) {
 }
 
 get_smooth_signal_for_session <- function(df, treatment, signal) {
-  
   session_df <- df %>% 
     filter(Treatment==treatment) %>%
     select(Timestamp, !!paste0('Raw_', signal)) %>%
     na.omit()
     
    
-  print(head(session_df, 2))
   session_df[[signal]] <- remove_noise(session_df[[paste0('Raw_', signal)]], 
                                        removeImpluse = T, 
                                        lowpassDecayFreq = get_decay(treatment), 
                                        samplePerSecond = 1)
   
-  # print(head(session_df, 2))
   session_df
 }
 
 generate_smooth_signal <- function(df, signal) {
-  # print('-------------------------- 1')
-  # raw_signal_name <- paste0('Raw_', signal)
-  df[[paste0('Raw_', signal)]] <- df[[signal]]
+  raw_signal_name <- paste0('Raw_', signal)
+  df[[raw_signal_name]] <- df[[signal]]
   
   df <- df %>% 
-    filter(Treatment %in% c('RB', 'WS')) %>% 
-    # dplyr::rename(.raw_signal_name=signal) %>% 
-    # dplyr::mutate(!!raw_signal_name:=!!signal) %>% 
-    na.omit()
-  # print('-------------------------- 2')
-  # print(head(df, 2))
+    filter(Treatment %in% c('RB', 'WS'))
   
   smooth_df <- tibble()
   treatments <- unique(df$Treatment)
   
   for (treatment in treatments) {
-    # print(treatment)
     smooth_df <- rbind.fill(smooth_df, get_smooth_signal_for_session(df, treatment, signal)) 
   }
   
   df <- df %>% 
-    select(-!!paste0('Raw_', signal)) %>%
+    select(-!!raw_signal_name, -!!signal) %>%
     merge(smooth_df, by='Timestamp', all=T) 
-    # filter(Treatment %in% c('RB', 'WS'))
-  
-  # print(head(df, 2))
+
   df
 }
 
 smooth_signal <- function(df) {
-  # df <- df %>% 
-  #   dplyr::rename(
-  #     Raw_EDA=EDA,
-  #     Raw_HR=HR,
-  #     Raw_iWatch_HR=iWatch_HR
-  #   ) %>% 
-  #   na.omit()
-
   df <- generate_smooth_signal(df, 'EDA')
   df <- generate_smooth_signal(df, 'HR')
   
-  if (df$Participant_ID != 'T001') {
+  if (df$Participant_ID[1] != 'T001') {
     df <- generate_smooth_signal(df, 'iWatch_HR')
   }
   
+  # print(head(df, 2))
   df
 }
 
@@ -578,21 +559,6 @@ merge_e4_data <- function(subj_name, day_serial, full_day_df) {
     
     for(e4_file_name in e4_file_list) {
       e4_df <- get_e4_data(day_dir, e4_file_name)
-      
-      # if(is_match(e4_file_name, 'EDA')) {
-      #   e4_df <- e4_df %>% 
-      #     dplyr::rename(
-      #       Raw_EDA=EDA,
-      #       Raw_HR=HR
-      #       ) %>% 
-      #     na.omit()
-      #   
-      #   # ##############################################################################################################
-      #   # decay_f <- 1/150
-      #   # ##############################################################################################################
-      #   # 
-      #   # e4_df$EDA <- remove_noise(e4_df$Raw_EDA, removeImpluse = T, lowpassDecayFreq = decay_f, samplePerSecond = 1)
-      # }
       convert_to_csv(e4_df, file.path(curated_data_dir, subj_data_dir, paste0('Group1_', subj_name, '_', day_serial, '_', sub('.csv', '', sub('.*/', '', e4_file_name)), '.csv')))
       
       ##############################################################################################
@@ -612,9 +578,6 @@ merge_e4_data <- function(subj_name, day_serial, full_day_df) {
   #   }
   # }
   
-  
-  # generate_smooth_signal(full_day_df, 'EDA')
-
   full_day_df
 }
 
@@ -774,8 +737,8 @@ curate_data <- function() {
   subj_list <- custom_read_csv(file.path(curated_data_dir, utility_data_dir, subj_list_file_name))$Subject
   
   # sapply(subj_list, function(subj_name) {
-  # sapply(subj_list[2], function(subj_name) {
-  sapply(c('T001', 'T003'), function(subj_name) {
+  sapply(subj_list[2], function(subj_name) {
+  # sapply(c('T001', 'T003'), function(subj_name) {
     
     subj_dir <- file.path(raw_data_dir, grp_dir, subj_name)
     day_list <- get_dir_list(subj_dir)
@@ -798,7 +761,7 @@ curate_data <- function() {
         full_day_df <- merge_iwatch_data(subj_name, day_serial, full_day_df)
         
         write_log_msg('Smoothing.....signals', curation_log_file)
-        smooth_signal(full_day_df)
+        full_day_df <- smooth_signal(full_day_df)
         
         write_log_msg('Fixing.....missing working session data', curation_log_file)
         ## Here get the info from ws start and end time

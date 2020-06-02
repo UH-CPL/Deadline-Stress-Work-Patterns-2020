@@ -1,6 +1,6 @@
 
 ----------
-T001-Day1
+T003-Day1
 ----------
 Processing.....Resting Baseline
 Processing.....Working Session
@@ -10,17 +10,4 @@ Smoothing.....signals
 Fixing.....missing working session data
 Merging.....all subj data
 
-
-----------
-T003-Day1
-----------
-Processing.....Resting Baseline
-Processing.....Working Session
-Merging.....e4 data
-Merging.....iwatch data
-Smoothing.....signals
-
-###########################################################
-T003-Day1: ERROR!
-Error in fix.by(by.y, y): 'by' must specify a uniquely valid column
-###########################################################
+Total relative time mismatch row: 242
