@@ -496,35 +496,26 @@ get_decay <- function(treatment) {
 }
 
 get_smooth_signal_for_session <- function(df, treatment, signal) {
-  # print(head(df, 2))
-  
   session_df <- df %>% 
     filter(Treatment==treatment) %>%
     select(-Treatment) %>%
-    # select(Timestamp, !!paste0('Raw_', signal)) %>%
     na.omit()
-    
    
   session_df[[signal]] <- remove_noise(session_df[[paste0('Raw_', signal)]], 
                                        removeImpluse = T, 
                                        lowpassDecayFreq = get_decay(treatment), 
                                        samplePerSecond = 1)
   
-  # print(head(session_df, 2))
   session_df
 }
 
 generate_smooth_signal <- function(df, signal) {
-  # print(head(df, 2))
-  
   raw_signal_name <- paste0('Raw_', signal)
   df[[raw_signal_name]] <- df[[signal]]
   
   df <- df %>% 
     filter(Treatment %in% c('RB', 'WS')) %>% 
     select(Timestamp, Treatment, !!raw_signal_name)
-  
-  # print(head(df, 2))
   
   smooth_df <- tibble()
   treatments <- unique(df$Treatment)
@@ -533,24 +524,14 @@ generate_smooth_signal <- function(df, signal) {
     smooth_df <- rbind.fill(smooth_df, get_smooth_signal_for_session(df, treatment, signal)) 
   }
   
-  # print(head(smooth_df, 2))
-  
   final_smooth_df <<- final_smooth_df %>%
-    # select(-!!raw_signal_name) %>%
     merge(smooth_df, by='Timestamp', all=T)
 }
 
 smooth_signal <- function(df) {
-  # print(head(df, 2))
-  
-  # final_smooth_df <<- df %>% 
-  #   select(-EDA, -HR, -iWatch_HR)
-  
-  # print(head(final_smooth_df, 2))
-  
   wrist_signal_list <- c('EDA', 'HR', 'iWatch_HR')
-  
   final_smooth_df <<- df
+  
   for (signal in wrist_signal_list) {
     if (signal %in% colnames(df)) {
       final_smooth_df <<- final_smooth_df %>% select(-!!signal)
@@ -563,7 +544,6 @@ smooth_signal <- function(df) {
     }
   }
 
-  # print(head(final_smooth_df, 2))
   final_smooth_df
 }
 
