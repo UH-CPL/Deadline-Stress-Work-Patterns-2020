@@ -496,9 +496,11 @@ get_decay <- function(treatment) {
 }
 
 get_smooth_signal_for_session <- function(df, treatment, signal) {
+  # print(head(df, 2))
+  
   session_df <- df %>% 
     filter(Treatment==treatment) %>%
-    select(-Treatment, -!!signal) %>%
+    select(-Treatment) %>%
     # select(Timestamp, !!paste0('Raw_', signal)) %>%
     na.omit()
     
@@ -508,6 +510,7 @@ get_smooth_signal_for_session <- function(df, treatment, signal) {
                                        lowpassDecayFreq = get_decay(treatment), 
                                        samplePerSecond = 1)
   
+  # print(head(session_df, 2))
   session_df
 }
 
@@ -518,7 +521,10 @@ generate_smooth_signal <- function(df, signal) {
   df[[raw_signal_name]] <- df[[signal]]
   
   df <- df %>% 
-    select(Timestamp, raw_signal_name)
+    filter(Treatment %in% c('RB', 'WS')) %>% 
+    select(Timestamp, Treatment, !!raw_signal_name)
+  
+  # print(head(df, 2))
   
   smooth_df <- tibble()
   treatments <- unique(df$Treatment)
@@ -527,21 +533,29 @@ generate_smooth_signal <- function(df, signal) {
     smooth_df <- rbind.fill(smooth_df, get_smooth_signal_for_session(df, treatment, signal)) 
   }
   
+  # print(head(smooth_df, 2))
+  
   final_smooth_df <<- final_smooth_df %>%
-    select(-!!raw_signal_name) %>%
-    merge(smooth_df, by='Timestamp', all=T) 
+    # select(-!!raw_signal_name) %>%
+    merge(smooth_df, by='Timestamp', all=T)
 }
 
 smooth_signal <- function(df) {
-  print(head(df, 2))
+  # print(head(df, 2))
   
-  final_smooth_df <<- df %>%
-    filter(Treatment %in% c('RB', 'WS')) %>% 
-    select(-Raw_PP, -PP, -E4_EDA,	-E4_HR, -iWatch_HR)
+  # final_smooth_df <<- df %>% 
+  #   select(-EDA, -HR, -iWatch_HR)
   
-  print(head(final_smooth_df, 2))
+  # print(head(final_smooth_df, 2))
   
   wrist_signal_list <- c('EDA', 'HR', 'iWatch_HR')
+  
+  final_smooth_df <<- df
+  for (signal in wrist_signal_list) {
+    if (signal %in% colnames(df)) {
+      final_smooth_df <<- final_smooth_df %>% select(-!!signal)
+    }
+  }
   
   for (signal in wrist_signal_list) {
     if (signal %in% colnames(df)) {
@@ -549,6 +563,7 @@ smooth_signal <- function(df) {
     }
   }
 
+  # print(head(final_smooth_df, 2))
   final_smooth_df
 }
 
@@ -668,7 +683,7 @@ refactor_and_export_all_subj_data <- function(all_subj_df) {
   all_subj_df <- all_subj_df[!(all_subj_df$Participant_ID=="T005" & all_subj_df$Day=="Day4"), ]
   all_subj_df$Day[all_subj_df$Day=="Day5"] <- "Day4"
   
-  
+  print(head(all_subj_df, 5))
   all_subj_df <- all_subj_df %>%
     dplyr::rename(Sinterface_Time=Time,
            Activities=Ontologies,
@@ -745,15 +760,15 @@ curate_data <- function() {
   # subj_list <- get_dir_list(file.path(raw_data_dir, grp_dir))
   subj_list <- custom_read_csv(file.path(curated_data_dir, utility_data_dir, subj_list_file_name))$Subject
   
-  # sapply(subj_list, function(subj_name) {
-  sapply(subj_list[2], function(subj_name) {
+  sapply(subj_list, function(subj_name) {
+  # sapply(subj_list[2], function(subj_name) {
   # sapply(c('T001', 'T003'), function(subj_name) {
-    
+
     subj_dir <- file.path(raw_data_dir, grp_dir, subj_name)
     day_list <- get_dir_list(subj_dir)
     
-    # sapply(day_list, function(day_serial) {
-    sapply(day_list[1], function(day_serial) {
+    sapply(day_list, function(day_serial) {
+    # sapply(day_list[3], function(day_serial) {
       tryCatch({
         write_log_msg(paste0('\n----------\n', subj_name, '-', day_serial, "\n----------"), curation_log_file)
         
@@ -779,7 +794,7 @@ curate_data <- function() {
         # full_day_df <-  add_missing_ws_session_data(subj_name, day_serial, full_day_df)
         
         
-        write_log_msg('Merging.....all subj data\n', curation_log_file)
+        write_log_msg('Merging.....all subj data', curation_log_file)
         all_subj_df <<- rbind.fill(all_subj_df, full_day_df)
         
       },
@@ -793,6 +808,7 @@ curate_data <- function() {
   # convert_to_csv(win_app_usage_df, file.path(curated_data_dir, physiological_data_dir, 'win_app_usage_df.csv'))
   # convert_to_csv(win_app_usage_df, file.path(curated_data_dir, physiological_data_dir, 'win_app_usage_row_num_df.csv'))
   
+  write_log_msg('Finally...refactoring all subj data', curation_log_file)
   refactor_and_export_all_subj_data(all_subj_df)
 }
 
