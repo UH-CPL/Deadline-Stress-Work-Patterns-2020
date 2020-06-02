@@ -7,12 +7,9 @@ Processing.....Working Session
 Merging.....e4 data
 Merging.....iwatch data
 Smoothing.....signals
+Fixing.....missing working session data
+Merging.....all subj data
 
-###########################################################
-T001-Day1: ERROR!
-Error: Can't rename columns that don't exist.
-[31mx[39m The column `EDA` doesn't exist.
-###########################################################
 
 ----------
 T003-Day1
@@ -25,6 +22,5 @@ Smoothing.....signals
 
 ###########################################################
 T003-Day1: ERROR!
-Error: Can't rename columns that don't exist.
-[31mx[39m The column `EDA` doesn't exist.
+Error in fix.by(by.y, y): 'by' must specify a uniquely valid column
 ###########################################################

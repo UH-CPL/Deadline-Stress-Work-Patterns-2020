@@ -496,14 +496,14 @@ get_decay <- function(treatment) {
 }
 
 get_smooth_signal_for_session <- function(df, treatment, signal) {
-  # print(head(df, 2))
+  
   session_df <- df %>% 
     filter(Treatment==treatment) %>%
     select(Timestamp, !!paste0('Raw_', signal)) %>%
     na.omit()
     
    
-  # print(head(session_df, 2))
+  print(head(session_df, 2))
   session_df[[signal]] <- remove_noise(session_df[[paste0('Raw_', signal)]], 
                                        removeImpluse = T, 
                                        lowpassDecayFreq = get_decay(treatment), 
@@ -514,8 +514,17 @@ get_smooth_signal_for_session <- function(df, treatment, signal) {
 }
 
 generate_smooth_signal <- function(df, signal) {
+  # print('-------------------------- 1')
+  # raw_signal_name <- paste0('Raw_', signal)
+  df[[paste0('Raw_', signal)]] <- df[[signal]]
+  
   df <- df %>% 
-    filter(Treatment %in% c('RB', 'WS'))
+    filter(Treatment %in% c('RB', 'WS')) %>% 
+    # dplyr::rename(.raw_signal_name=signal) %>% 
+    # dplyr::mutate(!!raw_signal_name:=!!signal) %>% 
+    na.omit()
+  # print('-------------------------- 2')
+  # print(head(df, 2))
   
   smooth_df <- tibble()
   treatments <- unique(df$Treatment)
@@ -534,6 +543,25 @@ generate_smooth_signal <- function(df, signal) {
   df
 }
 
+smooth_signal <- function(df) {
+  # df <- df %>% 
+  #   dplyr::rename(
+  #     Raw_EDA=EDA,
+  #     Raw_HR=HR,
+  #     Raw_iWatch_HR=iWatch_HR
+  #   ) %>% 
+  #   na.omit()
+
+  df <- generate_smooth_signal(df, 'EDA')
+  df <- generate_smooth_signal(df, 'HR')
+  
+  if (df$Participant_ID != 'T001') {
+    df <- generate_smooth_signal(df, 'iWatch_HR')
+  }
+  
+  df
+}
+
 
 merge_e4_data <- function(subj_name, day_serial, full_day_df) {
   day_dir <- file.path(raw_data_dir, grp_dir, subj_name, day_serial)
@@ -544,24 +572,27 @@ merge_e4_data <- function(subj_name, day_serial, full_day_df) {
   downsampled_e4_file_list <- get_matched_file_names(file.path(curated_data_dir, subj_data_dir), paste0(subj_day_info, 'HR', '|', subj_day_info, 'EDA'))
   
   
-  if(is_empty(downsampled_e4_file_list)) {
+  # if(is_empty(downsampled_e4_file_list)) {
     ## Two files for HR and EDA
     e4_file_list <- get_matched_file_names_recursively(day_dir, e4_file_pattern)
     
     for(e4_file_name in e4_file_list) {
       e4_df <- get_e4_data(day_dir, e4_file_name)
       
-      if(is_match(e4_file_name, 'EDA')) {
-        e4_df <- e4_df %>% 
-          dplyr::rename(Raw_EDA=EDA) %>% 
-          na.omit()
-        
-        # ##############################################################################################################
-        # decay_f <- 1/150
-        # ##############################################################################################################
-        # 
-        # e4_df$EDA <- remove_noise(e4_df$Raw_EDA, removeImpluse = T, lowpassDecayFreq = decay_f, samplePerSecond = 1)
-      }
+      # if(is_match(e4_file_name, 'EDA')) {
+      #   e4_df <- e4_df %>% 
+      #     dplyr::rename(
+      #       Raw_EDA=EDA,
+      #       Raw_HR=HR
+      #       ) %>% 
+      #     na.omit()
+      #   
+      #   # ##############################################################################################################
+      #   # decay_f <- 1/150
+      #   # ##############################################################################################################
+      #   # 
+      #   # e4_df$EDA <- remove_noise(e4_df$Raw_EDA, removeImpluse = T, lowpassDecayFreq = decay_f, samplePerSecond = 1)
+      # }
       convert_to_csv(e4_df, file.path(curated_data_dir, subj_data_dir, paste0('Group1_', subj_name, '_', day_serial, '_', sub('.csv', '', sub('.*/', '', e4_file_name)), '.csv')))
       
       ##############################################################################################
@@ -569,19 +600,22 @@ merge_e4_data <- function(subj_name, day_serial, full_day_df) {
       ##############################################################################################
     }
     
-  } else {
-    for(e4_file_name in downsampled_e4_file_list) {
-      e4_df <- custom_read_csv(file.path(curated_data_dir, subj_data_dir, e4_file_name)) %>%
-        mutate(Timestamp=as.POSIXct(Timestamp))
-      # print(str(e4_df))
+  # } else {
+  #   for(e4_file_name in downsampled_e4_file_list) {
+  #     e4_df <- custom_read_csv(file.path(curated_data_dir, subj_data_dir, e4_file_name)) %>%
+  #       mutate(Timestamp=as.POSIXct(Timestamp))
+  #     # print(str(e4_df))
+  # 
+  #     ##############################################################################################
+  #     full_day_df <- merge(full_day_df, e4_df, by='Timestamp', all=T)   ## CHECK!!! - all vs. all.x
+  #     ##############################################################################################
+  #   }
+  # }
+  
+  
+  # generate_smooth_signal(full_day_df, 'EDA')
 
-      ##############################################################################################
-      full_day_df <- merge(full_day_df, e4_df, by='Timestamp', all=T)   ## CHECK!!! - all vs. all.x
-      ##############################################################################################
-    }
-  }
-
-  generate_smooth_signal(full_day_df, 'EDA')
+  full_day_df
 }
 
 
@@ -669,9 +703,15 @@ refactor_and_export_all_subj_data <- function(all_subj_df) {
            Raw_PP=PP,
            PP=NR_PP,
            E4_HR=HR,
+           Raw_E4_HR=Raw_HR,
            E4_EDA=EDA,
            Raw_E4_EDA=Raw_EDA,
            ) %>% 
+    
+    
+  # Raw_EDA=EDA,
+  # Raw_HR=HR,
+  # Raw_iWatch_HR=iWatch_HR
     
     ## Calculating relative treatment time
     group_by(Participant_ID, Day, Treatment) %>% 
@@ -691,7 +731,10 @@ refactor_and_export_all_subj_data <- function(all_subj_df) {
            Raw_E4_EDA,
            E4_EDA,
            
+           Raw_E4_HR,
            E4_HR,
+           
+           Raw_iWatch_HR,
            iWatch_HR,
            
            Activities,
@@ -732,7 +775,7 @@ curate_data <- function() {
   
   # sapply(subj_list, function(subj_name) {
   # sapply(subj_list[2], function(subj_name) {
-  sapply(c('T001', 'T00C3'), function(subj_name) {
+  sapply(c('T001', 'T003'), function(subj_name) {
     
     subj_dir <- file.path(raw_data_dir, grp_dir, subj_name)
     day_list <- get_dir_list(subj_dir)
@@ -753,6 +796,9 @@ curate_data <- function() {
         
         write_log_msg('Merging.....iwatch data', curation_log_file)
         full_day_df <- merge_iwatch_data(subj_name, day_serial, full_day_df)
+        
+        write_log_msg('Smoothing.....signals', curation_log_file)
+        smooth_signal(full_day_df)
         
         write_log_msg('Fixing.....missing working session data', curation_log_file)
         ## Here get the info from ws start and end time
@@ -787,9 +833,5 @@ curate_data <- function() {
 #-------Main Program------#
 #-------------------------#
 # curate_data()
-
-
-# curate_data()
-# EDA Smooth - RB vs WS
 
 
