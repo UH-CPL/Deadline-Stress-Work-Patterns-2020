@@ -498,7 +498,8 @@ get_decay <- function(treatment) {
 get_smooth_signal_for_session <- function(df, treatment, signal) {
   session_df <- df %>% 
     filter(Treatment==treatment) %>%
-    select(Timestamp, !!paste0('Raw_', signal)) %>%
+    select(-Treatment, -!!signal) %>%
+    # select(Timestamp, !!paste0('Raw_', signal)) %>%
     na.omit()
     
    
@@ -511,11 +512,13 @@ get_smooth_signal_for_session <- function(df, treatment, signal) {
 }
 
 generate_smooth_signal <- function(df, signal) {
+  # print(head(df, 2))
+  
   raw_signal_name <- paste0('Raw_', signal)
   df[[raw_signal_name]] <- df[[signal]]
   
   df <- df %>% 
-    filter(Treatment %in% c('RB', 'WS'))
+    select(Timestamp, raw_signal_name)
   
   smooth_df <- tibble()
   treatments <- unique(df$Treatment)
@@ -524,31 +527,29 @@ generate_smooth_signal <- function(df, signal) {
     smooth_df <- rbind.fill(smooth_df, get_smooth_signal_for_session(df, treatment, signal)) 
   }
   
-  df <- df %>% 
-    select(-!!raw_signal_name, -!!signal) %>%
+  final_smooth_df <<- final_smooth_df %>%
+    select(-!!raw_signal_name) %>%
     merge(smooth_df, by='Timestamp', all=T) 
-
-  df
 }
 
 smooth_signal <- function(df) {
+  print(head(df, 2))
+  
+  final_smooth_df <<- df %>%
+    filter(Treatment %in% c('RB', 'WS')) %>% 
+    select(-Raw_PP, -PP, -E4_EDA,	-E4_HR, -iWatch_HR)
+  
+  print(head(final_smooth_df, 2))
+  
   wrist_signal_list <- c('EDA', 'HR', 'iWatch_HR')
   
   for (signal in wrist_signal_list) {
     if (signal %in% colnames(df)) {
-      df <- generate_smooth_signal(df, signal)
+      generate_smooth_signal(df, signal)
     }
   }
-  
-  # df <- generate_smooth_signal(df, 'EDA')
-  # df <- generate_smooth_signal(df, 'HR')
-  # 
-  # if (df$Participant_ID[1] != 'T001') {
-  #   df <- generate_smooth_signal(df, 'iWatch_HR')
-  # }
-  
-  # print(head(df, 2))
-  df
+
+  final_smooth_df
 }
 
 
@@ -561,7 +562,7 @@ merge_e4_data <- function(subj_name, day_serial, full_day_df) {
   downsampled_e4_file_list <- get_matched_file_names(file.path(curated_data_dir, subj_data_dir), paste0(subj_day_info, 'HR', '|', subj_day_info, 'EDA'))
   
   
-  # if(is_empty(downsampled_e4_file_list)) {
+  if(is_empty(downsampled_e4_file_list)) {
     ## Two files for HR and EDA
     e4_file_list <- get_matched_file_names_recursively(day_dir, e4_file_pattern)
     
@@ -574,17 +575,17 @@ merge_e4_data <- function(subj_name, day_serial, full_day_df) {
       ##############################################################################################
     }
     
-  # } else {
-  #   for(e4_file_name in downsampled_e4_file_list) {
-  #     e4_df <- custom_read_csv(file.path(curated_data_dir, subj_data_dir, e4_file_name)) %>%
-  #       mutate(Timestamp=as.POSIXct(Timestamp))
-  #     # print(str(e4_df))
-  # 
-  #     ##############################################################################################
-  #     full_day_df <- merge(full_day_df, e4_df, by='Timestamp', all=T)   ## CHECK!!! - all vs. all.x
-  #     ##############################################################################################
-  #   }
-  # }
+  } else {
+    for(e4_file_name in downsampled_e4_file_list) {
+      e4_df <- custom_read_csv(file.path(curated_data_dir, subj_data_dir, e4_file_name)) %>%
+        mutate(Timestamp=as.POSIXct(Timestamp))
+      # print(str(e4_df))
+
+      ##############################################################################################
+      full_day_df <- merge(full_day_df, e4_df, by='Timestamp', all=T)   ## CHECK!!! - all vs. all.x
+      ##############################################################################################
+    }
+  }
   
   full_day_df
 }
@@ -751,8 +752,8 @@ curate_data <- function() {
     subj_dir <- file.path(raw_data_dir, grp_dir, subj_name)
     day_list <- get_dir_list(subj_dir)
     
-    sapply(day_list, function(day_serial) {
-    # sapply(day_list[1], function(day_serial) {
+    # sapply(day_list, function(day_serial) {
+    sapply(day_list[1], function(day_serial) {
       tryCatch({
         write_log_msg(paste0('\n----------\n', subj_name, '-', day_serial, "\n----------"), curation_log_file)
         
