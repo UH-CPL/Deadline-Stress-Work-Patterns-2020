@@ -50,7 +50,7 @@ draw_regression_plot <- function(df, file_type) {
     # mutate(Is_Outlier = ifelse(rownames(.) %in% c(seq(1, 5)), "y", "n")) 
     mutate(Is_Outlier = ifelse(rownames(.) %in% c(seq(1, 5)), 1, 0)) 
   
-  print(head(df, 7))
+  # print(head(df, 7))
   
   x_col <- 'E4_HR'
   y_col <- 'iWatch_HR'

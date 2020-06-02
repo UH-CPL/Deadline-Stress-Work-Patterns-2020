@@ -1,53 +1,5 @@
 
 ----------
-T001-Day1
-----------
-Processing.....Resting Baseline
-Processing.....Working Session
-Merging.....e4 data
-Merging.....iwatch data
-Smoothing.....signals
-Fixing.....missing working session data
-Merging.....all subj data
-
-
-----------
-T001-Day2
-----------
-Processing.....Resting Baseline
-Processing.....Working Session
-Merging.....e4 data
-Merging.....iwatch data
-Smoothing.....signals
-Fixing.....missing working session data
-Merging.....all subj data
-
-
-----------
-T001-Day3
-----------
-Processing.....Resting Baseline
-Processing.....Working Session
-Merging.....e4 data
-Merging.....iwatch data
-Smoothing.....signals
-Fixing.....missing working session data
-Merging.....all subj data
-
-
-----------
-T001-Day4
-----------
-Processing.....Resting Baseline
-Processing.....Working Session
-Merging.....e4 data
-Merging.....iwatch data
-Smoothing.....signals
-Fixing.....missing working session data
-Merging.....all subj data
-
-
-----------
 T003-Day1
 ----------
 Processing.....Resting Baseline
@@ -94,4 +46,4 @@ Smoothing.....signals
 Fixing.....missing working session data
 Merging.....all subj data
 
-Total relative time mismatch row: 1937
+Total relative time mismatch row: 970

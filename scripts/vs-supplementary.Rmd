@@ -16,7 +16,6 @@ geometry: top=3.5cm, bottom=3cm
 #-------------------------#
 #--------LIBRARIES--------#
 #-------------------------#
-
 library(ggplot2)
 library(dplyr) # Some problem occured for loading the dplyr package at the beginning
 
@@ -32,7 +31,7 @@ project_dir <- dirname(getwd())
 setwd(project_dir)
 
 
-full_df <<- tibble()
+# full_df <<- tibble()
 
 ``` 
 
@@ -45,13 +44,14 @@ merge_data <- function() {
   physiological_data_path <- file.path(project_dir, curated_data_dir, physiological_data_dir)
   
   qc0_df <- custom_read_csv(file.path(physiological_data_path, qc0_final_file_name)) %>% 
-    select(Participant_ID, Day, Treatment, TreatmentTime, Raw_PP, Raw_E4_EDA, Raw_E4_HR, Raw_iWatch_HR)
+    select(Timestamp, Raw_PP, Raw_E4_EDA, Raw_E4_HR, Raw_iWatch_HR)
     
   ############################################################################################
   #                             This might be QC1 or QC2
   ############################################################################################
   qc_df <- custom_read_csv(file.path(physiological_data_path, qc1_file_name)) %>% 
-    select(Participant_ID, Day, Treatment, TreatmentTime, PP, E4_HR, E4_EDA, iWatch_HR, Mask) 
+    select(Timestamp, PP, E4_HR, E4_EDA, iWatch_HR, Mask) 
+    # select(Participant_ID, Day, Treatment, Timestamp, TreatmentTime, PP, E4_HR, E4_EDA, iWatch_HR, Mask) 
   # %>% 
   #   dplyr::rename(
   #     Raw_E4_HR=E4_HR,
@@ -59,7 +59,7 @@ merge_data <- function() {
   #   )
     
   transformed_df <- custom_read_csv(file.path(physiological_data_path, qc1_transformed_file_name)) %>% 
-    select(Participant_ID, Day, Treatment, TreatmentTime, PP, E4_HR, E4_EDA, iWatch_HR) %>% 
+    select(Participant_ID, Day, Treatment, TreatmentTime, Timestamp, PP, E4_HR, E4_EDA, iWatch_HR) %>% 
     dplyr::rename(
       Trans_PP=PP,
       Trans_E4_HR=E4_HR,
@@ -70,17 +70,34 @@ merge_data <- function() {
     
   
   
+  # print_msg(head(qc0_df, 2))
+  # print_msg(head(qc_df, 2))
+  # print_msg(head(transformed_df, 2))
+  
   
   print_msg('Merging data...')
   
-  full_df <- transformed_df %>%   
-    merge(qc0_df, by=c('Participant_ID', 'Day', 'Treatment', 'TreatmentTime'), all.x=T) %>% 
-    merge(qc_df, by=c('Participant_ID', 'Day', 'Treatment', 'TreatmentTime'), all.x=T) %>%
+  full_df <- transformed_df %>%
+  #   # merge(qc0_df, by=c('Participant_ID', 'Day', 'Treatment', 'TreatmentTime'), all=T) %>%
+  #   # merge(qc_df, by=c('Participant_ID', 'Day', 'Treatment', 'TreatmentTime'), all=T) %>%
+  #   # merge(qc0_df, by=c('Timestamp'), all.x=T) %>%
+  #   # merge(qc_df, by=c('Timestamp'), all.x=T) %>%
+    merge(qc0_df, by='Timestamp', all=T) %>%
+    merge(qc_df, by='Timestamp', all=T) %>%
+    
+  # full_df <- cbind(qc0_df, qc_df, transformed_df) %>% 
+    
+    # dplyr::full_join(qc0_df, by='Timestamp') %>%
+    # dplyr::full_join(qc_df, by='Timestamp') %>%
+    
+  # full_df <- full_df %>% 
+    
     arrange(Participant_ID, Day, Treatment, TreatmentTime) %>% 
     select(
       Participant_ID,
       Day,
       Treatment,
+      Timestamp,
       TreatmentTime,
 
       Raw_PP,
@@ -119,19 +136,28 @@ read_data <- function() {
 # E4_HR, Trans_E4_HR,  
 # iWatch_HR, Trans_iWatch_HR,  Mask
 get_signal_data <- function(signal) {
-  if (signal=='PP') {
-    signal_df <- full_df %>% 
-      select(Participant_ID, Day, Treatment, TreatmentTime, Raw_PP, PP, Trans_PP)
-  } else if (signal=='E4_EDA') {
-    signal_df <- full_df %>% 
-      select(Participant_ID, Day, Treatment, TreatmentTime, Raw_E4_EDA, E4_EDA, Trans_E4_EDA)
-  } else if (signal=='E4_HR') {
-    signal_df <- full_df %>% 
-      select(Participant_ID, Day, Treatment, TreatmentTime, Raw_E4_HR, Trans_E4_HR)
-  } else if (signal=='iWatch_HR') {
-    signal_df <- full_df %>% 
-      select(Participant_ID, Day, Treatment, TreatmentTime, Raw_iWatch_HR, Trans_iWatch_HR)
-  }
+  # if (signal=='PP') {
+  #   signal_df <- full_df %>% 
+  #     select(Participant_ID, Day, Treatment, TreatmentTime, Raw_PP, PP, Trans_PP)
+  # } else if (signal=='E4_EDA') {
+  #   signal_df <- full_df %>% 
+  #     select(Participant_ID, Day, Treatment, TreatmentTime, Raw_E4_EDA, E4_EDA, Trans_E4_EDA)
+  # } else if (signal=='E4_HR') {
+  #   signal_df <- full_df %>% 
+  #     select(Participant_ID, Day, Treatment, TreatmentTime, Raw_E4_HR, Trans_E4_HR)
+  # } else if (signal=='iWatch_HR') {
+  #   signal_df <- full_df %>% 
+  #     select(Participant_ID, Day, Treatment, TreatmentTime, Raw_iWatch_HR, Trans_iWatch_HR)
+  # }
+  
+  signal_df <- full_df %>% 
+      select(Participant_ID, 
+             Day, 
+             Treatment, 
+             TreatmentTime, 
+             !!paste0('Raw_', signal), 
+             !!signal, 
+             !!paste0('Trans_', signal))
 
   signal_df
 }
@@ -258,3 +284,20 @@ draw_plots(test=TRUE)
 # draw_plots()
 ```
 
+# ```{r echo=FALSE, warning = FALSE, message = FALSE}
+# authors <- data.frame(
+#     surname = c("Tukey", "Venables", "Tierney", "Ripley", "McNeil"),
+#     nationality = c("US", "Australia", "US", "UK", "Australia"),
+#     retired = c("yes", rep("no", 4)))
+# books <- data.frame(
+#     name = c("Tukey", "Venables", "Tierney", "Ripley", "Ripley", "McNeil"),
+#     title = c("Exploratory Data Analysis",
+#               "Modern Applied Statistics ...",
+#               "LISP-STAT",
+#               "Spatial Statistics", "Stochastic Simulation",
+#                "Interactive Data Analysis"),
+#     other.author = c(NA, "Ripley", NA, NA, NA, NA))
+# 
+# merge(authors, books, by.x="surname", by.y="name")
+# merge(books, authors, by.x="name", by.y="surname")
+# ```
