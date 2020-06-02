@@ -553,7 +553,7 @@ merge_e4_data <- function(subj_name, day_serial, full_day_df) {
   downsampled_e4_file_list <- get_matched_file_names(file.path(curated_data_dir, subj_data_dir), paste0(subj_day_info, 'HR', '|', subj_day_info, 'EDA'))
   
   
-  # if(is_empty(downsampled_e4_file_list)) {
+  if(is_empty(downsampled_e4_file_list)) {
     ## Two files for HR and EDA
     e4_file_list <- get_matched_file_names_recursively(day_dir, e4_file_pattern)
     
@@ -566,17 +566,17 @@ merge_e4_data <- function(subj_name, day_serial, full_day_df) {
       ##############################################################################################
     }
     
-  # } else {
-  #   for(e4_file_name in downsampled_e4_file_list) {
-  #     e4_df <- custom_read_csv(file.path(curated_data_dir, subj_data_dir, e4_file_name)) %>%
-  #       mutate(Timestamp=as.POSIXct(Timestamp))
-  #     # print(str(e4_df))
-  # 
-  #     ##############################################################################################
-  #     full_day_df <- merge(full_day_df, e4_df, by='Timestamp', all=T)   ## CHECK!!! - all vs. all.x
-  #     ##############################################################################################
-  #   }
-  # }
+  } else {
+    for(e4_file_name in downsampled_e4_file_list) {
+      e4_df <- custom_read_csv(file.path(curated_data_dir, subj_data_dir, e4_file_name)) %>%
+        mutate(Timestamp=as.POSIXct(Timestamp))
+      # print(str(e4_df))
+
+      ##############################################################################################
+      full_day_df <- merge(full_day_df, e4_df, by='Timestamp', all=T)   ## CHECK!!! - all vs. all.x
+      ##############################################################################################
+    }
+  }
   
   full_day_df
 }
@@ -737,14 +737,14 @@ curate_data <- function() {
   subj_list <- custom_read_csv(file.path(curated_data_dir, utility_data_dir, subj_list_file_name))$Subject
   
   # sapply(subj_list, function(subj_name) {
-  sapply(subj_list[2], function(subj_name) {
-  # sapply(c('T001', 'T003'), function(subj_name) {
+  # sapply(subj_list[2], function(subj_name) {
+  sapply(c('T001', 'T003'), function(subj_name) {
     
     subj_dir <- file.path(raw_data_dir, grp_dir, subj_name)
     day_list <- get_dir_list(subj_dir)
     
-    # sapply(day_list, function(day_serial) {
-    sapply(day_list[1], function(day_serial) {
+    sapply(day_list, function(day_serial) {
+    # sapply(day_list[1], function(day_serial) {
       tryCatch({
         write_log_msg(paste0('\n----------\n', subj_name, '-', day_serial, "\n----------"), curation_log_file)
         
