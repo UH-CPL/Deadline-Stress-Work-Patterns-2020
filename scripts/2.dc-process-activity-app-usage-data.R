@@ -233,10 +233,11 @@ format_activity_app_usage_data <- function() {
            Raw_E4_EDA,
            E4_EDA,
            
+           Raw_E4_HR,
            E4_HR,
+           
+           Raw_iWatch_HR,
            iWatch_HR,
-           
-           
            
            Activities,
            Activities_QC1,

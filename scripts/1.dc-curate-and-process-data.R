@@ -532,12 +532,20 @@ generate_smooth_signal <- function(df, signal) {
 }
 
 smooth_signal <- function(df) {
-  df <- generate_smooth_signal(df, 'EDA')
-  df <- generate_smooth_signal(df, 'HR')
+  wrist_signal_list <- c('EDA', 'HR', 'iWatch_HR')
   
-  if (df$Participant_ID[1] != 'T001') {
-    df <- generate_smooth_signal(df, 'iWatch_HR')
+  for (signal in wrist_signal_list) {
+    if (signal %in% colnames(df)) {
+      df <- generate_smooth_signal(df, signal)
+    }
   }
+  
+  # df <- generate_smooth_signal(df, 'EDA')
+  # df <- generate_smooth_signal(df, 'HR')
+  # 
+  # if (df$Participant_ID[1] != 'T001') {
+  #   df <- generate_smooth_signal(df, 'iWatch_HR')
+  # }
   
   # print(head(df, 2))
   df
@@ -553,7 +561,7 @@ merge_e4_data <- function(subj_name, day_serial, full_day_df) {
   downsampled_e4_file_list <- get_matched_file_names(file.path(curated_data_dir, subj_data_dir), paste0(subj_day_info, 'HR', '|', subj_day_info, 'EDA'))
   
   
-  if(is_empty(downsampled_e4_file_list)) {
+  # if(is_empty(downsampled_e4_file_list)) {
     ## Two files for HR and EDA
     e4_file_list <- get_matched_file_names_recursively(day_dir, e4_file_pattern)
     
@@ -566,17 +574,17 @@ merge_e4_data <- function(subj_name, day_serial, full_day_df) {
       ##############################################################################################
     }
     
-  } else {
-    for(e4_file_name in downsampled_e4_file_list) {
-      e4_df <- custom_read_csv(file.path(curated_data_dir, subj_data_dir, e4_file_name)) %>%
-        mutate(Timestamp=as.POSIXct(Timestamp))
-      # print(str(e4_df))
-
-      ##############################################################################################
-      full_day_df <- merge(full_day_df, e4_df, by='Timestamp', all=T)   ## CHECK!!! - all vs. all.x
-      ##############################################################################################
-    }
-  }
+  # } else {
+  #   for(e4_file_name in downsampled_e4_file_list) {
+  #     e4_df <- custom_read_csv(file.path(curated_data_dir, subj_data_dir, e4_file_name)) %>%
+  #       mutate(Timestamp=as.POSIXct(Timestamp))
+  #     # print(str(e4_df))
+  # 
+  #     ##############################################################################################
+  #     full_day_df <- merge(full_day_df, e4_df, by='Timestamp', all=T)   ## CHECK!!! - all vs. all.x
+  #     ##############################################################################################
+  #   }
+  # }
   
   full_day_df
 }
