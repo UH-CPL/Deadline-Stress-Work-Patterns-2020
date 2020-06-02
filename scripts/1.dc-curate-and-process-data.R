@@ -487,6 +487,54 @@ curate_ws_session_data <- function(subj_name, day_serial, rb_df) {
 }
 
 
+get_decay <- function(treatment) {
+  if (treatment == 'RB') {
+    return(1/6)
+  } 
+
+  return(1/150)
+}
+
+get_smooth_signal_for_session <- function(df, treatment, signal) {
+  # print(head(df, 2))
+  session_df <- df %>% 
+    filter(Treatment==treatment) %>%
+    select(Timestamp, !!paste0('Raw_', signal)) %>%
+    na.omit()
+    
+   
+  # print(head(session_df, 2))
+  session_df[[signal]] <- remove_noise(session_df[[paste0('Raw_', signal)]], 
+                                       removeImpluse = T, 
+                                       lowpassDecayFreq = get_decay(treatment), 
+                                       samplePerSecond = 1)
+  
+  # print(head(session_df, 2))
+  session_df
+}
+
+generate_smooth_signal <- function(df, signal) {
+  df <- df %>% 
+    filter(Treatment %in% c('RB', 'WS'))
+  
+  smooth_df <- tibble()
+  treatments <- unique(df$Treatment)
+  
+  for (treatment in treatments) {
+    # print(treatment)
+    smooth_df <- rbind.fill(smooth_df, get_smooth_signal_for_session(df, treatment, signal)) 
+  }
+  
+  df <- df %>% 
+    select(-!!paste0('Raw_', signal)) %>%
+    merge(smooth_df, by='Timestamp', all=T) 
+    # filter(Treatment %in% c('RB', 'WS'))
+  
+  # print(head(df, 2))
+  df
+}
+
+
 merge_e4_data <- function(subj_name, day_serial, full_day_df) {
   day_dir <- file.path(raw_data_dir, grp_dir, subj_name, day_serial)
   
@@ -508,11 +556,11 @@ merge_e4_data <- function(subj_name, day_serial, full_day_df) {
           dplyr::rename(Raw_EDA=EDA) %>% 
           na.omit()
         
-        ##############################################################################################################
-        decay_f <- 1/150
-        ##############################################################################################################
-        
-        e4_df$EDA <- remove_noise(e4_df$Raw_EDA, removeImpluse = T, lowpassDecayFreq = decay_f, samplePerSecond = 1)
+        # ##############################################################################################################
+        # decay_f <- 1/150
+        # ##############################################################################################################
+        # 
+        # e4_df$EDA <- remove_noise(e4_df$Raw_EDA, removeImpluse = T, lowpassDecayFreq = decay_f, samplePerSecond = 1)
       }
       convert_to_csv(e4_df, file.path(curated_data_dir, subj_data_dir, paste0('Group1_', subj_name, '_', day_serial, '_', sub('.csv', '', sub('.*/', '', e4_file_name)), '.csv')))
       
@@ -523,18 +571,17 @@ merge_e4_data <- function(subj_name, day_serial, full_day_df) {
     
   } else {
     for(e4_file_name in downsampled_e4_file_list) {
-      e4_df <- custom_read_csv(file.path(curated_data_dir, subj_data_dir, e4_file_name)) %>% 
+      e4_df <- custom_read_csv(file.path(curated_data_dir, subj_data_dir, e4_file_name)) %>%
         mutate(Timestamp=as.POSIXct(Timestamp))
       # print(str(e4_df))
-      
+
       ##############################################################################################
       full_day_df <- merge(full_day_df, e4_df, by='Timestamp', all=T)   ## CHECK!!! - all vs. all.x
       ##############################################################################################
     }
   }
-  
-  
-  return(full_day_df)
+
+  generate_smooth_signal(full_day_df, 'EDA')
 }
 
 
@@ -629,7 +676,7 @@ refactor_and_export_all_subj_data <- function(all_subj_df) {
     ## Calculating relative treatment time
     group_by(Participant_ID, Day, Treatment) %>% 
     arrange(Timestamp) %>%
-    mutate(TreatmentTime=as.numeric(Timestamp)-as.numeric(head(Timestamp, 1))) %>%
+    dplyr::mutate(TreatmentTime=as.numeric(Timestamp)-as.numeric(head(Timestamp, 1))) %>%
     
     select(Participant_ID,
            Day,
@@ -673,7 +720,6 @@ refactor_and_export_all_subj_data <- function(all_subj_df) {
   # write_log_msg(levels(factor(all_subj_df$Application)), curation_log_file)
   write_log_msg(paste0('Total relative time mismatch row: ', nrow(all_subj_df[all_subj_df$Sinterface_Time != all_subj_df$TreatmentTime, ])), curation_log_file)
   
-  
   convert_to_csv(all_subj_df, file.path(curated_data_dir, physiological_data_dir, qc0_raw_file_name))
 }
 
@@ -684,18 +730,17 @@ curate_data <- function() {
   # subj_list <- get_dir_list(file.path(raw_data_dir, grp_dir))
   subj_list <- custom_read_csv(file.path(curated_data_dir, utility_data_dir, subj_list_file_name))$Subject
   
-  sapply(subj_list, function(subj_name) {
-  # sapply(subj_list[1], function(subj_name) {
-  # sapply(c('T001', 'T003'), function(subj_name) {
+  # sapply(subj_list, function(subj_name) {
+  # sapply(subj_list[2], function(subj_name) {
+  sapply(c('T001', 'T00C3'), function(subj_name) {
     
     subj_dir <- file.path(raw_data_dir, grp_dir, subj_name)
     day_list <- get_dir_list(subj_dir)
     
-    sapply(day_list, function(day_serial) {
-    # sapply(day_list[1], function(day_serial) {
+    # sapply(day_list, function(day_serial) {
+    sapply(day_list[1], function(day_serial) {
       tryCatch({
         write_log_msg(paste0('\n----------\n', subj_name, '-', day_serial, "\n----------"), curation_log_file)
-        
         
         write_log_msg('Processing.....Resting Baseline', curation_log_file)
         rb_df <- curate_rb_session_data(subj_name, day_serial)

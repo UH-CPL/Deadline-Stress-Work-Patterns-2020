@@ -1,0 +1,111 @@
+
+----------
+T001-Day1
+----------
+Processing.....Resting Baseline
+Processing.....Working Session
+Merging.....e4 data
+Merging.....iwatch data
+Fixing.....missing working session data
+Merging.....all subj data
+
+
+----------
+T003-Day1
+----------
+Processing.....Resting Baseline
+Processing.....Working Session
+Merging.....e4 data
+Merging.....iwatch data
+Fixing.....missing working session data
+Merging.....all subj data
+
+
+----------
+T005-Day1
+----------
+Processing.....Resting Baseline
+Processing.....Working Session
+Merging.....e4 data
+Merging.....iwatch data
+Fixing.....missing working session data
+Merging.....all subj data
+
+
+----------
+T007-Day1
+----------
+Processing.....Resting Baseline
+Processing.....Working Session
+Merging.....e4 data
+Merging.....iwatch data
+Fixing.....missing working session data
+Merging.....all subj data
+
+
+----------
+T009-Day1
+----------
+Processing.....Resting Baseline
+Processing.....Working Session
+Merging.....e4 data
+Merging.....iwatch data
+Fixing.....missing working session data
+Merging.....all subj data
+
+
+----------
+T011-Day1
+----------
+Processing.....Resting Baseline
+Processing.....Working Session
+Merging.....e4 data
+Merging.....iwatch data
+Fixing.....missing working session data
+Merging.....all subj data
+
+
+----------
+T013-Day1
+----------
+Processing.....Resting Baseline
+Processing.....Working Session
+Merging.....e4 data
+Merging.....iwatch data
+Fixing.....missing working session data
+Merging.....all subj data
+
+
+----------
+T015-Day1
+----------
+Processing.....Resting Baseline
+Processing.....Working Session
+Merging.....e4 data
+Merging.....iwatch data
+Fixing.....missing working session data
+Merging.....all subj data
+
+
+----------
+T017-Day1
+----------
+Processing.....Resting Baseline
+Processing.....Working Session
+Merging.....e4 data
+Merging.....iwatch data
+Fixing.....missing working session data
+Merging.....all subj data
+
+
+----------
+T019-Day1
+----------
+Processing.....Resting Baseline
+Processing.....Working Session
+Merging.....e4 data
+Merging.....iwatch data
+Fixing.....missing working session data
+Merging.....all subj data
+
+Total relative time mismatch row: 2434
