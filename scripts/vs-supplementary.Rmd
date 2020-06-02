@@ -80,17 +80,13 @@ merge_data <- function() {
   full_df <- transformed_df %>%
   #   # merge(qc0_df, by=c('Participant_ID', 'Day', 'Treatment', 'TreatmentTime'), all=T) %>%
   #   # merge(qc_df, by=c('Participant_ID', 'Day', 'Treatment', 'TreatmentTime'), all=T) %>%
-  #   # merge(qc0_df, by=c('Timestamp'), all.x=T) %>%
-  #   # merge(qc_df, by=c('Timestamp'), all.x=T) %>%
-    merge(qc0_df, by='Timestamp', all=T) %>%
-    merge(qc_df, by='Timestamp', all=T) %>%
-    
-  # full_df <- cbind(qc0_df, qc_df, transformed_df) %>% 
-    
-    # dplyr::full_join(qc0_df, by='Timestamp') %>%
-    # dplyr::full_join(qc_df, by='Timestamp') %>%
-    
-  # full_df <- full_df %>% 
+
+    # merge(qc0_df, by='Timestamp', all=T) %>%
+    # merge(qc_df, by='Timestamp', all=T) %>%
+
+    dplyr::full_join(qc0_df, by='Timestamp') %>%
+    dplyr::full_join(qc_df, by='Timestamp') %>%
+
     
     arrange(Participant_ID, Day, Treatment, TreatmentTime) %>% 
     select(
@@ -280,7 +276,7 @@ read_data()
 <!-- Plots -->
 ------------------------------
 ```{r echo=FALSE, warning = FALSE, message = FALSE}
-draw_plots(test=TRUE)
-# draw_plots()
+# draw_plots(test=TRUE)
+draw_plots()
 ```
 

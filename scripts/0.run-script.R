@@ -51,8 +51,8 @@ transformation_parameter <- log_transformation
 
 
 #-------------------------------------------------------------------------------------------- 1
-source(file.path(script_dir, '1.dc-curate-and-process-data.R'))
-curate_data()
+# source(file.path(script_dir, '1.dc-curate-and-process-data.R'))
+# curate_data()
 
 
 
@@ -65,8 +65,8 @@ curate_data()
 #-------------------------------------------------------------------------------------------- 3
 # source(file.path(script_dir, '3.dc-quality-control-phase-one.R'))
 # process_quality_control_phase_one()
-# 
-# 
+
+
 # source(file.path(script_dir, 'vs-regression-plot.R'))
 # draw_regression_plots()
 
@@ -92,16 +92,18 @@ curate_data()
 # normalize_data()
 
 
-
-#-------------------------------------------------------------------------------------------- 6
 # source(file.path(script_dir, 'vs-deadline-effect.R'))
 # generate_format_table()
 
 
 
+#-------------------------------------------------------------------------------------------- 6
+# source(file.path(script_dir, '6.dc-merge-all-data.R'))
+# merge_all_data()
 
 
-#-------------------------------------------------------------------------------------------- 7
+
+#-------------------------------------------------------------------------------------------- 8
 # linear modeling
 # supplementary plots
 
@@ -111,7 +113,7 @@ curate_data()
 
 
 #-------------------------------------------------------------------------------------------- 10.1
-# source(file.path(script_dir, '6.dc-process-rr-data.R'))
+# source(file.path(script_dir, 7.dc-process-rr-data.R'))
 # gather_rr_data()
 # qc1_clean_rr_data()
 
