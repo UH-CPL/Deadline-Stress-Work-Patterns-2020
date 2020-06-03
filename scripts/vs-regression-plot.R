@@ -19,11 +19,11 @@ library(Hmisc)
 #---FUNCTION DEFINITION---#
 #-------------------------#
 read_files <- function(file_type) {
-  if (file_type=="raw") {
+  if (file_type=="Smooth") {
     file_name <- qc1_raw_mean_v1_file_name
-  } else if (file_type=="transformed") {
+  } else if (file_type=="Transformed") {
     file_name <- qc1_transformed_mean_v1_file_name
-  } else if (file_type=="normalized") {
+  } else if (file_type=="Normalized") {
     file_name <- qc1_normalized_mean_v1_file_name
   }
     
@@ -48,7 +48,7 @@ draw_regression_plot <- function(df, file_type) {
            ID=paste0(Participant_ID, '-', Day)) %>% 
     arrange(desc(Diff_HR)) %>% 
     # mutate(Is_Outlier = ifelse(rownames(.) %in% c(seq(1, 5)), "y", "n")) 
-    mutate(Is_Outlier = ifelse(rownames(.) %in% c(seq(1, 5)), 1, 0)) 
+    mutate(Is_Outlier = ifelse(rownames(.) %in% c(seq(1, 4)), 1, 0)) 
   
   # print(head(df, 7))
   
@@ -76,8 +76,9 @@ draw_regression_plot <- function(df, file_type) {
     geom_text(data=outlier_df, 
               aes(outlier_df[[x_col]], outlier_df[[y_col]], label = ID),
               # color = 'red', 
+              angle = 45,
               vjust = 2,
-              # hjust = -0.2,
+              # hjust = -0.5,
               size = 6
               ) +
     geom_smooth(data=df, aes(df[[x_col]], df[[y_col]]), method = "lm") +
@@ -91,6 +92,7 @@ draw_regression_plot <- function(df, file_type) {
              y=Inf,
              hjust=1,
              vjust=1.5,
+             # angle = 45,
              label=annot_label,
              fontface = 'italic', 
              size = 8) +
@@ -110,9 +112,9 @@ draw_regression_plot <- function(df, file_type) {
 draw_regression_plots_treatment <- function(treatment) {
   plot_list <<- list()
   
-  file_types <- c("raw", "transformed")
+  file_types <- c("Smooth", "Transformed")
   if (treatment=='WS') {
-    file_types <- c(file_types, "normalized")
+    file_types <- c(file_types, "Normalized")
   }
   
   for (file_type in file_types) {

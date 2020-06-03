@@ -51,8 +51,8 @@ transformation_parameter <- log_transformation
 
 
 #-------------------------------------------------------------------------------------------- 1
-source(file.path(script_dir, '1.dc-curate-and-process-data.R'))
-curate_data()
+# source(file.path(script_dir, '1.dc-curate-and-process-data.R'))
+# curate_data()
 
 
 
@@ -67,8 +67,8 @@ curate_data()
 # process_quality_control_phase_one()
 
 
-# source(file.path(script_dir, 'vs-regression-plot.R'))
-# draw_regression_plots()
+source(file.path(script_dir, 'vs-regression-plot.R'))
+draw_regression_plots()
 
 
 
@@ -97,7 +97,7 @@ curate_data()
 
 
 
-#-------------------------------------------------------------------------------------------- 6
+# -------------------------------------------------------------------------------------------- 6
 # source(file.path(script_dir, '6.dc-merge-all-data.R'))
 # merge_all_data()
 
