@@ -39,21 +39,16 @@ round_p_value <- function(p_value) {
 }
 
 
-draw_regression_plot <- function(df, file_type) {
+draw_regression_plot <- function(df, file_type, x_col, y_col) {
   df <- df %>%
     filter(Treatment=='WS') %>%
-    select(Participant_ID,	Day, E4_HR, iWatch_HR) %>%
+    select(Participant_ID,	Day, !!x_col, !!y_col) %>%
     na.omit() %>% 
-    mutate(Diff_HR=abs(E4_HR-iWatch_HR),
+    mutate(Diff_Signal=abs(.[[x_col]]-.[[y_col]]),
            ID=paste0(Participant_ID, '-', Day)) %>% 
-    arrange(desc(Diff_HR)) %>% 
+    arrange(desc(Diff_Signal)) %>% 
     # mutate(Is_Outlier = ifelse(rownames(.) %in% c(seq(1, 5)), "y", "n")) 
     mutate(Is_Outlier = ifelse(rownames(.) %in% c(seq(1, 4)), 1, 0)) 
-  
-  # print(head(df, 7))
-  
-  x_col <- 'E4_HR'
-  y_col <- 'iWatch_HR'
   
   cor_test <- cor.test(df[[x_col]], df[[y_col]], method = "pearson")
   sample_no <- df %>% dplyr::summarize(n = dplyr::n())
@@ -64,18 +59,12 @@ draw_regression_plot <- function(df, file_type) {
   
   
   outlier_df <- df[df$Is_Outlier==1,]
-  
-  # plot <- df %>%
-  #   # ggplot(aes(df[[x_col]], df[[y_col]], color=df$Is_Outlier, label = ID)) +
-  #   ggplot(aes(df[[x_col]], df[[y_col]])) +
-    
-    
-    plot <- ggplot() +
+
+  plot <- ggplot() +
     geom_point(data=df, aes(df[[x_col]], df[[y_col]]), size = 3) +
     geom_point(data=outlier_df, aes(outlier_df[[x_col]], outlier_df[[y_col]]), color='red', size = 3.5) +
     geom_text(data=outlier_df, 
               aes(outlier_df[[x_col]], outlier_df[[y_col]], label = ID),
-              # color = 'red', 
               angle = 45,
               vjust = 2,
               # hjust = -0.5,
@@ -86,7 +75,6 @@ draw_regression_plot <- function(df, file_type) {
     theme_bw() + 
     xlab(x_col) +
     ylab(y_col) +
-    # scale_colour_gradient(low = "#132B43", high = "#bf0b0b") +
     annotate("text",
              x=max(df[[x_col]]),
              y=Inf,
@@ -109,7 +97,7 @@ draw_regression_plot <- function(df, file_type) {
   plot_list[[length(plot_list)+1]] <<- plot
 }
 
-draw_regression_plots_treatment <- function(treatment) {
+draw_regression_plots_treatment <- function(treatment, x_col, y_col) {
   plot_list <<- list()
   
   file_types <- c("Smooth", "Transformed")
@@ -119,19 +107,32 @@ draw_regression_plots_treatment <- function(treatment) {
   
   for (file_type in file_types) {
     mean_df <- read_files(file_type)
-    draw_regression_plot(mean_df, paste0(treatment, ' - ', file_type))
+    draw_regression_plot(mean_df, 
+                         paste0(treatment, ' - ', file_type),
+                         x_col,
+                         y_col)
   }
   
-  save_plot(paste0('hr_', tolower(treatment), '_regression'), 
+  save_plot(paste0(tolower(x_col), '_', tolower(y_col), '_', tolower(treatment), '_regression'), 
             plot_grid(plotlist=plot_list, ncol=2), 
             30, 
-            length(file_types)*12/2)
+            length(file_types)*6)
 }
 
 
 draw_regression_plots <- function() {
-  for (treatment in c('RB', 'WS')) {
-    draw_regression_plots_treatment(treatment)
+  # draw_regression_plots_treatment(treatment, 'E4_HR', 'iWatch_HR')
+  
+  signal_name_list <- c('PP', 'E4_HR', 'E4_EDA', 'iWatch_HR')
+  
+  for (idx_1 in 1:length(signal_name_list)) {
+    for (idx_2 in idx_1+1:length(signal_name_list)) {
+      if (idx_2<=length(signal_name_list)) {
+        for (treatment in c('RB', 'WS')) {
+          draw_regression_plots_treatment(treatment, signal_name_list[idx_1], signal_name_list[idx_2])
+        }
+      }
+    }
   }
 }
 
