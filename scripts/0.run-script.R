@@ -98,8 +98,8 @@ transformation_parameter <- log_transformation
 
 
 #-------------------------------------------------------------------------------------------- 6
-# source(file.path(script_dir, '6.dc-merge-all-data.R'))
-# merge_all_data()
+source(file.path(script_dir, '6.dc-merge-all-data.R'))
+merge_all_data()
 
 
 
@@ -148,21 +148,6 @@ transformation_parameter <- log_transformation
 # 
 # source(file.path(script_dir, 'vs-variance-test-chunk-data.R'))
 # conduct_variance_tests_chunk_data()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
