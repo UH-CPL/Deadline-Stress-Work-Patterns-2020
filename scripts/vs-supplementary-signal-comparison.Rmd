@@ -1,0 +1,159 @@
+---
+title: 'Signal Comparison Plots'
+header-includes:
+- \usepackage{booktabs}
+- \usepackage{sectsty} \sectionfont{\centering}
+output:
+  pdf_document: default
+  html_document: default
+geometry: top=3.5cm, bottom=3cm
+---
+
+
+
+
+```{r echo = FALSE, warning = FALSE, message = FALSE, results='hide'} 
+#-------------------------#
+#--------LIBRARIES--------#
+#-------------------------#
+library(reshape2)
+library(ggplot2)
+library(dplyr) # Some problem occured for loading the dplyr package at the beginning
+
+
+
+
+#-------------------------#
+#-----GLOBAL VARIABLES----#
+#-------------------------#
+## CHANGE this path if needed
+source(file.path(getwd(), 'us-common-functions.R'))
+project_dir <- dirname(getwd())
+setwd(project_dir)
+
+
+signal_list <- c('PP', 'E4_EDA', 'E4_HR', 'iWatch_HR')
+# signal_list <- c('PP')
+``` 
+
+\newpage
+```{r echo=FALSE, warning = FALSE, message = FALSE}
+#-------------------------#
+#-----   FUNCTIONS    ----#
+#-------------------------#
+read_data <- function(test=F) {
+  if (test==TRUE) {
+    full_df <<- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, 'T003_full_df.csv'))
+  } else {
+    full_df <<- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, full_df_file_name)) 
+  }
+   
+  
+  # %>% 
+  #   filter(Participant_ID=='T003')
+  # convert_to_csv(full_df, file.path(project_dir, curated_data_dir, physiological_data_dir, 'T003_full_df.csv'))
+  
+  # print_msg(colnames(full_df))
+}
+
+
+draw_signal_comparison_plots <- function(test=F) {
+  if (test==T) {
+    subj_list <- c('T003')
+    day_list <- c('Day1')
+    
+  } else {
+    subj_list <- unique(full_df$Participant_ID)
+    subj_list <- subj_list[-length(subj_list)]
+    day_list <- unique(full_df$Day)
+  }
+  
+  for (subj in subj_list) {
+    subj_df <- full_df %>% filter(Participant_ID==subj)
+    
+    for (day in day_list) {
+      day_df <- subj_df %>% filter(Day==day) 
+      
+      for (treatment in unique(day_df$Treatment)) {
+        
+        message(paste(subj, day, treatment))
+        
+        treatment_df <- day_df %>% 
+          filter(Treatment==treatment) %>% 
+          select(TreatmentTime, PP, E4_EDA, E4_HR, iWatch_HR) 
+        
+        melted_df <- melt(treatment_df, 'TreatmentTime') %>% 
+          na.omit()
+        
+        plot <- ggplot(melted_df, aes(TreatmentTime, value, colour = variable)) + 
+          geom_line() +
+          ggtitle(paste0(subj, ' - ', day, ' - ', treatment)) +
+          xlab('Time [s]') +
+          ylab('Signal Values') +
+          facet_wrap(~ variable, 
+                     scales = 'free_y',
+                     ncol = 1) +
+          scale_colour_discrete() +
+          theme_bw() +
+          theme(
+                panel.grid.major = element_blank(),
+                panel.grid.minor = element_blank(),
+                axis.line = element_line(colour = "black"),
+                plot.title = element_text(hjust = 0.5, size = 16),
+                legend.position = 'None'
+                )
+        
+        print(plot)
+        print('# --------------------------------------------------------------------------- #')
+      }
+    }
+  }
+}
+
+
+
+# draw_signal_comparison_plots <- function(test=FALSE) {
+#   # signal_list <- c('PP', 'E4_EDA', 'E4_HR', 'iWatch_HR')
+#   # signal_list <- c('PP')
+#   
+#   draw_signal_plots(test)
+# 
+#   # for (signal in signal_list) {
+#   #   # signal_df <- get_signal_data(signal)
+#   #   draw_signal_plots(signal_df, signal, test)
+#   # }
+#   
+#   # for (idx_1 in 1:length(signal_name_list)) {
+#   #   for (idx_2 in idx_1+1:length(signal_name_list)) {
+#   #     if (idx_2<=length(signal_name_list)) {
+#   #       signal_x = signal_name_list[idx_1]
+#   #       signal_y = signal_name_list[idx_2]
+#   #       
+#   #       # signal_df <- get_signal_data(signal_x, signal_y)
+#   #       draw_signal_plots(signal_x, signal_y)
+#   #     }
+#   #   }
+#   # }
+# }
+```
+
+
+
+<!-- \newpage -->
+```{r echo=FALSE, warning = FALSE, message = FALSE}
+test=T
+
+read_data(test)
+draw_signal_comparison_plots(test)
+```
+
+
+
+<!-- \newpage -->
+<!-- Plots -->
+<!-- ------------------------------ -->
+<!-- # ```{r echo=FALSE, warning = FALSE, message = FALSE} -->
+<!-- # # # draw_signal_comparison_plots(test=T) -->
+<!-- # # # draw_signal_comparison_plots() -->
+<!-- # ``` -->
+

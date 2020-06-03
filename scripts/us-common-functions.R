@@ -14,6 +14,8 @@ performance_data_dir <- 'performance-data'
 index_data_dir <- 'index-data'
 final_data_dir <- 'final-data'
 
+signal_comparison_dir <- 'signal-comparison'
+
 
 default_plot_width <- 12
 default_plot_height <- 10
