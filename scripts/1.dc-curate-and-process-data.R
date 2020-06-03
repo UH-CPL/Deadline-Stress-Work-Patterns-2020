@@ -500,11 +500,19 @@ get_smooth_signal_for_session <- function(df, treatment, signal) {
     filter(Treatment==treatment) %>%
     select(-Treatment) %>%
     na.omit()
-   
-  session_df[[signal]] <- remove_noise(session_df[[paste0('Raw_', signal)]], 
-                                       removeImpluse = T, 
-                                       lowpassDecayFreq = get_decay(treatment), 
-                                       samplePerSecond = 1)
+  
+  # print('------------------------------------ 1')
+  if (nrow(session_df)>2) {
+    # if (signal=='iWatch_HR') {
+    #   print(nrow(session_df))
+    #   print(head(session_df, 2))
+    # }
+    session_df[[signal]] <- remove_noise(session_df[[paste0('Raw_', signal)]], 
+                                         removeImpluse = T, 
+                                         lowpassDecayFreq = get_decay(treatment), 
+                                         samplePerSecond = 1)
+  }
+  # print('------------------------------------ 2')
   
   session_df
 }
@@ -540,6 +548,7 @@ smooth_signal <- function(df) {
   
   for (signal in wrist_signal_list) {
     if (signal %in% colnames(df)) {
+      write_log_msg(paste0('smoothing...', signal), curation_log_file)
       generate_smooth_signal(df, signal)
     }
   }
@@ -663,7 +672,7 @@ refactor_and_export_all_subj_data <- function(all_subj_df) {
   all_subj_df <- all_subj_df[!(all_subj_df$Participant_ID=="T005" & all_subj_df$Day=="Day4"), ]
   all_subj_df$Day[all_subj_df$Day=="Day5"] <- "Day4"
   
-  print(head(all_subj_df, 5))
+  # print(head(all_subj_df, 2))
   all_subj_df <- all_subj_df %>%
     dplyr::rename(Sinterface_Time=Time,
            Activities=Ontologies,
@@ -741,7 +750,7 @@ curate_data <- function() {
   subj_list <- custom_read_csv(file.path(curated_data_dir, utility_data_dir, subj_list_file_name))$Subject
   
   sapply(subj_list, function(subj_name) {
-  # sapply(subj_list[2], function(subj_name) {
+  # sapply(subj_list[6], function(subj_name) {
   # sapply(c('T001', 'T003'), function(subj_name) {
 
     subj_dir <- file.path(raw_data_dir, grp_dir, subj_name)

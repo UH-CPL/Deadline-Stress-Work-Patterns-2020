@@ -16,8 +16,8 @@ library(plyr)
 # 
 # source(file.path(script_dir, 'us-common-functions.R'))
 
-mean_log_file <- file.path(project_dir, log_dir, paste0('mean-log-', format(Sys.Date(), format='%m-%d-%y'), '.txt'))
-file.create(mean_log_file)
+# mean_log_file <- file.path(project_dir, log_dir, paste0('mean-log-', format(Sys.Date(), format='%m-%d-%y'), '.txt'))
+# file.create(mean_log_file)
 
 
 # signal_name_list <- c('PP')

@@ -15,8 +15,8 @@ library(plyr)
 # 
 # source(file.path(script_dir, 'us-common-functions.R'))
 
-qc1_log_file <- file.path(project_dir, log_dir, paste0('quality-control-phase-one-log-', format(Sys.Date(), format='%m-%d-%y'), '.txt'))
-file.create(qc1_log_file)
+# qc1_log_file <- file.path(project_dir, log_dir, paste0('quality-control-phase-one-log-', format(Sys.Date(), format='%m-%d-%y'), '.txt'))
+# file.create(qc1_log_file)
 
 
 qc0_df <- tibble()
