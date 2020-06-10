@@ -15,6 +15,7 @@ index_data_dir <- 'index-data'
 final_data_dir <- 'final-data'
 
 signal_comparison_dir <- 'signal-comparison'
+activity_plots_dir <- 'activity-plots'
 
 
 default_plot_width <- 12
