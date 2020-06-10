@@ -48,7 +48,7 @@ draw_regression_plot <- function(df, file_type, x_col, y_col) {
            ID=paste0(Participant_ID, '-', Day)) %>% 
     arrange(desc(Diff_Signal)) %>% 
     # mutate(Is_Outlier = ifelse(rownames(.) %in% c(seq(1, 5)), "y", "n")) 
-    mutate(Is_Outlier = ifelse(rownames(.) %in% c(seq(1, 4)), 1, 0)) 
+    mutate(Is_Outlier = ifelse(rownames(.) %in% c(seq(1, 5)), 1, 0)) 
   
   cor_test <- cor.test(df[[x_col]], df[[y_col]], method = "pearson")
   sample_no <- df %>% dplyr::summarize(n = dplyr::n())
