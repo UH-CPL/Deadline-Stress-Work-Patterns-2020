@@ -43,12 +43,12 @@ export_formattable <- function(f, file, width = "100%", height = NULL, backgroun
 generate_specific_format_table <- function(input_file, treatment, output_file_parameter) {
   df <- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, input_file)) %>%
     filter(Treatment==treatment) %>%
-    select(Participant_ID, Treatment, Signal, Day1_Normalize, Day2_Normalize) %>%
+    dplyr::select(Participant_ID, Treatment, Signal, Day1_Normalize, Day2_Normalize) %>%
     dplyr::rename(Day1=Day1_Normalize,
                   Day2=Day2_Normalize) %>%
     gather(Day, Normalize_Value, -Participant_ID, -Signal, -Treatment) %>%
     spread(Signal, Normalize_Value) %>%
-    select(Participant_ID, Treatment, Day, PP, E4_EDA, E4_HR, iWatch_HR)
+    dplyr::select(Participant_ID, Treatment, Day, PP, E4_EDA, E4_HR, iWatch_HR)
   
   print(head(df, 2))
   

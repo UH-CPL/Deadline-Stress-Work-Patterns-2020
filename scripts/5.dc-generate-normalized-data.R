@@ -99,7 +99,7 @@ generate_chunk_mean_df <- function(df, chunk_size_minute, signal) {
         
         if (nrow(temp_chunk_df)>1) {
           temp_chunk_df <- temp_chunk_df %>% 
-            select(Participant_ID,	Day, Treatment, Mask, !!signal) %>% 
+            dplyr::select(Participant_ID,	Day, Treatment, Mask, !!signal) %>% 
             group_by(Participant_ID,	Day, Treatment, Mask) %>% 
             summarize_all(list(
               Mean_Val = ~mean(., na.rm=TRUE),
@@ -155,22 +155,22 @@ generate_chunk_mean_df <- function(df, chunk_size_minute, signal) {
 process_rb_data <- function() {
   if (baseline_parameter==lowest_baseline) {
     mean_v2_df <<- mean_v2_df %>%
-      select(Participant_ID, Treatment, Signal, Four_Day_Min) %>%
+      dplyr::select(Participant_ID, Treatment, Signal, Four_Day_Min) %>%
       filter(Treatment=='RB')
 
   } else if (baseline_parameter==corresponding_baseline) {
     mean_v2_df <<- mean_v2_df %>%
-      select(Participant_ID, Treatment, Signal, Day1, Day2, Day3, Day4) %>%
+      dplyr::select(Participant_ID, Treatment, Signal, Day1, Day2, Day3, Day4) %>%
       filter(Treatment=='RB')
 
   } else if (baseline_parameter==day3_day4_ws_mean) {
     mean_v2_df <<- mean_v2_df %>%
-      select(Participant_ID, Treatment, Signal, Day3_Day4_Mean) %>%
+      dplyr::select(Participant_ID, Treatment, Signal, Day3_Day4_Mean) %>%
       filter(Treatment=='WS')
 
   }  else if (baseline_parameter==day3_day4_ws_min) {
     mean_v2_df <<- mean_v2_df %>%
-      select(Participant_ID, Treatment, Signal, Day3_Day4_Min) %>%
+      dplyr::select(Participant_ID, Treatment, Signal, Day3_Day4_Min) %>%
       filter(Treatment=='WS')
   }
 }
@@ -181,26 +181,26 @@ get_rb <- function(df, signal) {
   if (baseline_parameter==lowest_baseline) {
     rb_val <- mean_v2_df %>%
       filter(Participant_ID==subj & Signal==signal) %>%
-      select(Four_Day_Min) %>%
+      dplyr::select(Four_Day_Min) %>%
       pull()
     
   } else if (baseline_parameter==corresponding_baseline) {
     day<-unique(df$Day)
     rb_val <- mean_v2_df %>%
       filter(Participant_ID==subj & Signal==signal) %>%
-      select(!!day) %>%
+      dplyr::select(!!day) %>%
       pull()
     
   } else if (baseline_parameter==day3_day4_ws_mean) {
     rb_val <- mean_v2_df %>%
       filter(Participant_ID==subj & Signal==signal) %>%
-      select(Day3_Day4_Mean) %>%
+      dplyr::select(Day3_Day4_Mean) %>%
       pull()
     
   } else if (baseline_parameter==day3_day4_ws_min) {
     rb_val <- mean_v2_df %>%
       filter(Participant_ID==subj & Signal==signal) %>%
-      select(Day3_Day4_Min) %>%
+      dplyr::select(Day3_Day4_Min) %>%
       pull()
   }
 

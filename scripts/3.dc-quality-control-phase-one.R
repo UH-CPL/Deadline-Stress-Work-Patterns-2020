@@ -2,8 +2,8 @@
 #--------LIBRARIES--------#
 #-------------------------#
 library(tidyverse) 
-library(dplyr)
 library(plyr) 
+library(dplyr)
 
 
 
@@ -35,7 +35,7 @@ signal_name_list <- c('PP', 'E4_HR', 'E4_EDA', 'iWatch_HR')
 #--- CHANGE HERE ---#
 read_data <- function() {
   qc0_df <<- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, qc0_final_file_name)) %>% 
-    select(Participant_ID, Day, Treatment, Timestamp, Sinterface_Time, TreatmentTime, PP, E4_HR, E4_EDA, iWatch_HR, Mask)
+    dplyr::select(Participant_ID, Day, Treatment, Timestamp, Sinterface_Time, TreatmentTime, PP, E4_HR, E4_EDA, iWatch_HR, Mask)
   
   # print_msg(colnames(qc0_df))  # "Participant_ID" "Day" "Treatment" "TreatmentTime" "PP" "E4_HR" "E4_EDA" "iWatch_HR"
   # print_msg(head(qc0_df, 2))
@@ -63,7 +63,7 @@ remove_data_out_of_range <- function() {
     range_list <- get_valid_range(signal)
     
     temp_filtered_df <- qc1_df %>% 
-      select(Participant_ID, Day, Treatment, Timestamp, Sinterface_Time, TreatmentTime, !!signal) %>% 
+      dplyr::select(Participant_ID, Day, Treatment, Timestamp, Sinterface_Time, TreatmentTime, !!signal) %>% 
       filter(qc1_df[[signal]] < range_list[1] | qc1_df[[signal]] > range_list[2]) %>% 
       gather(Signal_Name, Value, !!signal)
     

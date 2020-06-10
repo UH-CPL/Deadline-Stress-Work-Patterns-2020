@@ -39,16 +39,26 @@ round_p_value <- function(p_value) {
 }
 
 
-draw_regression_plot <- function(df, file_type, x_col, y_col) {
+draw_regression_plot <- function(df, file_type, x_col, y_col, remove_outlier_regression_plot=F) {
+  outlier_no <- 5
+  if ('PP' %in% c(x_col, y_col)) {
+    outlier_no <- 6
+  }
+  
   df <- df %>%
     filter(Treatment=='WS') %>%
-    select(Participant_ID,	Day, !!x_col, !!y_col) %>%
+    dplyr::select(Participant_ID,	Day, !!x_col, !!y_col) %>%
     na.omit() %>% 
     mutate(Diff_Signal=abs(.[[x_col]]-.[[y_col]]),
            ID=paste0(Participant_ID, '-', Day)) %>% 
     arrange(desc(Diff_Signal)) %>% 
-    # mutate(Is_Outlier = ifelse(rownames(.) %in% c(seq(1, 5)), "y", "n")) 
-    mutate(Is_Outlier = ifelse(rownames(.) %in% c(seq(1, 5)), 1, 0)) 
+    # mutate(Is_Outlier = ifelse(rownames(.) %in% c(seq(1, outlier_no)), "y", "n")) 
+    mutate(Is_Outlier = ifelse(rownames(.) %in% c(seq(1, outlier_no)), 1, 0)) 
+  
+  if (remove_outlier_regression_plot==T & 'PP' %in% c(x_col, y_col)) {
+    df <- df %>% 
+      slice(outlier_no:n())
+  }
   
   cor_test <- cor.test(df[[x_col]], df[[y_col]], method = "pearson")
   sample_no <- df %>% dplyr::summarize(n = dplyr::n())
@@ -123,16 +133,21 @@ draw_regression_plots_treatment <- function(treatment, x_col, y_col) {
 draw_regression_plots <- function() {
   # draw_regression_plots_treatment(treatment, 'E4_HR', 'iWatch_HR')
   
-  signal_name_list <- c('PP', 'E4_HR', 'E4_EDA', 'iWatch_HR')
+  # signal_name_list <- c('PP', 'E4_HR', 'E4_EDA', 'iWatch_HR')
+  # 
+  # for (idx_1 in 1:length(signal_name_list)) {
+  #   for (idx_2 in idx_1+1:length(signal_name_list)) {
+  #     if (idx_2<=length(signal_name_list)) {
+  #       for (treatment in c('RB', 'WS')) {
+  #         draw_regression_plots_treatment(treatment, signal_name_list[idx_1], signal_name_list[idx_2])
+  #       }
+  #     }
+  #   }
+  # }
   
-  for (idx_1 in 1:length(signal_name_list)) {
-    for (idx_2 in idx_1+1:length(signal_name_list)) {
-      if (idx_2<=length(signal_name_list)) {
-        for (treatment in c('RB', 'WS')) {
-          draw_regression_plots_treatment(treatment, signal_name_list[idx_1], signal_name_list[idx_2])
-        }
-      }
-    }
+  for (treatment in c('RB', 'WS')) {
+    draw_regression_plots_treatment(treatment, 'E4_HR', 'iWatch_HR')
+    draw_regression_plots_treatment(treatment, 'PP', 'E4_EDA')
   }
 }
 

@@ -68,6 +68,7 @@ process_quality_control_phase_one()
 
 
 source(file.path(script_dir, 'vs-regression-plot.R'))
+remove_outlier_regression_plot <<- T
 draw_regression_plots()
 
 

@@ -378,12 +378,12 @@ generate_daywise_mean_data <- function(mean_df, output_v2_file_name) {
 
 generate_treatment_mean_data <- function(df) {
   mean_df <- df %>%
-    select(Participant_ID,	Day, Treatment, Mask, PP, E4_HR, E4_EDA, iWatch_HR) %>%
+    dplyr::select(Participant_ID,	Day, Treatment, Mask, PP, E4_HR, E4_EDA, iWatch_HR) %>%
     group_by(Participant_ID,	Day, Treatment) %>%
     filter(Mask==1) %>%
     summarize_all(mean, na.rm=T) %>%
     ungroup() %>% 
-    select(-Mask)
+    dplyr::select(-Mask)
   
   return(mean_df)
 }

@@ -1,10 +1,10 @@
 #-------------------------#
 #--------LIBRARIES--------#
 #-------------------------#
-library(dplyr)
 library(stringr)    ## for func str_detect()
 library(reshape2)
 library(tidyr)
+library(dplyr)
 
 
 
@@ -220,7 +220,7 @@ format_activity_app_usage_data <- function() {
   ## 2. Remove app usage data except C-R & C-W
   ## 3. Get final app usage column
   all_subj_df <- get_final_activities_and_app_usage(all_subj_df) %>% 
-    select(Participant_ID,
+    dplyr::select(Participant_ID,
            Day,
            Treatment,
            Timestamp,

@@ -96,69 +96,72 @@ draw_signal_plots <- function(signal_df, signal, test) {
         
         message(paste(subj, day, treatment))
         
-        plot <- ggplot(data=treatment_df, aes(x=TreatmentTime)) + 
+        if (nrow(treatment_df)>0) {
+          plot <- ggplot(data=treatment_df, aes(x=TreatmentTime)) + 
             geom_line(aes_string(y=paste0('Raw_', signal)),
                       color='gray',
                       alpha = 0.6)  
         
         if(signal %in% colnames(treatment_df)) {
           plot <- plot +
-            geom_line(aes_string(y=signal),
-                    color='blue',
-                    alpha = 0.8) 
+              geom_line(aes_string(y=signal),
+                      color='blue',
+                      alpha = 0.8) 
+          }
+          
+          plot <- plot +
+            # geom_line(aes_string(y=signal),
+            #           color='blue',
+            #           alpha = 0.8) +
+            
+            ggtitle(paste0(subj, ' - ', day, ' - ', treatment)) +
+            xlab('Time [s]') +
+            ylab(signal) 
+            
+            
+            # geom_line(aes_string(y=paste0('Trans_', signal)),
+            #           color='green',
+            #           alpha = 0.8) +
+            # 
+            # scale_y_continuous(
+            #   limits=c(0, 1),
+            #   name = signal,
+            #   sec.axis = sec_axis(
+            #     trans=~.*1,
+            #     # trans='log',
+            #     name=paste0('ln(', signal, ')'))
+            # ) +
+            
+  
+          plot <- plot +  
+            theme_bw() +
+            theme(
+                  panel.grid.major = element_blank(),
+                  panel.grid.minor = element_blank(),
+                  axis.line = element_line(colour = "black"),
+                  plot.title = element_text(hjust = 0.5, size = 16)
+                  )
+          
+          print(plot)
+          
+          
+          plot <- ggplot(data=treatment_df, aes(x=TreatmentTime)) +
+            geom_line(aes_string(y=paste0('Trans_', signal)),
+                      color='green',
+                      alpha = 0.8) +
+            xlab('Time [s]') +
+            ylab(paste0('ln( ', signal, ' )')) +
+            theme_bw() +
+            theme(
+                  panel.grid.major = element_blank(),
+                  panel.grid.minor = element_blank(),
+                  axis.line = element_line(colour = "black"),
+                  plot.title = element_text(hjust = 0.5, size = 16)
+                  )
+  
+          print(plot)
+          
         }
-        
-        plot <- plot +
-          # geom_line(aes_string(y=signal),
-          #           color='blue',
-          #           alpha = 0.8) +
-          
-          ggtitle(paste0(subj, ' - ', day, ' - ', treatment)) +
-          xlab('Time [s]') +
-          ylab(signal) 
-          
-          
-          # geom_line(aes_string(y=paste0('Trans_', signal)),
-          #           color='green',
-          #           alpha = 0.8) +
-          # 
-          # scale_y_continuous(
-          #   limits=c(0, 1),
-          #   name = signal,
-          #   sec.axis = sec_axis(
-          #     trans=~.*1,
-          #     # trans='log',
-          #     name=paste0('ln(', signal, ')'))
-          # ) +
-          
-
-        plot <- plot +  
-          theme_bw() +
-          theme(
-                panel.grid.major = element_blank(),
-                panel.grid.minor = element_blank(),
-                axis.line = element_line(colour = "black"),
-                plot.title = element_text(hjust = 0.5, size = 16)
-                )
-        
-        print(plot)
-        
-        
-        plot <- ggplot(data=treatment_df, aes(x=TreatmentTime)) +
-          geom_line(aes_string(y=paste0('Trans_', signal)),
-                    color='green',
-                    alpha = 0.8) +
-          xlab('Time [s]') +
-          ylab(paste0('ln( ', signal, ' )')) +
-          theme_bw() +
-          theme(
-                panel.grid.major = element_blank(),
-                panel.grid.minor = element_blank(),
-                axis.line = element_line(colour = "black"),
-                plot.title = element_text(hjust = 0.5, size = 16)
-                )
-
-        print(plot)
       }
     }
   }

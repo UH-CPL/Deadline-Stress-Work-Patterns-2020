@@ -331,7 +331,7 @@ get_activity_tracker_ontologies <- function(activity_df, pp_df) {
                                                        format='%a %b %d %Y %H:%M:%S')))
   
   pp_df <- pp_df %>% 
-    select(-Ontologies) %>%
+    dplyr::select(-Ontologies) %>%
     ##############################################################################################
     merge(activity_df, by='Timestamp', all.x=T)  ## CHECK!!! - all vs. all.x
     ##############################################################################################
@@ -401,7 +401,7 @@ get_app_usage_data <- function(subj_name, day_serial, ws_df) {
       filter(Activity=='Application') %>% 
       mutate(Application=Details,
              Timestamp=convert_s_interface_date(convert_marker_date(Timestamp))) %>%
-      select(Timestamp, Application) %>%
+      dplyr::select(Timestamp, Application) %>%
       ##############################################################################################
       merge(ws_df, by='Timestamp', all=T)      ## CHECK!!! - all vs. all.x
     
@@ -487,18 +487,34 @@ curate_ws_session_data <- function(subj_name, day_serial, rb_df) {
 }
 
 
-get_decay <- function(treatment) {
-  if (treatment == 'RB') {
-    return(1/6)
-  } 
-
-  return(1/150)
+get_decay <- function(signal, treatment) {
+  if (signal %in% c('EDA')) {
+    if (treatment == 'RB') {
+      return(1/6)
+    } 
+    
+    return(1/150)
+    
+  } else if (signal %in% c('HR')) {
+    if (treatment == 'RB') {
+      return(1/2)
+    } 
+    
+    return(1/75)
+    
+  } else if (signal %in% c('iWatch_HR')) {
+    if (treatment == 'RB') {
+      return(1)
+    } 
+    
+    return(1/20)
+  }
 }
 
 get_smooth_signal_for_session <- function(df, treatment, signal) {
   session_df <- df %>% 
     filter(Treatment==treatment) %>%
-    select(-Treatment) %>%
+    dplyr::select(-Treatment) %>%
     na.omit()
   
   # print('------------------------------------ 1')
@@ -509,7 +525,7 @@ get_smooth_signal_for_session <- function(df, treatment, signal) {
     # }
     session_df[[signal]] <- remove_noise(session_df[[paste0('Raw_', signal)]], 
                                          removeImpluse = T, 
-                                         lowpassDecayFreq = get_decay(treatment), 
+                                         lowpassDecayFreq = get_decay(signal, treatment), 
                                          samplePerSecond = 1)
   }
   # print('------------------------------------ 2')
@@ -523,7 +539,7 @@ generate_smooth_signal <- function(df, signal) {
   
   df <- df %>% 
     filter(Treatment %in% c('RB', 'WS')) %>% 
-    select(Timestamp, Treatment, !!raw_signal_name)
+    dplyr::select(Timestamp, Treatment, !!raw_signal_name)
   
   smooth_df <- tibble()
   treatments <- unique(df$Treatment)
@@ -537,12 +553,17 @@ generate_smooth_signal <- function(df, signal) {
 }
 
 smooth_signal <- function(df) {
+  # print(head(df, 2))
+  
   wrist_signal_list <- c('EDA', 'HR', 'iWatch_HR')
   final_smooth_df <<- df
   
   for (signal in wrist_signal_list) {
     if (signal %in% colnames(df)) {
-      final_smooth_df <<- final_smooth_df %>% select(-!!signal)
+      # print(signal)
+      # print(colnames(df))
+      final_smooth_df <<- final_smooth_df %>% 
+        dplyr::select(-!!signal)
     }
   }
   
@@ -694,7 +715,7 @@ refactor_and_export_all_subj_data <- function(all_subj_df) {
     arrange(Timestamp) %>%
     dplyr::mutate(TreatmentTime=as.numeric(Timestamp)-as.numeric(head(Timestamp, 1))) %>%
     
-    select(Participant_ID,
+    dplyr::select(Participant_ID,
            Day,
            Treatment,
            Timestamp,
@@ -730,7 +751,7 @@ refactor_and_export_all_subj_data <- function(all_subj_df) {
   # If we don't want eda smoothing, we will remove the smoothened column and rename the raw value to E4_EDA
   if(!enable_eda_smoothing) {
     all_subj_df <- all_subj_df %>%
-      select(-E4_EDA) %>% 
+      dplyr::select(-E4_EDA) %>% 
       dplyr::rename(E4_EDA=Raw_E4_EDA)
   }
   
@@ -750,7 +771,7 @@ curate_data <- function() {
   subj_list <- custom_read_csv(file.path(curated_data_dir, utility_data_dir, subj_list_file_name))$Subject
   
   sapply(subj_list, function(subj_name) {
-  # sapply(subj_list[3], function(subj_name) {
+  # sapply(subj_list[1], function(subj_name) {
   # sapply(c('T003', 'T005'), function(subj_name) {
 
     subj_dir <- file.path(raw_data_dir, grp_dir, subj_name)

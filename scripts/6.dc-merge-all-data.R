@@ -33,7 +33,7 @@ merge_all_data <- function() {
   # print(colnames(qc0_df))
   
   qc0_df <- custom_read_csv(file.path(physiological_data_path, qc0_final_file_name)) %>%
-    select(Participant_ID, Day, Treatment, Timestamp, Sinterface_Time, TreatmentTime, 
+    dplyr::select(Participant_ID, Day, Treatment, Timestamp, Sinterface_Time, TreatmentTime, 
            Raw_PP, Raw_E4_EDA, Raw_E4_HR, Raw_iWatch_HR, 
            Activities, Activities_QC1, Activities_QC2, Activity_One, Activity_Two, Activity_Three,
            Reduced_Activities_QC1, Reduced_Activity_One, Reduced_Activity_Two, Reduced_Activity_Three,
@@ -44,7 +44,7 @@ merge_all_data <- function() {
   #                             This might be QC1 or QC2
   ############################################################################################
   qc_df <- custom_read_csv(file.path(physiological_data_path, qc1_file_name)) %>% 
-    select(Timestamp, PP, E4_HR, E4_EDA, iWatch_HR) 
+    dplyr::select(Timestamp, PP, E4_HR, E4_EDA, iWatch_HR) 
   
   
   # select(Participant_ID, Day, Treatment, Timestamp, TreatmentTime, PP, E4_HR, E4_EDA, iWatch_HR, Mask) 
@@ -55,7 +55,7 @@ merge_all_data <- function() {
   #   )
   
   transformed_df <- custom_read_csv(file.path(physiological_data_path, qc1_transformed_file_name)) %>% 
-    select(Timestamp, PP, E4_HR, E4_EDA, iWatch_HR) %>% 
+    dplyr::select(Timestamp, PP, E4_HR, E4_EDA, iWatch_HR) %>% 
     dplyr::rename(
       Trans_PP=PP,
       Trans_E4_HR=E4_HR,
@@ -84,7 +84,7 @@ merge_all_data <- function() {
 
 
     arrange(Participant_ID, Day, Treatment, TreatmentTime) %>%
-    select(
+    dplyr::select(
       Participant_ID,
       Day,
       Treatment,
