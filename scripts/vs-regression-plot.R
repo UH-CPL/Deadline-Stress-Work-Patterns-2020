@@ -39,7 +39,7 @@ round_p_value <- function(p_value) {
 }
 
 
-draw_regression_plot <- function(df, file_type, x_col, y_col, remove_outlier_regression_plot=F) {
+draw_regression_plot <- function(df, file_type, x_col, y_col) {
   outlier_no <- 5
   if ('PP' %in% c(x_col, y_col)) {
     outlier_no <- 6
@@ -57,7 +57,7 @@ draw_regression_plot <- function(df, file_type, x_col, y_col, remove_outlier_reg
   
   if (remove_outlier_regression_plot==T & 'PP' %in% c(x_col, y_col)) {
     df <- df %>% 
-      slice(outlier_no:n())
+      slice(outlier_no+1:n())
   }
   
   cor_test <- cor.test(df[[x_col]], df[[y_col]], method = "pearson")
