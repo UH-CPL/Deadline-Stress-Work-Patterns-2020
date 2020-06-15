@@ -35,6 +35,16 @@ setwd(project_dir)
 
 # signal_list <- c('PP', 'E4_EDA', 'E4_HR', 'iWatch_HR')
 signal_list <- c('PP')
+
+
+Ontology_Color <- c( "R" = "springgreen", 
+                     "W" = "blue",  
+                     "I" = "orange", 
+                     "Out" = "gray92", 
+                     "SP" = "red", 
+                     "SA" = "magenta", 
+                     "NA"="white"
+                     )
 ``` 
 
 \newpage
@@ -86,6 +96,36 @@ add_theme <- function(plot) {
   
   plot
 }  
+
+modify_activity_data <- function(activity_df) {
+  
+  activity_df[is.na(activity_df)] <- ""
+          
+  for (cell in 1:nrow(activity_df)) {
+    if(activity_df$Reduced_Activity_One[cell]==activity_df$Reduced_Activity_Two[cell]){
+      #print(cell)
+        activity_df$Reduced_Activity_Two[cell]=activity_df$Reduced_Activity_Three[cell]
+        activity_df$Reduced_Activity_Three[cell] = ""
+        activity_df$Reduced_Activities_QC1[cell]=paste(activity_df$Reduced_Activity_One[cell],
+                                                       activity_df$Reduced_Activity_Two[cell],
+                                                       activity_df$Reduced_Activity_Three[cell], sep="+")
+        activity_df$Reduced_Activities_QC1[cell]<-gsub("(\\+)*$", "", activity_df$Reduced_Activities_QC1[cell])
+    }
+
+  if ((activity_df$Reduced_Activity_One[cell]=="SA" & activity_df$Reduced_Activity_Two[cell]=="R") | (activity_df$Reduced_Activity_One[cell]=="SA" & activity_df$Reduced_Activity_Two[cell]=="W")){
+    temp=activity_df$Reduced_Activity_One[cell]
+    activity_df$Reduced_Activity_One[cell]=activity_df$Reduced_Activity_Two[cell]
+    activity_df$Reduced_Activity_Two[cell]=temp
+  }
+}
+  tab_timeline <- table(activity_df$Reduced_Activities_QC1)
+  activity_df<-activity_df[activity_df$Reduced_Activities_QC1 %in% names(tab_timeline)[tab_timeline>60], ]
+  activity_df$Reduced_Activity_Two[activity_df$Reduced_Activity_Two==""]<-"NA"
+  activity_df$Reduced_Activity_Three[activity_df$Reduced_Activity_Three==""]<-"NA"
+  activity_df$Application_QC3[activity_df$Application_QC3==""]<-"NA"
+  
+  activity_df
+}
 
 draw_signal_activity_comparison_plots <- function() {
   if (test==T) {
@@ -156,54 +196,26 @@ draw_signal_activity_comparison_plots <- function() {
                    Application_QC3
                    )
           
-          
-          
           #######################################################################################################
           #######################################################################################################
-          # print(unique(activity_df$Reduced_Activity_Two))
-          
-          activity_df[is.na(activity_df)] <- ""
-          
-          for (cell in 1:nrow(activity_df)) {
-            if(activity_df$Reduced_Activity_One[cell]==activity_df$Reduced_Activity_Two[cell]){
-              #print(cell)
-                activity_df$Reduced_Activity_Two[cell]=activity_df$Reduced_Activity_Three[cell]
-                activity_df$Reduced_Activity_Three[cell] = ""
-                activity_df$Reduced_Activities_QC1[cell]=paste(activity_df$Reduced_Activity_One[cell],
-                                                               activity_df$Reduced_Activity_Two[cell],
-                                                               activity_df$Reduced_Activity_Three[cell], sep="+")
-                activity_df$Reduced_Activities_QC1[cell]<-gsub("(\\+)*$", "", activity_df$Reduced_Activities_QC1[cell])
-            }
-
-          if ((activity_df$Reduced_Activity_One[cell]=="SA" & activity_df$Reduced_Activity_Two[cell]=="R") | (activity_df$Reduced_Activity_One[cell]=="SA" & activity_df$Reduced_Activity_Two[cell]=="W")){
-            temp=activity_df$Reduced_Activity_One[cell]
-            activity_df$Reduced_Activity_One[cell]=activity_df$Reduced_Activity_Two[cell]
-            activity_df$Reduced_Activity_Two[cell]=temp
-          }
-        }
-          tab_timeline <- table(activity_df$Reduced_Activities_QC1)
-          activity_df<-activity_df[activity_df$Reduced_Activities_QC1 %in% names(tab_timeline)[tab_timeline>60], ]
-          activity_df$Reduced_Activity_Two[activity_df$Reduced_Activity_Two==""]<-"NA"
-          activity_df$Reduced_Activity_Three[activity_df$Reduced_Activity_Three==""]<-"NA"
-          activity_df$Application_QC3[activity_df$Application_QC3==""]<-"NA"
-          
-          Ontology_Color <- c( "R" = "springgreen", 
-                               "W" = "blue",  
-                               "I" = "orange", 
-                               "Out" = "gray92", 
-                               "SP" = "red", 
-                               "SA" = "magenta", 
-                               "NA"="white")
+          activity_df <- modify_activity_data(activity_df)
           #######################################################################################################
           #######################################################################################################
+          
+          # activity_plot <- ggplot(activity_df, aes(x=TreatmentTime)) +
+          #   geom_point(aes(y=factor(1), colour=Reduced_Activity_One), shape=15, size=5) +
+          #   geom_point(aes(y=1.12, colour=Reduced_Activity_Two), shape=15, size=5) +
+          #   geom_point(aes(y=1.24, colour=Reduced_Activity_Three), shape=15, size=5) +
+          #   scale_color_manual(values = Ontology_Color, limits = c("R", "W", "Out", "SA", "SP", "I", "NA")) +
+          #   guides(colour = guide_legend(nrow = 1))
+          
           
           activity_plot <- ggplot(activity_df, aes(x=TreatmentTime)) +
-            geom_point(aes(y=factor(1), colour=Reduced_Activity_One), shape=15, size=5) +
-            geom_point(aes(y=1.12, colour=Reduced_Activity_Two), shape=15, size=5) +
-            geom_point(aes(y=1.24, colour=Reduced_Activity_Three), shape=15, size=5) +
-            # scale_color_manual(values = Ontology_Color) +
-            scale_color_manual(values = Ontology_Color, limits = c("R", "W", "Out", "SA", "SP", "I", "NA")) +
+            geom_point(aes(y=factor(1), colour=Activity_One), shape=15, size=5) +
+            geom_point(aes(y=1.12, colour=Activity_Two), shape=15, size=5) +
+            geom_point(aes(y=1.24, colour=Activity_Three), shape=15, size=5) +
             guides(colour = guide_legend(nrow = 1))
+          
           
           app_colors <- gg_color_hue(length(unique(activity_df$Application_QC3)))
           app_colors[unique(activity_df$Application_QC3)=="NA"] <- "white"
@@ -244,7 +256,7 @@ draw_signal_activity_comparison_plots <- function() {
 
 <!-- \newpage -->
 ```{r echo=FALSE, warning = FALSE, message = FALSE}
-test <<- F
+test <<- T
 read_data()
 draw_signal_activity_comparison_plots()
 ```
