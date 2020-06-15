@@ -63,6 +63,30 @@ read_data <- function() {
 }
 
 
+gg_color_hue <- function(n) {
+  hues = seq(15, 375, length = n + 1)
+  hcl(h = hues, l = 65, c = 100)[1:n]
+}
+
+add_theme <- function(plot) {
+  plot <- plot + 
+    theme_bw() +
+    theme(
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank(),
+      legend.position="bottom",
+      legend.title = element_blank(),
+      # axis.title.x=element_blank(),
+      # axis.text.x=element_blank(),
+      # axis.ticks.x=element_blank(),
+      axis.title.y=element_blank(),
+      axis.text.y=element_blank(),
+      axis.ticks.y=element_blank()
+      )
+  
+  plot
+}  
+
 draw_signal_activity_comparison_plots <- function() {
   if (test==T) {
     # subj_list <- c('T001', 'T011', 'T017')
@@ -113,8 +137,6 @@ draw_signal_activity_comparison_plots <- function() {
                 axis.line = element_line(colour = "black"),
                 plot.title = element_text(hjust = 0.5, size = 16),
                 axis.title.x=element_blank(),
-                # axis.text.x=element_blank(),
-                # axis.ticks.x=element_blank(),
                 axis.title.y=element_blank(),
                 axis.text.y=element_blank(),
                 axis.ticks.y=element_blank(),
@@ -125,7 +147,14 @@ draw_signal_activity_comparison_plots <- function() {
           activity_df <- day_df %>% 
             filter(Treatment==treatment) %>% 
             select(TreatmentTime,
-                   Reduced_Activities_QC1, Reduced_Activity_One, Reduced_Activity_Two, Reduced_Activity_Three)
+                   
+                   Reduced_Activities_QC1, 
+                   Reduced_Activity_One, 
+                   Reduced_Activity_Two, 
+                   Reduced_Activity_Three,
+                   
+                   Application_QC3
+                   )
           
           
           
@@ -156,8 +185,7 @@ draw_signal_activity_comparison_plots <- function() {
           activity_df<-activity_df[activity_df$Reduced_Activities_QC1 %in% names(tab_timeline)[tab_timeline>60], ]
           activity_df$Reduced_Activity_Two[activity_df$Reduced_Activity_Two==""]<-"NA"
           activity_df$Reduced_Activity_Three[activity_df$Reduced_Activity_Three==""]<-"NA"
-          
-          print(unique(activity_df$Reduced_Activity_Two))
+          activity_df$Application_QC3[activity_df$Application_QC3==""]<-"NA"
           
           Ontology_Color <- c( "R" = "springgreen", 
                                "W" = "blue",  
@@ -173,25 +201,23 @@ draw_signal_activity_comparison_plots <- function() {
             geom_point(aes(y=factor(1), colour=Reduced_Activity_One), shape=15, size=5) +
             geom_point(aes(y=1.12, colour=Reduced_Activity_Two), shape=15, size=5) +
             geom_point(aes(y=1.24, colour=Reduced_Activity_Three), shape=15, size=5) +
-            xlab('Time [s]') +
             # scale_color_manual(values = Ontology_Color) +
             scale_color_manual(values = Ontology_Color, limits = c("R", "W", "Out", "SA", "SP", "I", "NA")) +
-            guides(colour = guide_legend(nrow = 1)) +
-            theme_bw() +
-            theme(
-              panel.grid.major = element_blank(),
-              panel.grid.minor = element_blank(),
-              legend.position="bottom",
-              legend.title = element_blank(),
-              # axis.title.x=element_blank(),
-              # axis.text.x=element_blank(),
-              # axis.ticks.x=element_blank(),
-              axis.title.y=element_blank(),
-              axis.text.y=element_blank(),
-              axis.ticks.y=element_blank(),
-              )
+            guides(colour = guide_legend(nrow = 1))
+          
+          app_colors <- gg_color_hue(length(unique(activity_df$Application_QC3)))
+          app_colors[unique(activity_df$Application_QC3)=="NA"] <- "white"
+          
+          app_usage_plot <- ggplot(activity_df, aes(x=TreatmentTime)) +  
+            geom_point(aes(y=factor(1), colour=Application_QC3), shape=15, size=5) +
+            scale_color_manual(values=app_colors, limits = unique(activity_df$Application_QC3)) +
+            xlab('Time [s]')
             
-          grid_plot <- grid.arrange(signal_plot, activity_plot, ncol=1)
+          
+          app_usage_plot <- add_theme(app_usage_plot)
+          activity_plot <- add_theme(activity_plot)
+            
+          grid_plot <- grid.arrange(signal_plot, activity_plot, app_usage_plot, ncol=1)
           save_plot(file.path(project_dir, plots_dir, activity_plots_dir, 
                               paste0(subj, '_', day, '_', treatment)), grid_plot)
           
@@ -205,6 +231,9 @@ draw_signal_activity_comparison_plots <- function() {
     }
   }
 }
+
+
+
 
 
 
