@@ -248,15 +248,21 @@ format_activity_app_usage_data <- function() {
            Activity_Three,
            
            Reduced_Activities_QC1,
+           
+           ###############################
            Reduced_Activity_One,
            Reduced_Activity_Two,
            Reduced_Activity_Three,
-           
+           ###############################
            
            Application,
            Application_QC1,
            Application_QC2,
            Application_QC3,
+           
+           ###############################
+           # Reduced_Application,
+           ###############################
            
            Mask
     )

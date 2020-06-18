@@ -293,7 +293,7 @@ draw_signal_activity_comparison_plots <- function() {
 
 <!-- \newpage -->
 ```{r echo=FALSE, warning = FALSE, message = FALSE}
-test <<- T
+test <<- F
 show_activity_details <<- F
 
 read_data()

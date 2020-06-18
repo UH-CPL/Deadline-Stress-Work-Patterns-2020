@@ -203,7 +203,7 @@ get_downsampled_pp <- function(subj_name, day_serial, session_name) {
   # downsampled_pp_df <- reduce_noise_and_downsample(session_dir, pp_file_name)
   
   downsampled_pp_df <- downsampled_pp_df %>% 
-    mutate(Participant_ID=subj_name,
+    dplyr::mutate(Participant_ID=subj_name,
            Day=day_serial,
            Ontologies=NA,
            Treatment=get_session_abbr(session_name)) %>%
@@ -678,8 +678,9 @@ refactor_and_export_all_subj_data <- function(all_subj_df) {
   #   Ontologies==NA & Treatment=='WS' & Participant_ID=='T001'~'Working',
   #   Ontologies==NA & Treatment=='WS' & Participant_ID=='T003'~'C - Writing/Reading'))
   
+  
   all_subj_df <- all_subj_df %>%
-    mutate(Ontologies=case_when(
+    dplyr::mutate(Ontologies=case_when(
       #is.na(Ontologies) & Treatment=='WS' & Participant_ID=='T001'~'Working',
       is.na(Ontologies) & Treatment=='WS' & Participant_ID=='T003'~'C - Writing/Reading',
       TRUE~Ontologies))
@@ -771,14 +772,14 @@ curate_data <- function() {
   subj_list <- custom_read_csv(file.path(curated_data_dir, utility_data_dir, subj_list_file_name))$Subject
   
   sapply(subj_list, function(subj_name) {
-  # sapply(subj_list[1], function(subj_name) {
+  # sapply(subj_list[2], function(subj_name) {
   # sapply(c('T003', 'T005'), function(subj_name) {
 
     subj_dir <- file.path(raw_data_dir, grp_dir, subj_name)
     day_list <- get_dir_list(subj_dir)
     
-    sapply(day_list, function(day_serial) {
-    # sapply(day_list[1], function(day_serial) {
+    # sapply(day_list, function(day_serial) {
+    sapply(day_list[4], function(day_serial) {
       tryCatch({
         write_log_msg(paste0('\n----------\n', subj_name, '-', day_serial, "\n----------"), curation_log_file)
         

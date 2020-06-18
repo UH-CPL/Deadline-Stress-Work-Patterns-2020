@@ -50,6 +50,22 @@ transformation_parameter <- log_transformation
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+#-------------------------#
+#-----Function Calling----#
+#-------------------------#
+
 #-------------------------------------------------------------------------------------------- 1
 # source(file.path(script_dir, '1.dc-curate-and-process-data.R'))
 # curate_data()
@@ -57,8 +73,8 @@ transformation_parameter <- log_transformation
 
 
 #-------------------------------------------------------------------------------------------- 2
-# source(file.path(script_dir, '2.dc-process-activity-app-usage-data.R'))
-# format_activity_app_usage_data()
+source(file.path(script_dir, '2.dc-process-activity-app-usage-data.R'))
+format_activity_app_usage_data()
 
 
 
@@ -67,9 +83,9 @@ transformation_parameter <- log_transformation
 # process_quality_control_phase_one()
 
 
-source(file.path(script_dir, 'vs-regression-plot.R'))
-remove_outlier_regression_plot <<- T
-draw_regression_plots()
+# source(file.path(script_dir, 'vs-regression-plot.R'))
+### remove_outlier_regression_plot <<- T
+# draw_regression_plots()
 
 
 

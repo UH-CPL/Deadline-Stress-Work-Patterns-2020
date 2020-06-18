@@ -89,6 +89,7 @@ merge_all_data <- function() {
       Day,
       Treatment,
       Timestamp,
+      Sinterface_Time,
       TreatmentTime,
 
       Raw_PP,
