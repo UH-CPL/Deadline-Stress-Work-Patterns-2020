@@ -1,6 +1,6 @@
 
 ----------
-T003-Day1
+T001-Day1
 ----------
 Processing.....Resting Baseline
 Processing.....Working Session
@@ -9,12 +9,11 @@ Merging.....iwatch data
 Smoothing.....signals
 smoothing...EDA
 smoothing...HR
-smoothing...iWatch_HR
 Fixing.....missing working session data
 Merging.....all subj data
 
 ----------
-T003-Day2
+T001-Day2
 ----------
 Processing.....Resting Baseline
 Processing.....Working Session
@@ -23,12 +22,11 @@ Merging.....iwatch data
 Smoothing.....signals
 smoothing...EDA
 smoothing...HR
-smoothing...iWatch_HR
 Fixing.....missing working session data
 Merging.....all subj data
 
 ----------
-T003-Day3
+T001-Day3
 ----------
 Processing.....Resting Baseline
 Processing.....Working Session
@@ -37,12 +35,11 @@ Merging.....iwatch data
 Smoothing.....signals
 smoothing...EDA
 smoothing...HR
-smoothing...iWatch_HR
 Fixing.....missing working session data
 Merging.....all subj data
 
 ----------
-T003-Day4
+T001-Day4
 ----------
 Processing.....Resting Baseline
 Processing.....Working Session
@@ -51,7 +48,3 @@ Merging.....iwatch data
 Smoothing.....signals
 smoothing...EDA
 smoothing...HR
-Fixing.....missing working session data
-Merging.....all subj data
-Finally...refactoring all subj data
-Total relative time mismatch row: 970

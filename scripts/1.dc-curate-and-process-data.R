@@ -778,8 +778,8 @@ curate_data <- function() {
     subj_dir <- file.path(raw_data_dir, grp_dir, subj_name)
     day_list <- get_dir_list(subj_dir)
     
-    # sapply(day_list, function(day_serial) {
-    sapply(day_list[4], function(day_serial) {
+    sapply(day_list, function(day_serial) {
+    # sapply(day_list[4], function(day_serial) {
       tryCatch({
         write_log_msg(paste0('\n----------\n', subj_name, '-', day_serial, "\n----------"), curation_log_file)
         
