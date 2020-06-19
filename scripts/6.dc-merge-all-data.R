@@ -37,7 +37,7 @@ merge_all_data <- function() {
            Raw_PP, Raw_E4_EDA, Raw_E4_HR, Raw_iWatch_HR, 
            Activities, Activities_QC1, Activities_QC2, Activity_One, Activity_Two, Activity_Three,
            Reduced_Activities_QC1, Reduced_Activity_One, Reduced_Activity_Two, Reduced_Activity_Three,
-           Application, Application_QC1, Application_QC2, Application_QC3, 
+           Application, Application_QC1, Application_QC2, Application_QC3, Reduced_Application,
            Mask)
   
   ############################################################################################
@@ -108,29 +108,40 @@ merge_all_data <- function() {
       iWatch_HR,
       Trans_iWatch_HR,
 
-      Activities, 
-      Activities_QC1, 
-      Activities_QC2, 
+      # Activities, 
+      # Activities_QC1, 
+      # Activities_QC2, 
       
       Activity_One, 
       Activity_Two, 
       Activity_Three,
       
-      Reduced_Activities_QC1, 
+      Reduced_Activities_QC1,
+      
       Reduced_Activity_One, 
       Reduced_Activity_Two, 
       Reduced_Activity_Three,
       
-      Application, 
-      Application_QC1, 
-      Application_QC2, 
-      Application_QC3, 
+      # Application, 
+      # Application_QC1, 
+      # Application_QC2, 
+      # Application_QC3, 
+      
+      Reduced_Application,
       
       Mask
     )
 
   print_msg('Done merging data...exporting')
   convert_to_csv(full_df, file.path(physiological_data_path, full_df_file_name))
+  
+  full_df_1 <- full_df %>% 
+    filter(Participant_ID %in% c('T001', 'T003', 'T005', 'T007', 'T009'))
+  convert_to_csv(full_df_1, file.path(physiological_data_path, 'full_df_1.csv'))
+  
+  full_df_2 <- full_df %>% 
+    filter(Participant_ID %in% c('T011', 'T013', 'T015', 'T017'))
+  convert_to_csv(full_df_2, file.path(physiological_data_path, 'full_df_2.csv'))
 }
 
 
