@@ -45,6 +45,7 @@ rr_file_pattern <- 'IBI.csv'
 iWatch_file_pattern <- '.*iWatch.csv'
 
 
+################-------Activities-------------##################
 
 # computer_usage_pattern = '^CR$|^CW$|^Computer - Reading$|^Computer - Writing$|^C - Reading$|^C - Writing$|^C - Writing/Reading$'
 computer_usage_pattern = 'CR|CW|Computer - Reading|Computer - Writing|C - Reading|C - Writing|C - Writing/Reading|Working'
@@ -64,6 +65,23 @@ PI='H-H Interaction|Personal Interaction PI|Physical Interaction PI'
 VI='C - Talking Skype & others|Virtual Interaction VI'
 
 
+
+################-------Applications-------------##################
+
+DocumentsApp = '^Microsoft Word$|^Microsoft AutoUpdate$|^Microsoft PowerPoint$|^AdobeAcrobat$|^AdobeReader$|^Emacs-x86_64-10_9$|^EndNote X7$|^Microsoft Excel$|^zotero$
+|^Evernote$|^Preview$|^TextEdit$|^Acrobat$|^WINWORD$|^POWERPNT$|^EXCEL$|^MendeleyDesktop$|^AcroRd32$|^Photoshop$|^lyx$|^BibDesk$|^TeXShop$'
+ 
+Email= '^Mail$|^Microsoft Outlook$'
+
+WebBrowsingApps='^Google Chrome$|^firefox|Safari$|^chrome$'
+ 
+EntertainingApps ='^Photos|iTunes$|^Spotify$|^App Store$|^FindMy$'
+
+UtilitiesApps ='^Calendar$|^Finder$|^Notes$|^explorer$'
+
+ProgrammingApps = '^JavaApplicationStub$|^RStudio$|^Osascript$|^Terminal$|^Console$|^ATLAS.ti$|^TeamViewer$|^Idle$|^rstudio$|^pycharm$|^iTerm2$|^Mathematica$|^MATLAB$'  
+
+VirtualCommunicationApps = '^QQ$|^Skype$|^FaceTime$|^Slack$|^WeChat$|^Messages$|^Telegram Desktop$|^Discord$'
 
 
 

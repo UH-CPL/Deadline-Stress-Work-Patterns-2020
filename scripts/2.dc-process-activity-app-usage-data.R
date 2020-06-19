@@ -159,6 +159,22 @@ get_final_activities <- function(all_subj_df) {
   
 
   
+  ############################--------------------Application--------------------############################
+  all_subj_df$Application_QC1<-trimws(all_subj_df$Application_QC1)
+  all_subj_df<- all_subj_df %>%
+    mutate(Reduced_Application = case_when(str_detect(Application_QC1, DocumentsApp)~'Document Apps',
+                                           str_detect(Application_QC1, Email)~'Email',
+                                           str_detect(Application_QC1, WebBrowsingApps)~'Web Browsing Apps',
+                                           str_detect(Application_QC1, EntertainingApps)~'Entertaining Apps',
+                                           str_detect(Application_QC1, UtilitiesApps)~'Utilities Apps',
+                                           str_detect(Application_QC1, ProgrammingApps)~'Programming Apps',
+                                           str_detect(Application_QC1, VirtualCommunicationApps)~'Virtual Communication Apps'))
+  
+  
+  ############################--------------------Application--------------------############################
+  
+  
+  
   return(all_subj_df)
 }
 
@@ -261,7 +277,7 @@ format_activity_app_usage_data <- function() {
            Application_QC3,
            
            ###############################
-           # Reduced_Application,
+           Reduced_Application,
            ###############################
            
            Mask
