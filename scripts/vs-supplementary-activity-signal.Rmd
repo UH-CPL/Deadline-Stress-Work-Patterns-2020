@@ -60,13 +60,13 @@ save_plot <- function(plot_name, plot, width=default_plot_width, height=default_
 
 read_data <- function() {
   if (test==TRUE) {
-    full_df <<- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, 'T005_full_df.csv'))
+    full_df <<- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, 'mini_full_df.csv'))
   } else {
-    full_df <<- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, full_df_file_name)) 
+    full_df <<- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, full_df_file_name))
   }
    
   # full_df <<- full_df %>%
-  #   filter(Participant_ID %in% c('T001', 'T011', 'T017'))
+  #   filter(Participant_ID %in% c('T005'))
   # convert_to_csv(full_df, file.path(project_dir, curated_data_dir, physiological_data_dir, 'mini_full_df.csv'))
   
   # print_msg(colnames(full_df))
@@ -132,7 +132,7 @@ modify_activity_data <- function(activity_df) {
   activity_df$Activity_Two[activity_df$Activity_Two==""]<-"NA"
   activity_df$Activity_Three[activity_df$Activity_Three==""]<-"NA"
   
-  activity_df$Application_QC3[activity_df$Application_QC3==""]<-"NA"
+  activity_df$Reduced_Application[activity_df$Reduced_Application==""]<-"NA"
   
   activity_df
 }
@@ -211,7 +211,7 @@ draw_signal_activity_comparison_plots <- function() {
                    Reduced_Activity_Two, 
                    Reduced_Activity_Three,
                    
-                   Application_QC3
+                   Reduced_Application
                    )
           
           
@@ -255,12 +255,12 @@ draw_signal_activity_comparison_plots <- function() {
           }
           
 
-          app_colors <- gg_color_hue(length(unique(activity_df$Application_QC3)))
-          app_colors[unique(activity_df$Application_QC3)=="NA"] <- "white"
+          app_colors <- gg_color_hue(length(unique(activity_df$Reduced_Application)))
+          app_colors[unique(activity_df$Reduced_Application)=="NA"] <- "white"
 
           app_usage_plot <- ggplot(activity_df, aes(x=TreatmentTime)) +
-            geom_point(aes(y=factor(1), colour=Application_QC3), shape=15, size=5) +
-            scale_color_manual(values=app_colors, limits = unique(activity_df$Application_QC3)) +
+            geom_point(aes(y=factor(1), colour=Reduced_Application), shape=15, size=5) +
+            scale_color_manual(values=app_colors, limits = unique(activity_df$Reduced_Application)) +
             xlab('Time [s]')
 
 
@@ -286,14 +286,14 @@ draw_signal_activity_comparison_plots <- function() {
 
 
 
-# Participant_ID	Day	Treatment	Timestamp	TreatmentTime	Raw_PP	PP	Trans_PP	Raw_E4_EDA	E4_EDA	Trans_E4_EDA	Raw_E4_HR	E4_HR	Trans_E4_HR	Raw_iWatch_HR	iWatch_HR	Trans_iWatch_HR	Activities	Activities_QC1	Activities_QC2	Activity_One	Activity_Two	Activity_Three	Reduced_Activities_QC1	Reduced_Activity_One	Reduced_Activity_Two	Reduced_Activity_Three	Application	Application_QC1	Application_QC2	Application_QC3	Mask
+# Participant_ID	Day	Treatment	Timestamp	TreatmentTime	Raw_PP	PP	Trans_PP	Raw_E4_EDA	E4_EDA	Trans_E4_EDA	Raw_E4_HR	E4_HR	Trans_E4_HR	Raw_iWatch_HR	iWatch_HR	Trans_iWatch_HR	Activities	Activities_QC1	Activities_QC2	Activity_One	Activity_Two	Activity_Three	Reduced_Activities_QC1	Reduced_Activity_One	Reduced_Activity_Two	Reduced_Activity_Three	Application	Application_QC1	Application_QC2	Reduced_Application	Mask
 ```
 
 
 
 <!-- \newpage -->
 ```{r echo=FALSE, warning = FALSE, message = FALSE}
-test <<- F
+test <<- T
 show_activity_details <<- F
 
 read_data()

@@ -73,8 +73,8 @@ transformation_parameter <- log_transformation
 
 
 #-------------------------------------------------------------------------------------------- 2
-source(file.path(script_dir, '2.dc-process-activity-app-usage-data.R'))
-format_activity_app_usage_data()
+# source(file.path(script_dir, '2.dc-process-activity-app-usage-data.R'))
+# format_activity_app_usage_data()
 
 
 
@@ -115,8 +115,8 @@ format_activity_app_usage_data()
 
 
 # -------------------------------------------------------------------------------------------- 6
-# source(file.path(script_dir, '6.dc-merge-all-data.R'))
-# merge_all_data()
+source(file.path(script_dir, '6.dc-merge-all-data.R'))
+merge_all_data()
 
 
 
