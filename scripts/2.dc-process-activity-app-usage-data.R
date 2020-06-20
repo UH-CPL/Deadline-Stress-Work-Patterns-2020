@@ -154,6 +154,33 @@ get_final_activities <- function(all_subj_df) {
   
   all_subj_df$Reduce_Activities<-paste(all_subj_df$Reduced_Activity_One,all_subj_df$Reduced_Activity_Two,all_subj_df$Reduced_Activity_Three, sep="+")
   all_subj_df<-all_subj_df%>%mutate(Reduced_Activities_QC1=gsub("(\\+)*$", "", Reduce_Activities))
+  
+  
+  for ( cell in 1:nrow(all_subj_df)) {
+    
+      if(all_subj_df$Reduced_Activity_Two[cell]!="" & (all_subj_df$Reduced_Activity_One[cell]==all_subj_df$Reduced_Activity_Two[cell])){
+        all_subj_df$Reduced_Activity_Two[cell]= all_subj_df$Reduced_Activity_Three[cell]
+        all_subj_df$Reduced_Activity_Three[cell] = ""
+        all_subj_df$Reduced_Activities_QC1[cell]=paste(all_subj_df$Reduced_Activity_One[cell],all_subj_df$Reduced_Activity_Two[cell],all_subj_df$Reduced_Activity_Three[cell], sep="+")
+        all_subj_df$Reduced_Activities_QC1[cell]<-gsub("(\\+)*$", "", all_subj_df$Reduced_Activities_QC1[cell])
+      }
+
+    
+    
+    if(all_subj_df$Reduced_Activity_Three[cell]!="" & (all_subj_df$Reduced_Activity_Three[cell]==all_subj_df$Reduced_Activity_Two[cell])){
+      all_subj_df$Reduced_Activity_Two[cell]= all_subj_df$Reduced_Activity_Three[cell]
+      all_subj_df$Reduced_Activity_Three[cell] = ""
+      all_subj_df$Reduced_Activities_QC1[cell]=paste(all_subj_df$Reduced_Activity_One[cell],all_subj_df$Reduced_Activity_Two[cell],all_subj_df$Reduced_Activity_Three[cell], sep="+")
+      all_subj_df$Reduced_Activities_QC1[cell]<-gsub("(\\+)*$", "", all_subj_df$Reduced_Activities_QC1[cell])
+    }
+    
+      if ((all_subj_df$Reduced_Activity_One[cell]=="SA" & all_subj_df$Reduced_Activity_Two[cell]=="R") | (all_subj_df$Reduced_Activity_One[cell]=="SA" & all_subj_df$Reduced_Activity_Two[cell]=="W")){
+        temp=all_subj_df$Reduced_Activity_One[cell]
+        all_subj_df$Reduced_Activity_One[cell]=all_subj_df$Reduced_Activity_Two[cell]
+        all_subj_df$Reduced_Activity_Two[cell]=temp
+
+      }
+  }
 
   #######################################Reduced Ontoloties########################
   
