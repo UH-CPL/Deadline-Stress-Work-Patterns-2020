@@ -21,7 +21,8 @@ setwd('..')
 root_dir <- getwd()
 data_dir <- file.path(root_dir, 'curated-data/physiological-data')
 # data_file_name<-'qc99_all_subj.csv'
-data_file_name<-'full_df.csv'
+# data_file_name<-'full_df.csv'
+data_file_name<-'qc0_final_data.csv'
 
 plot_location <- file.path(root_dir, 'plots', 'app-usage-plots')
 ```
@@ -29,8 +30,16 @@ plot_location <- file.path(root_dir, 'plots', 'app-usage-plots')
 
 ```{r cars, echo=FALSE}
 DF<-read.csv(file.path(data_dir,data_file_name),stringsAsFactors = FALSE)
-#unique(DF$Application)
+
+# 
+# check_data<- subset(DF, Participant_ID=="T015" & Day=="Day1" & Activities_QC2=="Other Activities")
+# unique(check_data$Activities_QC1)
+# tab_activities<-table(check_data$Activities_QC2)
+# tab_activities
 ```
+
+
+
 
 ```{r}
 #DF_Sub1<-subset(DF, Participant_ID=="T015" & DF$Treatment=="WS" & Day=="Day1" & DF$Activities_QC2=="Computer Working" & DF$Reduced_Ontology_One!="SA")
@@ -40,58 +49,49 @@ DF<-read.csv(file.path(data_dir,data_file_name),stringsAsFactors = FALSE)
 # tab_activities <- table(DF_Sub1$Application_QC1)
 # tab_activities
 
-```
-
-```{r, echo= FALSE}
 # DF_Sub1$Application<-as.character(DF_Sub1$Application)
 # DF_Sub1$Application[is.na(DF_Sub1$Application)] <- "NA"
 # tab_activities <- table(DF_Sub1$Application)
 # tab_activities
 
 #unique(DF_Sub1$Application_QC1)
-DF=DF %>% mutate(Modified_App = ifelse(Application_QC1 == "Microsoft Word" | Application_QC1 == "Microsoft AutoUpdate" |Application_QC1 == "Microsoft PowerPoint" | Application_QC1 == "AdobeAcrobat"| 
-                                                   Application_QC1 == "AdobeReader" | Application_QC1 == "Emacs-x86_64-10_9" |Application_QC1 == "EndNote X7"|Application_QC1 == "Microsoft Excel" |Application_QC1 == "zotero"|
-                                                   Application_QC1 == "Evernote"| Application_QC1 == "Preview"|Application_QC1 == "TextEdit"|Application_QC1 == "Acrobat"|Application_QC1 == "WINWORD"|
-                                                  Application_QC1 == "POWERPNT"|Application_QC1 == "EXCEL"|Application_QC1=="MendeleyDesktop"|Application_QC1=="AcroRd32"|Application_QC1=="Photoshop"
-                                       |Application_QC1=="lyx"|Application_QC1=="BibDesk"|Application_QC1=="TeXShop","Document Apps", 
-                                       
-                                ifelse(Application_QC1 == "Mail"| Application_QC1 == "Microsoft Outlook", "Email",
-                                       
-                                       
-                                ifelse(Application_QC1=="Google Chrome"| Application_QC1=="firefox"|Application_QC1=="Safari"|Application_QC1=="chrome", "Web Browsing Apps",
-                                       
-                                ifelse(Application_QC1=="Photos"| Application_QC1=="iTunes"|Application_QC1=="Spotify" | Application_QC1=="App Store"| Application_QC1=="FindMy", "Entertaining Apps",
-                                       
-                                ifelse(Application_QC1=="Calendar"| Application_QC1=="Finder" | Application_QC1=="Notes" | Application_QC1=="explorer", "Utilities Apps",
-                                       
-                                ifelse(Application_QC1=="JavaApplication_QC1Stub"| Application_QC1=="RStudio" | Application_QC1=="Osascript" | Application_QC1=="Terminal" | Application_QC1=="Console" 
-                                                 |Application_QC1=="ATLAS.ti" |Application_QC1=="TeamViewer" | Application_QC1 == "Idle"| Application_QC1 == "rstudio"| Application_QC1 == "pycharm"| Application_QC1 == "iTerm2"| Application_QC1 == "Mathematica"| Application_QC1 == "MATLAB", "Programming Apps",
-                                       
-                                ifelse(Application_QC1=="QQ"| Application_QC1=="Skype" |Application_QC1=="FaceTime"| Application_QC1=="Slack" |Application_QC1=="WeChat"| Application_QC1=="Messages" | Application_QC1=="Telegram Desktop" | Application_QC1=="Discord"  , "Virtual Communication Apps",
-                                       
-                                ifelse(Application_QC1=="Cisco AnyConnect Secure Mobility Client"| Application_QC1=="NA", "NA" ,"NA")))))))))
-#unique(DF$Modified_App)
+
+
+
+
+# DF=DF %>% mutate(Modified_App = ifelse(Application_QC1 == "Microsoft Word" | Application_QC1 == "Microsoft AutoUpdate" |Application_QC1 == "Microsoft PowerPoint" | Application_QC1 == "AdobeAcrobat"|
+#                                                    Application_QC1 == "AdobeReader" | Application_QC1 == "Emacs-x86_64-10_9" |Application_QC1 == "EndNote X7"|Application_QC1 == "Microsoft Excel" |Application_QC1 == "zotero"|
+#                                                    Application_QC1 == "Evernote"| Application_QC1 == "Preview"|Application_QC1 == "TextEdit"|Application_QC1 == "Acrobat"|Application_QC1 == "WINWORD"|
+#                                                   Application_QC1 == "POWERPNT"|Application_QC1 == "EXCEL"|Application_QC1=="MendeleyDesktop"|Application_QC1=="AcroRd32"|Application_QC1=="Photoshop"
+#                                        |Application_QC1=="lyx"|Application_QC1=="BibDesk"|Application_QC1=="TeXShop","Document Apps",
+# 
+#                                 ifelse(Application_QC1 == "Mail"| Application_QC1 == "Microsoft Outlook", "Email",
+# 
+# 
+#                                 ifelse(Application_QC1=="Google Chrome"| Application_QC1=="firefox"|Application_QC1=="Safari"|Application_QC1=="chrome", "Web Browsing Apps",
+# 
+#                                 ifelse(Application_QC1=="Photos"| Application_QC1=="iTunes"|Application_QC1=="Spotify" | Application_QC1=="App Store"| Application_QC1=="FindMy", "Entertaining Apps",
+# 
+#                                 ifelse(Application_QC1=="Calendar"| Application_QC1=="Finder" | Application_QC1=="Notes" | Application_QC1=="explorer", "Utilities Apps",
+# 
+#                                 ifelse(Application_QC1=="JavaApplication_QC1Stub"| Application_QC1=="RStudio" | Application_QC1=="Osascript" | Application_QC1=="Terminal" | Application_QC1=="Console"
+#                                                  |Application_QC1=="ATLAS.ti" |Application_QC1=="TeamViewer" | Application_QC1 == "Idle"| Application_QC1 == "rstudio"| Application_QC1 == "pycharm"| Application_QC1 == "iTerm2"| Application_QC1 == "Mathematica"| Application_QC1 == "MATLAB", "Programming Apps",
+# 
+#                                 ifelse(Application_QC1=="QQ"| Application_QC1=="Skype" |Application_QC1=="FaceTime"| Application_QC1=="Slack" |Application_QC1=="WeChat"| Application_QC1=="Messages" | Application_QC1=="Telegram Desktop" | Application_QC1=="Discord"  , "Virtual Communication Apps",
+# 
+#                                 ifelse(Application_QC1=="Cisco AnyConnect Secure Mobility Client"| Application_QC1=="NA", "NA" ,"NA")))))))))
+
+
+
+
+
+# #unique(DF$Modified_App)
 # title="Day1"
 # fig<-Plot2(DF_Sub1,  DF_Sub1$Modified_App,DF_Sub1$Reduced_Ontology_One ,DF_Sub1$Day,DF_Sub1$Participant_ID, title)
 #fig<-Plot4(DF_Sub1,  DF_Sub1$Modified_App, DF_Sub1$Reduced_Ontology_One, DF_Sub1$Sinterface_Time,DF_Sub1$Participant_ID, title)
 #fig
 ```
 
-
-```{r, echo=FALSE}
-Plot1<-function(fun.data, fun.x, Day, SID, title){
-p<-ggplot(fun.data, aes(x=fun.x)) + 
-  geom_bar(stat="count", width=0.5)+
-  theme(axis.text.x = element_text(angle = 30, hjust = 1))+
-  ylab("Time [s]")+
-  xlab("")+
-  labs(title =title )+
-  theme(plot.title = element_text(hjust = 0.5))+
-  scale_x_discrete(limits=c("Document Apps", "Web Browsing Apps", "Programming Apps", "Email", "Utilities Apps", "Virtual Communication Apps", "Entertaining Apps", "NA" ))
- print(p)
- 
-}
-```
 
 ```{r, echo=FALSE}
 color<- c("R"="green", "W"="blue")
@@ -111,60 +111,12 @@ p<-ggplot(data, aes(x=x, fill=y)) +
 }
 ```
 
-```{r, echo=FALSE}
-Plot3<-function(fun.data, fun.x, fun.y,Day, SID, title){
-p<-ggplot(fun.data, aes(x=fun.x, y=fun.y, fill=fun.y)) + 
-  geom_bar(stat="identity", width=0.5)+
-  theme(axis.text.x = element_text(angle = 30, hjust = 1))+
-  ylab("Time [s]")+
-  xlab("")+
-  labs(title =title )+
-  theme(plot.title = element_text(hjust = 0.5))+
-  scale_x_discrete(limits=c("Document Apps", "Web Browsing Apps", "Programming Apps", "Email", "Utilities Apps", "Virtual Communication Apps", "Entertaining Apps", "NA" ))
- print(p)
- }
-```
 
-
-```{r, echo=FALSE}
-color<- c("R"="green", "W"="blue")
-Plot4<-function(data, x, y, S_time, SID, title){
-p<-ggplot(data, aes(x=x, fill=y)) + 
-  geom_bar(stat="count", width=0.5)+
-  theme(axis.text.x = element_text(angle = 30, hjust = 1))+
-  ylab("Time [s]")+
-  xlab("")+
-  labs(title =title )+
-  theme(plot.title = element_text(hjust = 0.5))+
-  scale_x_discrete(limits=c("Document Apps", "Web Browsing Apps", "Programming Apps", "Email", "Utilities Apps", "Virtual Communication Apps", "Entertaining Apps" ))+
-  scale_fill_manual(values = color, limits = c("R", "W"))
-}
-```
-
-
-```{r, echo=FALSE}
-# DF$Application<-as.character(DF$Application)
-# DF$Application[is.na(DF$Application)] <- "NA"
-# unique(DF$Application)
-# DF=DF %>% mutate(Modified_App = ifelse(Application == "Microsoft Word" | Application == "Microsoft AutoUpdate" |Application == "Microsoft PowerPoint" | 
-#                                     Application == "AdobeReader" | Application == "Emacs-x86_64-10_9" |Application == "EndNote X7"|
-#                                     Application == "Microsoft Excel" |Application == "Preview","Document Apps", 
-#                                 ifelse(Application == "Mail", "Email",
-#                                 ifelse(Application=="Google Chrome"| Application=="Safari", "Web Browsing Apps",
-#                                 ifelse(Application=="Photos"| Application=="iTunes" | Application=="App Store", "Entertaining Apps",
-#                                 ifelse(Application=="Calendar"| Application=="Finder" | Application=="Notes", "Utilities Apps",
-#                                 ifelse(Application=="JavaApplicationStub"| Application=="RStudio" | Application=="Osascript" | Application=="Terminal" | Application=="Console" |  Application=="TeamViewer", "Programming Apps",
-#                                 ifelse(Application=="QQ"| Application=="Skype" |Application=="FaceTime"| Application=="Slack" |Application=="WeChat"| Application=="Messages"  , "Virtual Communication Apps",
-#                                 ifelse(Application=="Cisco AnyConnect Secure Mobility Client"| Application=="NA", "NA" ,"NA")))))))))
-# unique(DF$Modified_App)
-#write.csv(DF,'Apps.csv')
-```
 
 ```{r, echo=FALSE}
 # plot_location<-"C:/Users/soton/Documents/R/DeadlineProject/Plots/AppsActivity/Version6/"
 
 ######----------------Please Add plot location here---------------------------################
-
 
 plot_list<-list()
 sid<-factor(DF$Participant_ID)
@@ -179,9 +131,8 @@ for (i in 1:n) {
       for (j in 1:m) {
         DF_Sub_Day<-subset(DF_T001, Day==levels(D_id)[j])
         title=levels(D_id)[j]
-    
-        #fig<-Plot2(DF_Sub_Day,  DF_Sub_Day$Modified_App,DF_Sub_Day$Reduced_Ontology_One, DF_S_D$Day,DF_S_D$Participant_ID, title)
-        fig<-Plot2(DF_Sub_Day,  DF_Sub_Day$Modified_App, DF_Sub_Day$Reduced_Activity_One, DF_Sub_Day$Sinterface_Time,DF_Sub_Day$Participant_ID, title, y_max)
+        fig<-Plot2(DF_Sub_Day,  DF_Sub_Day$Reduced_Application, DF_Sub_Day$Reduced_Activity_One, DF_Sub_Day$Sinterface_Time,DF_Sub_Day$Participant_ID, title, y_max)
+        # fig<-Plot2(DF_Sub_Day,  DF_Sub_Day$Modified_App, DF_Sub_Day$Reduced_Activity_One, DF_Sub_Day$Sinterface_Time,DF_Sub_Day$Participant_ID, title, y_max)
         print(fig)
         plot_list[[length(plot_list) + 1]] <- fig
 
@@ -200,17 +151,5 @@ for (i in 1:n) {
       full_path<-file.path(plot_location,paste(levels(sid)[i],".pdf",sep=""))
       ggsave(full_path, final_plot, width = 8.5, height = 11, units = "in")
 }
-    
-  #final_list[[length(final_list) + 1]] <- final_plot
-    #   full_path<-paste(plot_location,plot_title,".pdf",sep="")
-    #   ggsave(full_path, final_plot, width = 8.5, height = 11, units = "in")
-    # 
-    # plots=ggarrange(plotlist = plot_list, nrow = 4, ncol = 2)
-    # #final_list
-    # legend_merge<-plot_grid(global_legend, ncol = 1, nrow = 1)
-    # legends_of_plots<-plot_grid(plots,legend_merge, ncol = 1, rel_heights = c(1, .05))
-    # plot_title<-paste(Title, "Baseline")
-    
-    
     
 ```

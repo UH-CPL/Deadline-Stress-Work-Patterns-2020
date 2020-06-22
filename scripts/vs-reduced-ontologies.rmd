@@ -35,7 +35,7 @@ setwd('..')
 root_dir <- getwd()
 data_dir <- file.path(root_dir, 'curated-data/physiological-data')
 # data_file_name<-'qc99_all_subj.csv'
-data_file_name<-'full_df.csv'
+data_file_name<-'qc0_final_data.csv'
 #data_file_name<-'qc0_all_subj.csv'
 
 plot_location <- file.path(root_dir, 'plots', 'ontologies-plots')
@@ -43,68 +43,50 @@ plot_location <- file.path(root_dir, 'plots', 'ontologies-plots')
 
 ```{r}
 DF<-read.csv(file.path(data_dir,data_file_name),stringsAsFactors = FALSE)
-# DF$Reduced_Activities_QC1
-#write.csv(DF, 'All.csv')
+# 
+
+# unique(DF$Reduced_Activities_QC1)
+# tab_activities<-table(DF$Reduced_Activities_QC1)
+# tab_activities
+# 
+# 
+# table(DF$Reduced_Activities_QC1)
+# 
+# 
+# check_data<- subset(DF, Participant_ID=="T019" & Day=="Day2")
+# tab_activities<-table(check_data$Reduced_Activities_QC1)
+# tab_activities
 ```
+
+
 
 
 ```{r}
+# 
+# DF$Reduced_Activity_Two
+# DF$Reduced_Activities_QC1[is.na(DF$Reduced_Activities_QC1)] <- ""
+# DF$Reduced_Activity_One[is.na(DF$Reduced_Activity_One)] <- ""
+# 
+#   for ( cell in 1:nrow(DF)) {
+#       if(DF$Reduced_Activity_One[cell]==DF$Reduced_Activity_Two[cell]){
+#         #print(cell)
+#           DF$Reduced_Activity_Two[cell]= DF$Reduced_Activity_Three[cell]
+#           DF$Reduced_Activity_Three[cell] = ""
+#           DF$Reduced_Activities_QC1[cell]=paste(DF$Reduced_Activity_One[cell],DF$Reduced_Activity_Two[cell],DF$Reduced_Activity_Three[cell], sep="+")
+#           DF$Reduced_Activities_QC1[cell]<-gsub("(\\+)*$", "", DF$Reduced_Activities_QC1[cell])
+#       }
+# 
+# 
+#     if ((DF$Reduced_Activity_One[cell]=="SA" & DF$Reduced_Activity_Two[cell]=="R") | (DF$Reduced_Activity_One[cell]=="SA" & DF$Reduced_Activity_Two[cell]=="W")){
+#       temp=DF$Reduced_Activity_One[cell]
+#       DF$Reduced_Activity_One[cell]=DF$Reduced_Activity_Two[cell]
+#       DF$Reduced_Activity_Two[cell]=temp
+# 
+#     }
+#   }
 
-# DF$Reduced_Ontology_One<- DF$Ontology_One
-# DF$Reduced_Ontology_Two<- DF$Ontology_Two
-# DF$Reduced_Ontology_Three<- DF$Ontology_Three
 
 ```
-
-```{r}
-# R= '^CR$|^PR$'
-# W = '^CW$|^PW$'
-# I = '^PI|^VI'
-# Out = '^Out$'
-# SP = '^SP$'
-# SA = '^ELD$|^EiP$'
-# Thinking = '^T$'
-```
-
-```{r}
-  # DF$Reduced_Ontology_One<-case_when(
-  #                         str_detect(DF$Ontology_One, Out)~"Out",
-  #                          str_detect(DF$Ontology_One, W)~"W",
-  #                          str_detect(DF$Ontology_One, R)~"R",
-  #                          str_detect(DF$Ontology_One, Thinking)~"T",
-  #                          str_detect(DF$Ontology_One, SP)~"SP",
-  #                          str_detect(DF$Ontology_One, SA)~"SA",
-  #                          str_detect(DF$Ontology_One, I)~"I")
-  # 
-  # DF$Reduced_Ontology_Two<-case_when(
-  #                         str_detect(DF$Ontology_Two, Out)~"Out",
-  #                          str_detect(DF$Ontology_Two, W)~"W",
-  #                          str_detect(DF$Ontology_Two, R)~"R",
-  #                          str_detect(DF$Ontology_Two, Thinking)~"T",
-  #                          str_detect(DF$Ontology_Two, SP)~"SP",
-  #                          str_detect(DF$Ontology_Two, SA)~"SA",
-  #                          str_detect(DF$Ontology_Two, I)~"I")
-  # 
-  #   DF$Reduced_Ontology_Three<-case_when(
-  #                         str_detect(DF$Ontology_Three, Out)~"Out",
-  #                          str_detect(DF$Ontology_Three, W)~"W",
-  #                          str_detect(DF$Ontology_Three, R)~"R",
-  #                          str_detect(DF$Ontology_Three, Thinking)~"T",
-  #                          str_detect(DF$Ontology_Three, SP)~"SP",
-  #                          str_detect(DF$Ontology_Three, SA)~"SA",
-  #                          str_detect(DF$Ontology_Three, I)~"I")
-  #   
-  #   
-  # 
-  # #DF$Reduced_Ontology_One[is.na(DF$Reduced_Ontology_One)] <- ""
-  # DF$Reduced_Ontology_Two[is.na(DF$Reduced_Ontology_Two)] <- ""
-  # DF$Reduced_Ontology_Three[is.na(DF$Reduced_Ontology_Three)] <- ""
-  # 
-  # DF$Reduce_Activities<-paste(DF$Reduced_Ontology_One,DF$Reduced_Ontology_Two,DF$Reduced_Ontology_Three, sep="+")
-  # DF<-DF%>%mutate(Reduce_Activities_QC1=gsub("(\\+)*$", "", Reduce_Activities))
-  # 
-```
-
 
 
 ```{r, echo=FALSE}
@@ -259,23 +241,23 @@ add_bottom_legend <- function() {
 
 ```{r, echo=FALSE}
 Draw_Timeline_Day<-function(Data_Frame, Title){
-  for ( cell in 1:nrow(Data_Frame)) {
-      if(Data_Frame$Reduced_Activity_One[cell]==Data_Frame$Reduced_Activity_Two[cell]){
-        #print(cell)
-          Data_Frame$Reduced_Activity_Two[cell]= Data_Frame$Reduced_Activity_Three[cell]
-          Data_Frame$Reduced_Activity_Three[cell] = ""
-          Data_Frame$Reduced_Activities_QC1[cell]=paste(Data_Frame$Reduced_Activity_One[cell],Data_Frame$Reduced_Activity_Two[cell],Data_Frame$Reduced_Activity_Three[cell], sep="+")
-          Data_Frame$Reduced_Activities_QC1[cell]<-gsub("(\\+)*$", "", Data_Frame$Reduced_Activities_QC1[cell])
-      }
-  
-    
-    if ((Data_Frame$Reduced_Activity_One[cell]=="SA" & Data_Frame$Reduced_Activity_Two[cell]=="R") | (Data_Frame$Reduced_Activity_One[cell]=="SA" & Data_Frame$Reduced_Activity_Two[cell]=="W")){
-      temp=Data_Frame$Reduced_Activity_One[cell]
-      Data_Frame$Reduced_Activity_One[cell]=Data_Frame$Reduced_Activity_Two[cell]
-      Data_Frame$Reduced_Activity_Two[cell]=temp
-      
-    }
-  }
+  # for ( cell in 1:nrow(Data_Frame)) {
+  #     if(Data_Frame$Reduced_Activity_One[cell]==Data_Frame$Reduced_Activity_Two[cell]){
+  #       #print(cell)
+  #         Data_Frame$Reduced_Activity_Two[cell]= Data_Frame$Reduced_Activity_Three[cell]
+  #         Data_Frame$Reduced_Activity_Three[cell] = ""
+  #         Data_Frame$Reduced_Activities_QC1[cell]=paste(Data_Frame$Reduced_Activity_One[cell],Data_Frame$Reduced_Activity_Two[cell],Data_Frame$Reduced_Activity_Three[cell], sep="+")
+  #         Data_Frame$Reduced_Activities_QC1[cell]<-gsub("(\\+)*$", "", Data_Frame$Reduced_Activities_QC1[cell])
+  #     }
+  # 
+  #   
+  #   if ((Data_Frame$Reduced_Activity_One[cell]=="SA" & Data_Frame$Reduced_Activity_Two[cell]=="R") | (Data_Frame$Reduced_Activity_One[cell]=="SA" & Data_Frame$Reduced_Activity_Two[cell]=="W")){
+  #     temp=Data_Frame$Reduced_Activity_One[cell]
+  #     Data_Frame$Reduced_Activity_One[cell]=Data_Frame$Reduced_Activity_Two[cell]
+  #     Data_Frame$Reduced_Activity_Two[cell]=temp
+  #     
+  #   }
+  # }
       tab_Timeline <- table(Data_Frame$Reduced_Activities_QC1)
       #view(tab_Timeline)
       print(tab_Timeline)
@@ -350,8 +332,8 @@ final_list<-list()
 SubjectID<-factor(DF$Participant_ID)
 # SubjectID=c('T005')
 numberSid=nlevels(SubjectID)
-# for (i in 1:numberSid) {
-for (i in 3:3) {
+for (i in 1:numberSid) {
+# for (i in 3:3) {
   Timeline_Heatmap_list<-list()
   DF_Sub<-subset(DF, Participant_ID==levels(SubjectID)[i] & DF$Treatment=="WS")
   subject_title=levels(SubjectID)[i]
@@ -394,11 +376,6 @@ for (i in 3:3) {
 
 ```{r, echo=FALSE}
   # DF_Sub1<-subset(DF, Participant_ID=="T003" & DF$Treatment=="WS" & Day=="Day4")
-```
-
-
-
-```{r, echo=FALSE}
 ##--------------------Heatmap with percwntage for single subject------------------##
 # DF_Sub_Day<-subset(DF, Participant_ID=="T015" & Day=="Day3" & Treatment=="WS")
 # 
