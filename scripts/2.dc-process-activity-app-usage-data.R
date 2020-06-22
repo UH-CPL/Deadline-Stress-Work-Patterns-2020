@@ -37,11 +37,8 @@ get_final_activities <- function(all_subj_df) {
   all_subj_df<-all_subj_df %>%separate(Activities1, c("A", "B", "C"), ",")
   all_subj_df$A<-trimws(all_subj_df$A)
   all_subj_df$B<-trimws(all_subj_df$B)
+  all_subj_df$C<-trimws(all_subj_df$C)
   
-  
-  if (is.na(all_subj_df$C)!=TRUE) {
-    all_subj_df$C<-trimws(all_subj_df$c)
-  }
   
   
   #unique(all_subj_df$A)
@@ -116,9 +113,7 @@ get_final_activities <- function(all_subj_df) {
   I = '^PI|^VI'
   Out = '^Out$'
   SP = '^SP$'
-  SA = '^ELD$|^EiP$'
-  #Thinking = '^T$'
-
+  SA = '^ELD$|^EiP$|^OB$'
 
   all_subj_df$Reduced_Activity_One<-case_when(
     str_detect(all_subj_df$Activity_One, Out)~"Out",
@@ -148,7 +143,7 @@ get_final_activities <- function(all_subj_df) {
     str_detect(all_subj_df$Activity_Three, I)~"I")
   
   
-  #all_subj_df$Reduced_Activity_One[is.na(all_subj_df$Reduced_Activity_One)] <- ""
+  # all_subj_df$Reduced_Activity_One[is.na(all_subj_df$Reduced_Activity_One)] <- ""
   all_subj_df$Reduced_Activity_Two[is.na(all_subj_df$Reduced_Activity_Two)] <- ""
   all_subj_df$Reduced_Activity_Three[is.na(all_subj_df$Reduced_Activity_Three)] <- ""
   
@@ -157,6 +152,9 @@ get_final_activities <- function(all_subj_df) {
   
   
   for ( cell in 1:nrow(all_subj_df)) {
+    print(cell)
+    print(all_subj_df$Reduced_Activity_One[cell])
+    print(all_subj_df$Reduced_Activity_Two[cell])
     
       if(all_subj_df$Reduced_Activity_Two[cell]!="" & (all_subj_df$Reduced_Activity_One[cell]==all_subj_df$Reduced_Activity_Two[cell])){
         all_subj_df$Reduced_Activity_Two[cell]= all_subj_df$Reduced_Activity_Three[cell]
@@ -198,6 +196,8 @@ get_final_activities <- function(all_subj_df) {
                                            str_detect(Application_QC1, VirtualCommunicationApps)~'Virtual Communication Apps'))
   
   
+  all_subj_df <- all_subj_df %>% mutate(Reduced_Application_final=case_when(str_detect(Activities_QC2, application_usage_pattern)~'NA',
+                                                          Treatment=='WS'~ Reduced_Application)) 
   ############################--------------------Application--------------------############################
   
   
@@ -302,6 +302,7 @@ format_activity_app_usage_data <- function() {
            Application_QC3,
            
            Reduced_Application,
+           Reduced_Application_final,
            
            Mask
     )

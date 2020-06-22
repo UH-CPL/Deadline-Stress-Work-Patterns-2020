@@ -51,18 +51,19 @@ iWatch_file_pattern <- '.*iWatch.csv'
 computer_usage_pattern = 'CR|CW|Computer - Reading|Computer - Writing|C - Reading|C - Writing|C - Writing/Reading|Working'
 # computer_usage_pattern = 'CR|CW'
 Out='Break Out|Break Out - Other|Break - Out|Break Out - Tea/Coffee|Break Out -Other|Break Out - - Tea/Coffee|Out'
-CR='^C - Reading$|Computer - Reading|^Computer Reading (CR)$'
+CR='^C - Reading$|Computer - Reading|^Computer Reading (CR)$|^ C - Reading $'
 CW='^C - Writing$/Reading|C - Writing|^Computer - Reading and Writing$|Computer - Writing|^Computer Writing (CW)$'
 EiP='^Break In - Meal$|Break In Place - Tea/Coffee|Break In Place - Meal|^Eat in Place (EiP)$'
 OB='^Break In - Other$|^Other Break (OB)$|Break In Place - Other'
 Working='Working'
 Thinking='Thinking|^Thinking (T)$'
-SP='SP - Talking|SP - Looking|SmartPhone - Looking|SmartPhone - Talking|^Smart Phone (SP)$'
+SP='SP - Talking|^SP - Looking$|SmartPhone - Looking|SmartPhone - Talking|^Smart Phone (SP)$'
 PR='^HC - Reading$|Hard Copy - Reading|^Paper Reading (PR)$'
 PW='^HC - Writing$|Hard Copy - Writing|^Board Writing$|^Board Writing BW$|^Paper Writing (PW)$'	
 ELD='Listening on Headphone|^Ear Listening Device (ELD)$'	
 PI='H-H Interaction|Personal Interaction PI|^Physical Interaction (PI)$'	
 VI='C - Talking Skype & others|^Virtual Interaction (VI)$'
+
 
 
 
@@ -83,7 +84,7 @@ ProgrammingApps = '^JavaApplicationStub$|^RStudio$|^Osascript$|^Terminal$|^Conso
 
 VirtualCommunicationApps = '^QQ$|^Skype$|^FaceTime$|^Slack$|^WeChat$|^Messages$|^Telegram Desktop$|^Discord$'
 
-
+application_usage_pattern ='Other Activities' 
 
 
 ## 1. Timestamp -->    Extract whatever inside []                 -->   \\[(.*)\\]
