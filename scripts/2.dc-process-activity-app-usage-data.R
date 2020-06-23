@@ -152,9 +152,9 @@ get_final_activities <- function(all_subj_df) {
   
   
   for ( cell in 1:nrow(all_subj_df)) {
-    print(cell)
-    print(all_subj_df$Reduced_Activity_One[cell])
-    print(all_subj_df$Reduced_Activity_Two[cell])
+    # print(cell)
+    # print(all_subj_df$Reduced_Activity_One[cell])
+    # print(all_subj_df$Reduced_Activity_Two[cell])
     
       if(all_subj_df$Reduced_Activity_Two[cell]!="" & (all_subj_df$Reduced_Activity_One[cell]==all_subj_df$Reduced_Activity_Two[cell])){
         all_subj_df$Reduced_Activity_Two[cell]= all_subj_df$Reduced_Activity_Three[cell]
