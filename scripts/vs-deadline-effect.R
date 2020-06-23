@@ -50,7 +50,7 @@ generate_specific_format_table <- function(input_file, treatment, output_file_pa
     spread(Signal, Normalize_Value) %>%
     dplyr::select(Participant_ID, Treatment, Day, PP, E4_EDA, E4_HR, iWatch_HR)
   
-  print(head(df, 2))
+  # print(head(df, 2))
   
   format_table <- formattable(df, align =c("l", "c", "c", "c", "c", "c", "c"), list(
     `Participant_ID` = formatter("span", style = ~ style(color = "grey",font.weight = "bold")),

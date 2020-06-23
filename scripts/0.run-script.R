@@ -73,26 +73,26 @@ transformation_parameter <- log_transformation
 
 
 #-------------------------------------------------------------------------------------------- 2
-source(file.path(script_dir, '2.dc-process-activity-app-usage-data.R'))
-format_activity_app_usage_data()
+# source(file.path(script_dir, '2.dc-process-activity-app-usage-data.R'))
+# format_activity_app_usage_data()
 
 
 
 #-------------------------------------------------------------------------------------------- 3
-source(file.path(script_dir, '3.dc-quality-control-phase-one.R'))
-process_quality_control_phase_one()
+# source(file.path(script_dir, '3.dc-quality-control-phase-one.R'))
+# process_quality_control_phase_one()
 
 
-source(file.path(script_dir, 'vs-regression-plot.R'))
-remove_outlier_regression_plot <- F
-draw_regression_plots()
+# source(file.path(script_dir, 'vs-regression-plot.R'))
+# remove_outlier_regression_plot <- F
+# draw_regression_plots()
 
 
 
 
 #-------------------------------------------------------------------------------------------- 4
-source(file.path(script_dir, '4.dc-generate-transformed-data.R'))
-transform_data()
+# source(file.path(script_dir, '4.dc-generate-transformed-data.R'))
+# transform_data()
 
 
 #-------------------------------------------------#
@@ -105,18 +105,18 @@ transform_data()
 
 
 #-------------------------------------------------------------------------------------------- 5
-source(file.path(script_dir, '5.dc-generate-normalized-data.R'))
-normalize_data()
+# source(file.path(script_dir, '5.dc-generate-normalized-data.R'))
+# normalize_data()
 
 
-source(file.path(script_dir, 'vs-deadline-effect.R'))
-generate_format_table()
+# source(file.path(script_dir, 'vs-deadline-effect.R'))
+# generate_format_table()
 
 
 
 # -------------------------------------------------------------------------------------------- 6
-source(file.path(script_dir, '6.dc-merge-all-data.R'))
-merge_all_data()
+# source(file.path(script_dir, '6.dc-merge-all-data.R'))
+# merge_all_data()
 
 
 

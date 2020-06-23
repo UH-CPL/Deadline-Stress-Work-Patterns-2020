@@ -136,13 +136,20 @@ merge_all_data <- function() {
   print_msg('Done merging data...exporting')
   convert_to_csv(full_df, file.path(physiological_data_path, full_df_file_name))
   
+  
+  half_subj_list <- c('T001', 'T003', 'T005', 'T007', 'T009')
+  
   full_df_1 <- full_df %>% 
-    filter(Participant_ID %in% c('T001', 'T003', 'T005', 'T007', 'T009'))
+    filter(Participant_ID %in% half_subj_list)
   convert_to_csv(full_df_1, file.path(physiological_data_path, 'full_df_1.csv'))
   
   full_df_2 <- full_df %>% 
-    filter(Participant_ID %in% c('T011', 'T013', 'T015', 'T017'))
+    filter(!(Participant_ID %in% half_subj_list))
   convert_to_csv(full_df_2, file.path(physiological_data_path, 'full_df_2.csv'))
+  
+  mini_full_df <- full_df %>%
+    filter(Participant_ID %in% c('T005'))
+  convert_to_csv(mini_full_df, file.path(physiological_data_path, 'mini_full_df.csv'))
 }
 
 
