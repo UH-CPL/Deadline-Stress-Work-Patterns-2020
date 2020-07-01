@@ -16,6 +16,7 @@ final_data_dir <- 'final-data'
 
 signal_comparison_dir <- 'signal-comparison'
 activity_plots_dir <- 'activity-plots'
+pp_time_plots_dir <- 'pp-time-plots'
 
 
 default_plot_width <- 12
