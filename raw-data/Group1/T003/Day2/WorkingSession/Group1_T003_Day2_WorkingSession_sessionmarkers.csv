@@ -1,2 +1,5 @@
 Session,StartTime,startTimestamp,EndTime,EndTimestamp,Ontologies
-Session 1,2.817467,Wed May 15 12:00:36.095 2019,13757.91,Wed May 15 15:44:29.420 2019,
+Session 1,2.817467,Wed May 15 12:05:36.095 2019,13757.91,Wed May 15 12:19:00.420 2019,Computer Reading (CR)
+Session 1,2.817467,Wed May 15 12:50:01.095 2019,13757.91,Wed May 15 13:18:00.420 2019,Computer Reading (CR)
+Session 1,2.817467,Wed May 15 13:22:26.095 2019,13757.91,Wed May 15 13:45:23.420 2019,Computer Reading (CR)
+Session 1,2.817467,Wed May 15 15:20:01.095 2019,13757.91,Wed May 15 15:37:30.420 2019,Computer Reading (CR)

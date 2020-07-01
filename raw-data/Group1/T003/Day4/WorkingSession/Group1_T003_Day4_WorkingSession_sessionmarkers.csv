@@ -1,6 +1,14 @@
 Session,StartTime,startTimestamp,EndTime,EndTimestamp,Ontologies
+Session 1,7.439112,Tue May 21 11:44:00.431 2019,12784.67,Tue May 21 11:57:57.667 2019,Computer Reading (CR)
 Session 1,7.439112,Tue May 21 11:57:58.431 2019,12784.67,Tue May 21 11:59:45.667 2019,SP - Looking 
+Session 1,7.439112,Tue May 21 11:59:46.667 2019,12784.67,Tue May 21 12:14:55.667 2019,Computer Reading (CR)
+Session 1,7.439112,Tue May 21 12:20:11.667 2019,12784.67,Tue May 21 12:45:19.667 2019,Computer Reading (CR)
 Session 2,8.439112,Tue May 21 12:45:20.431 2019,12785.67,Tue May 21 12:52:55.667 2019,Break Out - Other
 Session 3,9.439112,Tue May 21 12:52:55.431 2019,12786.67,Tue May 21 12:54:50.667 2019,SP - Looking 
+Session 3,9.439112,Tue May 21 12:54:51.667 2019,12786.67,Tue May 21 13:04:19.431 2019,Computer Reading (CR)
 Session 4,10.439112,Tue May 21 13:04:20.431 2019,12787.67,Tue May 21 13:06:40.667 2019,SP - Looking 
+Session 5,11.439112,Tue May 21 13:06:41.667 2019,12787.67,Tue May 21 13:15:40.667 2019,Computer Reading (CR)
+Session 5,11.439112,Tue May 21 13:20:25.667 2019,12787.67,Tue May 21 14:13:20.667 2019,Computer Reading (CR)
 Session 5,11.439112,Tue May 21 14:14:03.431 2019,12788.67,Tue May 21 14:15:30.667 2019,SP - Looking 
+Session 5,11.439112,Tue May 21 14:15:31.667 2019,12788.67,Tue May 21 14:53:05.667 2019,Computer Reading (CR)
+Session 5,11.439112,Tue May 21 14:54:01.667 2019,12788.67,Tue May 21 15:17:00.667 2019,Computer Reading (CR)
