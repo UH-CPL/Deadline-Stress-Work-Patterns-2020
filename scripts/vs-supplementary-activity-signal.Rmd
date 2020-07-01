@@ -65,14 +65,10 @@ read_data <- function() {
     full_df <<- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, full_df_file_name))
   }
    
-  print_msg(colnames(full_df))
+  # print_msg(colnames(full_df))
+  # print_msg(unique(full_df$Reduced_Application_final))
 }
 
-
-gg_color_hue <- function(n) {
-  hues = seq(15, 375, length = n + 1)
-  hcl(h = hues, l = 65, c = 100)[1:n]
-}
 
 add_theme <- function(plot) {
   plot <- plot + 
@@ -97,30 +93,30 @@ modify_activity_data <- function(activity_df) {
   
   #######################################################################################################
   #######################################################################################################
-  activity_df[is.na(activity_df)] <- ""
+  # activity_df[is.na(activity_df)] <- ""
           
-  for (cell in 1:nrow(activity_df)) {
-    if(activity_df$Reduced_Activity_One[cell]==activity_df$Reduced_Activity_Two[cell]){
-      #print(cell)
-        activity_df$Reduced_Activity_Two[cell]=activity_df$Reduced_Activity_Three[cell]
-        activity_df$Reduced_Activity_Three[cell] = ""
-        activity_df$Reduced_Activities_QC1[cell]=paste(activity_df$Reduced_Activity_One[cell],
-                                                       activity_df$Reduced_Activity_Two[cell],
-                                                       activity_df$Reduced_Activity_Three[cell], sep="+")
-        activity_df$Reduced_Activities_QC1[cell]<-gsub("(\\+)*$", "", activity_df$Reduced_Activities_QC1[cell])
-    }
-
-    if ((activity_df$Reduced_Activity_One[cell]=="SA" & activity_df$Reduced_Activity_Two[cell]=="R") | (activity_df$Reduced_Activity_One[cell]=="SA" & activity_df$Reduced_Activity_Two[cell]=="W")){
-      temp=activity_df$Reduced_Activity_One[cell]
-      activity_df$Reduced_Activity_One[cell]=activity_df$Reduced_Activity_Two[cell]
-      activity_df$Reduced_Activity_Two[cell]=temp
-    }
-  }
+  # for (cell in 1:nrow(activity_df)) {
+  #   if(activity_df$Reduced_Activity_One[cell]==activity_df$Reduced_Activity_Two[cell]){
+  #     #print(cell)
+  #       activity_df$Reduced_Activity_Two[cell]=activity_df$Reduced_Activity_Three[cell]
+  #       activity_df$Reduced_Activity_Three[cell] = ""
+  #       activity_df$Reduced_Activities_QC1[cell]=paste(activity_df$Reduced_Activity_One[cell],
+  #                                                      activity_df$Reduced_Activity_Two[cell],
+  #                                                      activity_df$Reduced_Activity_Three[cell], sep="+")
+  #       activity_df$Reduced_Activities_QC1[cell]<-gsub("(\\+)*$", "", activity_df$Reduced_Activities_QC1[cell])
+  #   }
+  # 
+  #   if ((activity_df$Reduced_Activity_One[cell]=="SA" & activity_df$Reduced_Activity_Two[cell]=="R") | (activity_df$Reduced_Activity_One[cell]=="SA" & activity_df$Reduced_Activity_Two[cell]=="W")){
+  #     temp=activity_df$Reduced_Activity_One[cell]
+  #     activity_df$Reduced_Activity_One[cell]=activity_df$Reduced_Activity_Two[cell]
+  #     activity_df$Reduced_Activity_Two[cell]=temp
+  #   }
+  # }
+  #######################################################################################################
+  #######################################################################################################
   
   tab_timeline <- table(activity_df$Reduced_Activities_QC1)
   activity_df<-activity_df[activity_df$Reduced_Activities_QC1 %in% names(tab_timeline)[tab_timeline>60], ]
-  #######################################################################################################
-  #######################################################################################################
   
   activity_df$Reduced_Activity_Two[activity_df$Reduced_Activity_Two==""]<-"NA"
   activity_df$Reduced_Activity_Three[activity_df$Reduced_Activity_Three==""]<-"NA"
@@ -234,7 +230,7 @@ draw_signal_activity_comparison_plots <- function() {
                "VI" = "orange",
                "PI" = "thistle",
                "EiP" = "slateblue",
-               "Out" = "gray92",
+               "Out" = "gray80",
                "SP" = "red",
                "T" = "chartreuse",
                "ELD" = "palevioletred1",
@@ -251,12 +247,42 @@ draw_signal_activity_comparison_plots <- function() {
           }
           
 
-          app_colors <- gg_color_hue(length(unique(activity_df$Reduced_Application_final)))
-          app_colors[unique(activity_df$Reduced_Application_final)=="NA"] <- "white"
+          
+          
+          # Document Apps
+          # Utilities Apps
+          # Web Browsing Apps
+          # Programming Apps
+          # Email
+          # Virtual Communication Apps
+          # Entertaining Apps
+          # NA
+          app_colors <- c(
+               "Document Apps" = "gray80",
+               "Utilities Apps" = "turquoise1",
+               "Web Browsing Apps" = "yellow",
+               "Programming Apps" = "blue",
+               "Email" = "orange",
+               "Virtual Communication Apps" = "springgreen2",
+               "Entertaining Apps" = "slateblue",
+               "NA" = "white"
+               )
+          
+          # app_colors <- gg_color_hue(length(unique(activity_df$Reduced_Application_final)))
+          # app_colors[unique(activity_df$Reduced_Application_final)=="NA"] <- "white"
 
           app_usage_plot <- ggplot(activity_df, aes(x=TreatmentTime)) +
             geom_point(aes(y=factor(1), colour=Reduced_Application_final), shape=15, size=5) +
-            scale_color_manual(values=app_colors, limits = unique(activity_df$Reduced_Application_final)) +
+            scale_color_manual(values=app_colors, limits = c(
+               "Document Apps",
+               "Utilities Apps",
+               "Web Browsing Apps",
+               "Programming Apps",
+               "Email",
+               "Virtual Communication Apps",
+               "Entertaining Apps",
+               "NA"
+               )) +
             xlab('Time [s]')
 
 
