@@ -20,8 +20,6 @@ library(ggplot2)
 library(dplyr) # Some problem occured for loading the dplyr package at the beginning
 
 
-
-
 #-------------------------#
 #-----GLOBAL VARIABLES----#
 #-------------------------#
@@ -30,8 +28,6 @@ source(file.path(getwd(), 'us-common-functions.R'))
 project_dir <- dirname(getwd())
 setwd(project_dir)
 
-
-# full_df <<- tibble()
 
 ``` 
 
@@ -45,7 +41,7 @@ read_data <- function() {
   # print_msg(colnames(full_df))
 }
 
-get_signal_data <- function(signal) {
+get_signal_data <- function(day_df, signal) {
   # if (signal=='PP') {
   #   signal_df <- full_df %>% 
   #     select(Participant_ID, Day, Treatment, TreatmentTime, Raw_PP, PP, Trans_PP)
@@ -60,11 +56,12 @@ get_signal_data <- function(signal) {
   #     select(Participant_ID, Day, Treatment, TreatmentTime, Raw_iWatch_HR, Trans_iWatch_HR)
   # }
   
-  signal_df <- full_df %>% 
+  signal_df <- day_df %>% 
       select(Participant_ID, 
              Day, 
              Treatment, 
              TreatmentTime, 
+             Mask,
              !!paste0('Raw_', signal), 
              !!signal, 
              !!paste0('Trans_', signal))
@@ -72,108 +69,81 @@ get_signal_data <- function(signal) {
   signal_df
 }
 
+ get_themed_plot <- function(plot) {
+  plot <- plot +
+    theme_bw() +
+    theme(
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.line = element_line(colour = "black"),
+        plot.title = element_text(hjust = 0.5, size = 16)
+        )
+  plot
+}
 
-draw_signal_plots <- function(signal_df, signal, test) {
+
+draw_signal_plots <- function(test=F) {
   if (test==TRUE) {
-    subj_list <- c('T003')
+    subj_list <- c('T003', 'T005')
     day_list <- c('Day1')
     
   } else {
-    subj_list <- unique(signal_df$Participant_ID)
+    subj_list <- unique(full_df$Participant_ID)
     subj_list <- subj_list[-length(subj_list)]
-    day_list <- unique(signal_df$Day)
+    day_list <- unique(full_df$Day)
   }
   
   for (subj in subj_list) {
-    subj_df <- signal_df %>% filter(Participant_ID==subj)
+    subj_df <- full_df %>% filter(Participant_ID==subj)
     
     for (day in day_list) {
       day_df <- subj_df %>% filter(Day==day) 
       
-      for (treatment in unique(day_df$Treatment)) {
-        treatment_df <- day_df %>% filter(Treatment==treatment) %>% 
-          na.omit()
+      for (signal in signal_list) {
+        signal_df <- get_signal_data(day_df, signal)
         
-        message(paste(subj, day, treatment))
-        
-        if (nrow(treatment_df)>0) {
-          plot <- ggplot(data=treatment_df, aes(x=TreatmentTime)) + 
-            geom_line(aes_string(y=paste0('Raw_', signal)),
-                      color='gray',
-                      alpha = 0.6)  
-        
-        if(signal %in% colnames(treatment_df)) {
-          plot <- plot +
-              geom_line(aes_string(y=signal),
-                      color='blue',
-                      alpha = 0.8) 
+        for (treatment in unique(day_df$Treatment)) {
+          treatment_df <- day_df %>% 
+            filter(Treatment==treatment) 
+          
+          if (signal=='iWatch_HR') {
+            treatment_df <- treatment_df %>%
+              na.omit()
           }
           
-          plot <- plot +
-            # geom_line(aes_string(y=signal),
-            #           color='blue',
-            #           alpha = 0.8) +
-            
-            ggtitle(paste0(subj, ' - ', day, ' - ', treatment)) +
-            xlab('Time [s]') +
-            ylab(signal) 
-            
-            
-            # geom_line(aes_string(y=paste0('Trans_', signal)),
-            #           color='green',
-            #           alpha = 0.8) +
-            # 
-            # scale_y_continuous(
-            #   limits=c(0, 1),
-            #   name = signal,
-            #   sec.axis = sec_axis(
-            #     trans=~.*1,
-            #     # trans='log',
-            #     name=paste0('ln(', signal, ')'))
-            # ) +
-            
-  
-          plot <- plot +  
-            theme_bw() +
-            theme(
-                  panel.grid.major = element_blank(),
-                  panel.grid.minor = element_blank(),
-                  axis.line = element_line(colour = "black"),
-                  plot.title = element_text(hjust = 0.5, size = 16)
-                  )
+          message(paste(subj, day, signal, treatment))
           
-          print(plot)
+          if (nrow(treatment_df)>0) {
+            plot <- ggplot(data=treatment_df, aes(x=TreatmentTime)) + 
+              geom_line(aes_string(y=paste0('Raw_', signal)),
+                        color='gray',
+                        alpha = 0.6)  
           
-          
-          plot <- ggplot(data=treatment_df, aes(x=TreatmentTime)) +
-            geom_line(aes_string(y=paste0('Trans_', signal)),
-                      color='green',
-                      alpha = 0.8) +
-            xlab('Time [s]') +
-            ylab(paste0('ln( ', signal, ' )')) +
-            theme_bw() +
-            theme(
-                  panel.grid.major = element_blank(),
-                  panel.grid.minor = element_blank(),
-                  axis.line = element_line(colour = "black"),
-                  plot.title = element_text(hjust = 0.5, size = 16)
-                  )
-  
-          print(plot)
-          
+          if(signal %in% colnames(treatment_df)) {
+            plot <- plot +
+                geom_line(aes_string(y=signal),
+                        color='blue',
+                        alpha = 0.8) 
+            }
+            
+            plot <- plot +
+              ggtitle(paste0(subj, ' - ', day, ' - ', treatment)) +
+              xlab('Time [s]') +
+              ylab(signal) 
+            print(get_themed_plot(plot))
+            
+            
+            plot <- ggplot(data=treatment_df, aes(x=TreatmentTime)) +
+              geom_line(aes_string(y=paste0('Trans_', signal)),
+                        color='green',
+                        alpha = 0.8) +
+              xlab('Time [s]') +
+              ylab(paste0('ln( ', signal, ' )'))
+            print(get_themed_plot(plot))
+          }
         }
       }
     }
-  }
-}
-
-draw_plots <- function(test=FALSE) {
-  signal_list <- c('PP', 'E4_EDA', 'E4_HR', 'iWatch_HR')
-  # signal_list <- c('PP')
-
-  for (signal in signal_list) {
-    signal_df <- get_signal_data(signal)
-    draw_signal_plots(signal_df, signal, test)
   }
 }
 ```
@@ -192,7 +162,10 @@ read_data()
 <!-- Plots -->
 ------------------------------
 ```{r echo=FALSE, warning = FALSE, message = FALSE}
-# draw_plots(test=TRUE)
-draw_plots()
+signal_list <<- c('PP', 'E4_EDA', 'E4_HR', 'iWatch_HR')
+# signal_list <<- c('PP')
+
+draw_signal_plots(test=TRUE)
+# draw_signal_plots()
 ```
 
