@@ -128,8 +128,14 @@ transformation_parameter <- log_transformation
 
 
 
-
 #-------------------------------------------------------------------------------------------- 10.1
+source(file.path(script_dir, 'vs-pp-time-report.R'))
+generate_pp_time_plots()
+
+
+
+
+#-------------------------------------------------------------------------------------------- 20.1
 # source(file.path(script_dir, 7.dc-process-rr-data.R'))
 # gather_rr_data()
 # qc1_clean_rr_data()
@@ -140,7 +146,7 @@ transformation_parameter <- log_transformation
 
 
 
-#-------------------------------------------------------------------------------------------- 10.2
+#-------------------------------------------------------------------------------------------- 20.2
 # source(file.path(script_dir, 'vs-rr-plots.R'))
 # generate_rr_time_series_plot()
 # generate_rr_validation_plot()
@@ -149,22 +155,25 @@ transformation_parameter <- log_transformation
 
 
 
-#-------------------------------------------------------------------------------------------- 10.3
+#-------------------------------------------------------------------------------------------- 20.3
 # source(file.path(script_dir, 'vs-validation_plots.R'))
 # draw_validation_plots()
 
 
-#-------------------------------------------------------------------------------------------- 10.4
+#-------------------------------------------------------------------------------------------- 20.4
 # source(file.path(script_dir, 'vs-variance-test.R'))
 # conduct_variance_tests()
 
 
-#-------------------------------------------------------------------------------------------- 10.5
+#-------------------------------------------------------------------------------------------- 20.5
 # source(file.path(script_dir, '5.dc-generate-meta-data.R'))
 # generate_ws_chunk_mean_data()
 # 
 # source(file.path(script_dir, 'vs-variance-test-chunk-data.R'))
 # conduct_variance_tests_chunk_data()
+
+
+
 
 
 
