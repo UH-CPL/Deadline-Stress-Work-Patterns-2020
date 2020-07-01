@@ -140,7 +140,7 @@ reduce_noise_and_downsample_newFFT <- function(session_dir, pp_file_name, sessio
     decay_f <<- 1/6
   }
   if(session_name=="WorkingSession"){
-    decay_f <<- 1/150
+    decay_f <<- 1/70
   }
   #print(decay_f)
   
@@ -185,18 +185,16 @@ get_downsampled_pp <- function(subj_name, day_serial, session_name) {
   pp_file_name <- get_matched_file_names(session_dir, pp_file_pattern)
   nr_pp_file_name <- get_matched_file_names(file.path(curated_data_dir, subj_data_dir), paste0('.*', subj_name, '_', day_serial, '_', session_name, nr_pp_file_pattern))
   
-  
-  
   if(!is_empty(pp_file_name)) {
-    if(is_empty(nr_pp_file_name)) {
-      # write_log_msg('--- noise reduced pp file NOT found ---', curation_log_file)
-      #downsampled_pp_df <- reduce_noise_and_downsample(session_dir, pp_file_name)
+    # if(is_empty(nr_pp_file_name)) {
+      ##### write_log_msg('--- noise reduced pp file NOT found ---', curation_log_file)
+      ##### downsampled_pp_df <- reduce_noise_and_downsample(session_dir, pp_file_name)
       downsampled_pp_df <- reduce_noise_and_downsample_newFFT(session_dir, pp_file_name, session_name)
-    } else {
-      # write_log_msg('--- noise reduced pp file found ---', curation_log_file)
-      downsampled_pp_df <- read_downsampled_pp(nr_pp_file_name)
-      downsampled_pp_df$Timestamp <- as.POSIXct(downsampled_pp_df$Timestamp)
-    }
+    # } else {
+    #   # write_log_msg('--- noise reduced pp file found ---', curation_log_file)
+    #   downsampled_pp_df <- read_downsampled_pp(nr_pp_file_name)
+    #   downsampled_pp_df$Timestamp <- as.POSIXct(downsampled_pp_df$Timestamp)
+    # }
   }
   
   ## This is when we need to update the *pp_nr.csv file
@@ -771,9 +769,9 @@ curate_data <- function() {
   # subj_list <- get_dir_list(file.path(raw_data_dir, grp_dir))
   subj_list <- custom_read_csv(file.path(curated_data_dir, utility_data_dir, subj_list_file_name))$Subject
   
-  sapply(subj_list, function(subj_name) {
+  # sapply(subj_list, function(subj_name) {
   # sapply(subj_list[2], function(subj_name) {
-  # sapply(c('T003', 'T005'), function(subj_name) {
+  sapply(c('T003', 'T005'), function(subj_name) {
 
     subj_dir <- file.path(raw_data_dir, grp_dir, subj_name)
     day_list <- get_dir_list(subj_dir)
