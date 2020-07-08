@@ -152,7 +152,7 @@ generate_pp_time_plots <- function() {
 
     
     # grid_plot <- do.call("grid.arrange", c(plot_list, ncol=2, top=textGrob(subj, gp=gpar(fontsize=20,font=3))))
-    title <- ggdraw() + draw_label(subj, fontface='bold')
+    title <- ggdraw() + draw_label(paste0(subj, ": non-normalised ln(PP) per Activity"), fontface='bold')
     # grid_plot <- plot_grid(plotlist=plot_list, nrow=2)
     grid_plot <- plot_grid(title, 
                            plot_grid(plotlist=plot_list, nrow=2), 
