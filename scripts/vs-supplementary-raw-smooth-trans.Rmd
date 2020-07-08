@@ -36,6 +36,11 @@ setwd(project_dir)
 #-------------------------#
 #-----   FUNCTIONS    ----#
 #-------------------------#
+save_plot <- function(plot_name, plot, width=default_plot_width, height=default_plot_height) {
+  ggsave(paste0(plot_name, '.pdf'), plot, width=width, height=height)
+  ggsave(paste0(plot_name, '.pdf'), plot, device=cairo_pdf, width=width, height=height)
+}
+
 read_data <- function() {
   full_df <<- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, full_df_file_name))
   # print_msg(colnames(full_df))
@@ -130,8 +135,15 @@ draw_signal_plots <- function(test=F) {
               ggtitle(paste0(subj, ' - ', day, ' - ', treatment)) +
               xlab('Time [s]') +
               ylab(signal) 
-            print(get_themed_plot(plot))
-            
+            plot <- get_themed_plot(plot)
+            print(plot)
+
+            save_plot(file.path(project_dir, plots_dir, 'raw-smooth-signals',
+                            paste0(subj, '_', day, '_', treatment, '_', signal)), 
+                  plot,
+                  24,
+                  8
+                  )
             
             plot <- ggplot(data=treatment_df, aes(x=TreatmentTime)) +
               geom_line(aes_string(y=paste0('Trans_', signal)),
