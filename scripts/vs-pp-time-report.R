@@ -34,7 +34,7 @@ activity_color <<- c(
 #-------------------------#
 #---FUNCTION DEFINITION---#
 #-------------------------#
-save_plot <- function(plot_name, plot, width=16, height=6) {
+save_plot <- function(plot_name, plot, width=16, height=8) {
   ggsave(paste0(plot_name, '.pdf'), plot, width=width, height=height)
   ggsave(paste0(plot_name, '.pdf'), plot, device=cairo_pdf, width=width, height=height)
 }
@@ -70,12 +70,14 @@ generate_pp_time_plots <- function() {
     subj_list <- unique(full_df$Participant_ID)
   }
 
-  print(subj_list)
-  print(unique(full_df$Reduced_Activity_One))
+  # print(subj_list)
+  # print(unique(full_df$Reduced_Activity_One))
 
   for (subj in subj_list) {
     subj_df <- full_df %>% filter(Participant_ID==subj)
     plot_list <- list()
+    
+    print(subj)
 
     for (day in unique(full_df$Day)) {
       day_df <- subj_df %>%
@@ -89,7 +91,7 @@ generate_pp_time_plots <- function() {
       max_y=max(subj_df$Trans_PP, na.rm=T)+0.1
 
 
-      plot <- ggplot(day_df, aes(x=Reduced_Activity_One, y=Trans_PP)) +
+      plot <- ggplot(day_df, aes(x=Reduced_Activity_One, y=Trans_PP, fill=Reduced_Activity_One)) +
         geom_boxplot() +
         geom_hline(yintercept=rb_mean$Mean[1], linetype="dashed", color = "red", alpha = 0.6, size=1) +
         # xlab('Activities') +
@@ -97,23 +99,25 @@ generate_pp_time_plots <- function() {
         # xlab('') +
         # ylab('') +
         ggtitle(day) +
+        scale_fill_manual(breaks = c("RB", "R", "W", "Out", "SA", "SP", "I", "NA"),
+                          values=c(
+                            "yellow",
+                            "springgreen",
+                            "blue",
+                            "orange",
+                            "gray92",
+                            "red",
+                            "magenta",
+                            "white"
+                          )) +
         scale_x_discrete(limits=c("RB", "R", "W", "Out", "SA", "SP", "I", "NA"), drop=F) +
         scale_y_continuous(limits = c(min_y, max_y),
                            breaks = round(seq(min_y, max_y, by=0.4), 1)) +
         stat_summary(fun.data = get_n, geom = "text", size = 3) +
+        # scale_color_brewer(palette="Dark2") +
         # scale_y_continuous(limits = c(min(subj_df$Trans_PP, na.rm=T), 1)) +
         # scale_x_discrete(breaks=unique(day_df$Reduced_Activity_ One), drop=F) 
-        # scale_fill_manual(breaks = c("RB", "R", "W", "Out", "SA", "SP", "I", "NA"), drop=F,
-        #                   values=c(
-        #                       "yellow",
-        #                       "springgreen",
-        #                       "blue",
-        #                       "orange",
-        #                       "gray92",
-        #                       "red",
-        #                       "magenta",
-        #                       "white"
-        #                     )) +
+        
         # scale_color_manual(values = activity_color) +
         # scale_fill_manual(values = activity_color) +
         # scale_fill_manual(values = c(
@@ -131,6 +135,7 @@ generate_pp_time_plots <- function() {
           panel.grid.major = element_blank(),
           panel.grid.minor = element_blank(),
           legend.title = element_blank(),
+          legend.position = "None",
           axis.title.x=element_blank(),
           # axis.text.x=element_blank(),
           # axis.ticks.x=element_blank(),
@@ -153,7 +158,7 @@ generate_pp_time_plots <- function() {
                            plot_grid(plotlist=plot_list, nrow=2), 
                            ncol=1, 
                            rel_heights=c(0.1, 1))
-    save_plot(file.path(project_dir, plots_dir, pp_time_plots_dir, subj), grid_plot)
+    save_plot(file.path(project_dir, plots_dir, activity_time_box_plots_dir, subj), grid_plot)
   }
 }
   
@@ -161,7 +166,7 @@ generate_pp_time_plots <- function() {
 #-------------------------#
 #-------Main Program------#
 #-------------------------#
-test <<- T
+test <<- F
 generate_pp_time_plots()
 
 
