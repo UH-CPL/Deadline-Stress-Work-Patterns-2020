@@ -157,7 +157,7 @@ generate_pp_time_plots <- function() {
     grid_plot <- plot_grid(title, 
                            plot_grid(plotlist=plot_list, nrow=2), 
                            ncol=1, 
-                           rel_heights=c(0.1, 1))
+                           rel_heights=c(0.07, 1))
     save_plot(file.path(project_dir, plots_dir, activity_time_box_plots_dir, subj), grid_plot)
   }
 }
