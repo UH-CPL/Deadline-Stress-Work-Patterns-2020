@@ -165,7 +165,7 @@ read_data()
 signal_list <<- c('PP', 'E4_EDA', 'E4_HR', 'iWatch_HR')
 # signal_list <<- c('PP')
 
-draw_signal_plots(test=TRUE)
-# draw_signal_plots()
+# draw_signal_plots(test=TRUE)
+draw_signal_plots()
 ```
 

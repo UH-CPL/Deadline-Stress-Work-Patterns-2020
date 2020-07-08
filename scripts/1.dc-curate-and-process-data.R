@@ -140,10 +140,11 @@ reduce_noise_and_downsample_newFFT <- function(session_dir, pp_file_name, sessio
     decay_f <<- 1/6
   }
   if(session_name=="WorkingSession"){
-    decay_f <<- 1/70
+    # decay_f <<- 1/150
+    decay_f <<- 1/150
   }
   #print(decay_f)
-  
+  15
   pp_df <- custom_read_csv(file.path(session_dir, pp_file_name))
   names(pp_df) <- c("Frame",	"Time",	"Timestamp", "PP")
  
@@ -769,10 +770,10 @@ curate_data <- function() {
   # subj_list <- get_dir_list(file.path(raw_data_dir, grp_dir))
   subj_list <- custom_read_csv(file.path(curated_data_dir, utility_data_dir, subj_list_file_name))$Subject
   
-  # sapply(subj_list, function(subj_name) {
+  sapply(subj_list, function(subj_name) {
   # sapply(subj_list[2], function(subj_name) {
   # sapply(c('T003', 'T005'), function(subj_name) {
-  sapply(c('T005'), function(subj_name) {
+  # sapply(c('T005'), function(subj_name) {
 
     subj_dir <- file.path(raw_data_dir, grp_dir, subj_name)
     day_list <- get_dir_list(subj_dir)

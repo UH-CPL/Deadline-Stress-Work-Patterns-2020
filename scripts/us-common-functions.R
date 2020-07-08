@@ -336,6 +336,8 @@ get_n <- function(x) {
   return(c(y=-Inf, vjust = -1, label=length(x))) 
 } 
 
+
+
 get_significance_sign <- function(p_value) { 
   if (p_value > 0.05) { 
     return(" ") 
