@@ -144,7 +144,6 @@ reduce_noise_and_downsample_newFFT <- function(session_dir, pp_file_name, sessio
     decay_f <<- 1/150
   }
   #print(decay_f)
-  15
   pp_df <- custom_read_csv(file.path(session_dir, pp_file_name))
   names(pp_df) <- c("Frame",	"Time",	"Timestamp", "PP")
  
