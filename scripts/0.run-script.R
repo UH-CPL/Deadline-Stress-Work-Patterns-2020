@@ -101,8 +101,8 @@ transformation_parameter <- log_transformation
 
 
 #-------------------------------------------------------------------------------------------- 10.3
-# source(file.path(script_dir, 'vs-pp-time-report.R'))
-# generate_pp_time_plots()
+source(file.path(script_dir, 'vs-activity-pp-box-plot-report.R'))
+generate_activity_pp_box_plots()
 
 
 
