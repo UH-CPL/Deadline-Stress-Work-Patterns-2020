@@ -94,15 +94,20 @@ transformation_parameter <- log_transformation
 # draw_regression_plots()
 
 
+#-------------------------------------------------------------------------------------------- 20.3
+source(file.path(script_dir, 'vs-validation_plots.R'))
+draw_validation_plots()
+
+
 #-------------------------------------------------------------------------------------------- 10.2
-# source(file.path(script_dir, 'vs-deadline-effect.R'))
-# generate_format_table()
+source(file.path(script_dir, 'vs-deadline-effect.R'))
+generate_format_table()
 
 
 
 #-------------------------------------------------------------------------------------------- 10.3
-source(file.path(script_dir, 'vs-activity-pp-box-plot-report.R'))
-generate_activity_pp_box_plots()
+# source(file.path(script_dir, 'vs-activity-pp-box-plot-report.R'))
+# generate_activity_pp_box_plots()
 
 
 
@@ -140,11 +145,6 @@ generate_activity_pp_box_plots()
 
 
 
-
-
-#-------------------------------------------------------------------------------------------- 20.3
-# source(file.path(script_dir, 'vs-validation_plots.R'))
-# draw_validation_plots()
 
 
 #-------------------------------------------------------------------------------------------- 20.4
