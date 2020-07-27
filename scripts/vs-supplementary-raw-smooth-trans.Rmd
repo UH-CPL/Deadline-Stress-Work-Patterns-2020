@@ -16,6 +16,7 @@ geometry: top=3.5cm, bottom=3cm
 #-------------------------#
 #--------LIBRARIES--------#
 #-------------------------#
+library(scales)
 library(ggplot2)
 library(dplyr) # Some problem occured for loading the dplyr package at the beginning
 
@@ -86,10 +87,18 @@ get_signal_data <- function(day_df, signal) {
   plot
 }
 
+get_ticks_no <- function(treatment) {
+  if (treatment=='RB') {
+    return(25)
+  }
+  
+  return(40)
+}
 
 draw_signal_plots <- function(test=F) {
   if (test==TRUE) {
-    subj_list <- c('T003', 'T005')
+    # subj_list <- c('T003', 'T005')
+    subj_list <- c('T003')
     day_list <- c('Day1')
     
   } else {
@@ -133,6 +142,10 @@ draw_signal_plots <- function(test=F) {
             
             plot <- plot +
               ggtitle(paste0(subj, ' - ', day, ' - ', treatment)) +
+              scale_x_continuous(breaks = scales::pretty_breaks(n = get_ticks_no(treatment))) +
+              # scale_x_continuous(breaks = round(seq(min(treatment_df$TreatmentTime), 
+              #                                       max(treatment_df$TreatmentTime), 
+              #                                       by = 500), 1)) +
               xlab('Time [s]') +
               ylab(signal) 
             plot <- get_themed_plot(plot)
@@ -174,8 +187,8 @@ read_data()
 <!-- Plots -->
 ------------------------------
 ```{r echo=FALSE, warning = FALSE, message = FALSE}
-signal_list <<- c('PP', 'E4_EDA', 'E4_HR', 'iWatch_HR')
-# signal_list <<- c('PP')
+# signal_list <<- c('PP', 'E4_EDA', 'E4_HR', 'iWatch_HR')
+signal_list <<- c('PP')
 
 # draw_signal_plots(test=TRUE)
 draw_signal_plots()
