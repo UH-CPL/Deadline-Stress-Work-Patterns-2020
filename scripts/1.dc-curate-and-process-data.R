@@ -136,12 +136,12 @@ read_downsampled_pp <- function(nr_pp_file_name) {
 reduce_noise_and_downsample_newFFT <- function(session_dir, pp_file_name, session_name) {
   
   print(session_name)
-  if(session_name=="Baseline"){
+  if(session_name=="Baseline") {
     decay_f <<- 1/6
   }
-  if(session_name=="WorkingSession"){
+  if(session_name=="WorkingSession") {
     # decay_f <<- 1/150
-    decay_f <<- 1/150
+    decay_f <<- 1/15
   }
   #print(decay_f)
   pp_df <- custom_read_csv(file.path(session_dir, pp_file_name))
@@ -149,6 +149,34 @@ reduce_noise_and_downsample_newFFT <- function(session_dir, pp_file_name, sessio
  
   # pp_df$Timestamp <- as.POSIXct(strptime(pp_df$Timestamp, format=s_interface_date_format)) 
   pp_df$Timestamp <- convert_s_interface_date(convert_marker_date(pp_df$Timestamp))
+  
+  
+  if((session_name=="WorkingSession") & (remove_peaks==T)) {
+    mean <- mean(pp_df$PP, na.rm=TRUE)
+    sd <- sd(pp_df$PP, na.rm=TRUE)
+    
+    # print(head(pp_df, 2))
+    # print(paste(mean, sd))
+    
+    outliers <- pp_df %>%
+      filter(pp_df$PP<mean-sd_val*sd | pp_df$PP>mean+sd_val*sd) %>%
+      select(PP) %>%
+      unlist()
+    
+    # print(head(pp_df, 2))
+    # pp_df[pp_df$PP %in% as.list(outliers), 'PP'] <- NA
+    # print(head(pp_df, 2))
+    # print(11111111111111111)
+    
+    pp_df <- pp_df %>% 
+      filter(!(PP %in% as.list(outliers)))
+    
+    # print(22222222222222222)
+    # print(head(pp_df, 2))
+    # mutate(ReportEmail=case_when(Treatment %in% c('ST', 'DT')~1,
+    #                              TRUE~NA))
+  }
+  
 
   #pp_df$NR_PP <- remove_noise(pp_df$PP)
   pp_df$NR_PP <- remove_noise(pp_df$PP, removeImpluse = T, lowpassDecayFreq = decay_f, samplePerSecond = 7)
@@ -769,9 +797,9 @@ curate_data <- function() {
   # subj_list <- get_dir_list(file.path(raw_data_dir, grp_dir))
   subj_list <- custom_read_csv(file.path(curated_data_dir, utility_data_dir, subj_list_file_name))$Subject
   
-  sapply(subj_list, function(subj_name) {
+  # sapply(subj_list, function(subj_name) {
   # sapply(subj_list[2], function(subj_name) {
-  # sapply(c('T003', 'T005'), function(subj_name) {
+  sapply(c('T003', 'T005'), function(subj_name) {
   # sapply(c('T005'), function(subj_name) {
 
     subj_dir <- file.path(raw_data_dir, grp_dir, subj_name)

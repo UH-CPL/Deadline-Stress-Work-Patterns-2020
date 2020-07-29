@@ -54,35 +54,39 @@ transformation_parameter <- log_transformation
 #-----Function Calling----#
 #-------------------------#
 
+
+sd_val <- 3
+remove_peaks <- T
+
 #-------------------------------------------------------------------------------------------- 1
-# source(file.path(script_dir, '1.dc-curate-and-process-data.R'))
-# curate_data()
-# 
-# 
-# #-------------------------------------------------------------------------------------------- 2
-# source(file.path(script_dir, '2.dc-process-activity-app-usage-data.R'))
-# format_activity_app_usage_data()
-# 
-# 
-# #-------------------------------------------------------------------------------------------- 3
-# source(file.path(script_dir, '3.dc-quality-control-phase-one.R'))
-# process_quality_control_phase_one()
-# 
-# 
-# #-------------------------------------------------------------------------------------------- 4
-# source(file.path(script_dir, '4.dc-generate-transformed-data.R'))
-# transform_data()
-# 
-# 
-# #-------------------------------------------------------------------------------------------- 5
-# source(file.path(script_dir, '5.dc-generate-normalized-data.R'))
-# normalize_data()
-# 
-# 
-# 
-# # -------------------------------------------------------------------------------------------- 6
-# source(file.path(script_dir, '6.dc-merge-all-data.R'))
-# merge_all_data()
+source(file.path(script_dir, '1.dc-curate-and-process-data.R'))
+curate_data()
+
+
+#-------------------------------------------------------------------------------------------- 2
+source(file.path(script_dir, '2.dc-process-activity-app-usage-data.R'))
+format_activity_app_usage_data()
+
+
+#-------------------------------------------------------------------------------------------- 3
+source(file.path(script_dir, '3.dc-quality-control-phase-one.R'))
+process_quality_control_phase_one()
+
+
+#-------------------------------------------------------------------------------------------- 4
+source(file.path(script_dir, '4.dc-generate-transformed-data.R'))
+transform_data()
+
+
+#-------------------------------------------------------------------------------------------- 5
+source(file.path(script_dir, '5.dc-generate-normalized-data.R'))
+normalize_data()
+
+
+
+# -------------------------------------------------------------------------------------------- 6
+source(file.path(script_dir, '6.dc-merge-all-data.R'))
+merge_all_data()
 
 
 
@@ -95,13 +99,13 @@ transformation_parameter <- log_transformation
 
 
 #-------------------------------------------------------------------------------------------- 20.3
-source(file.path(script_dir, 'vs-validation_plots.R'))
-draw_validation_plots()
+# source(file.path(script_dir, 'vs-validation_plots.R'))
+# draw_validation_plots()
 
 
 #-------------------------------------------------------------------------------------------- 10.2
-source(file.path(script_dir, 'vs-deadline-effect.R'))
-generate_format_table()
+# source(file.path(script_dir, 'vs-deadline-effect.R'))
+# generate_format_table()
 
 
 

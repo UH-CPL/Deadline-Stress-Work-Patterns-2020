@@ -82,7 +82,8 @@ get_signal_data <- function(day_df, signal) {
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
         axis.line = element_line(colour = "black"),
-        plot.title = element_text(hjust = 0.5, size = 16)
+        axis.text = element_text(size=14),
+        plot.title = element_text(hjust = 0.5, size = 18)
         )
   plot
 }
@@ -103,7 +104,7 @@ draw_signal_plots <- function(test=F) {
     
   } else {
     subj_list <- unique(full_df$Participant_ID)
-    subj_list <- subj_list[-length(subj_list)]
+    # subj_list <- subj_list[-length(subj_list)]
     day_list <- unique(full_df$Day)
   }
   
@@ -143,6 +144,7 @@ draw_signal_plots <- function(test=F) {
             plot <- plot +
               ggtitle(paste0(subj, ' - ', day, ' - ', treatment)) +
               scale_x_continuous(breaks = scales::pretty_breaks(n = get_ticks_no(treatment))) +
+              scale_y_continuous(breaks = scales::pretty_breaks(n = 10)) +
               # scale_x_continuous(breaks = round(seq(min(treatment_df$TreatmentTime), 
               #                                       max(treatment_df$TreatmentTime), 
               #                                       by = 500), 1)) +
