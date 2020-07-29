@@ -99,9 +99,12 @@ get_ticks_no <- function(treatment) {
 
 draw_signal_plots <- function(test=F) {
   if (test==TRUE) {
-    # subj_list <- c('T003', 'T005')
-    subj_list <- c('T003')
-    day_list <- c('Day1')
+    
+    # subj_list <- c('T003')
+    # day_list <- c('Day1')
+    
+    subj_list <- c('T003', 'T005')
+    day_list <- unique(full_df$Day)
     
   } else {
     subj_list <- unique(full_df$Participant_ID)
@@ -193,7 +196,7 @@ read_data()
 # signal_list <<- c('PP', 'E4_EDA', 'E4_HR', 'iWatch_HR')
 signal_list <<- c('PP')
 
-# draw_signal_plots(test=TRUE)
-draw_signal_plots()
+draw_signal_plots(test=TRUE)
+# draw_signal_plots()
 ```
 
