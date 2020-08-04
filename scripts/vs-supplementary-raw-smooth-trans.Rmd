@@ -84,6 +84,7 @@ get_signal_data <- function(day_df, signal) {
         axis.line = element_line(colour = "black"),
         text=element_text(size=18),
         axis.text = element_text(size=16),
+        axis.text.x = element_text(angle = 45, hjust=1),  ## vjust = 0.5
         plot.title = element_text(hjust=0.5, size=22)
         )
   plot
@@ -148,7 +149,7 @@ draw_signal_plots <- function(test=F) {
             plot <- plot +
               ggtitle(paste0(subj, ' - ', day, ' - ', treatment)) +
               scale_x_continuous(breaks = scales::pretty_breaks(n = get_ticks_no(treatment))) +
-              scale_y_continuous(breaks = scales::pretty_breaks(n = 10)) +
+              scale_y_continuous(breaks = scales::pretty_breaks(n = 5)) +
               # scale_x_continuous(breaks = round(seq(min(treatment_df$TreatmentTime), 
               #                                       max(treatment_df$TreatmentTime), 
               #                                       by = 500), 1)) +
@@ -196,7 +197,7 @@ read_data()
 # signal_list <<- c('PP', 'E4_EDA', 'E4_HR', 'iWatch_HR')
 signal_list <<- c('PP')
 
-draw_signal_plots(test=TRUE)
-# draw_signal_plots()
+# draw_signal_plots(test=TRUE)
+draw_signal_plots()
 ```
 
