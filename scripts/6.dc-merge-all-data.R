@@ -34,7 +34,8 @@ merge_all_data <- function() {
   
   qc0_df <- custom_read_csv(file.path(physiological_data_path, qc0_final_file_name)) %>%
     dplyr::select(Participant_ID, Day, Treatment, 
-                 Timestamp, Sinterface_Time, BaseTreatmentTime, TreatmentTime, 
+                 Timestamp, Sinterface_Time, TreatmentTime, 
+                 # BaseTreatmentTime,
                  # Raw_Noisy_PP, 
                  Raw_PP, Raw_E4_EDA, Raw_E4_HR, Raw_iWatch_HR, 
                  Activities, Activities_QC1, Activities_QC2, Activity_One, Activity_Two, Activity_Three,
@@ -92,7 +93,7 @@ merge_all_data <- function() {
       Treatment,
       Timestamp,
       Sinterface_Time,
-      BaseTreatmentTime,
+      # BaseTreatmentTime,
       TreatmentTime,
       
       # Raw_Noisy_PP,

@@ -715,11 +715,27 @@ curate_baseline_time_for_row <- function(rb_row, df) {
   # print(head(temp_df$TreatmentTime, 2))
   
   
+  # df <- df %>%
+  #   filter(!(Participant_ID==rb_row$Subject_ID &
+  #              Day==rb_row$Day &
+  #              Treatment=='RB' &
+  #              (BaseTreatmentTime<=rb_row$StartTime | BaseTreatmentTime>=rb_row$EndTime)))
+  
+  
+  
+  
   df <- df %>%
-    filter(!(Participant_ID==rb_row$Subject_ID &
-               Day==rb_row$Day &
-               Treatment=='RB' &
-               (BaseTreatmentTime<=rb_row$StartTime | BaseTreatmentTime>=rb_row$EndTime)))
+    # mutate(PP=replace(PP,
+    #                   (Participant_ID==rb_row$Subject_ID & 
+    #                      Day==rb_row$Day & 
+    #                      Treatment=='RB' & 
+    #                      (BaseTreatmentTime<=rb_row$StartTime | BaseTreatmentTime>=rb_row$EndTime)), 
+    #                   NA))
+    mutate_at(.vars = c("PP", "Raw_PP"), 
+              funs(ifelse((Participant_ID==rb_row$Subject_ID &
+                             Day==rb_row$Day & 
+                             Treatment=='RB' &
+                             (TreatmentTime<=rb_row$StartTime | TreatmentTime>=rb_row$EndTime)), NA, .)))
   
   df
 }
@@ -794,20 +810,20 @@ refactor_and_export_all_subj_data <- function(all_subj_df) {
     ## Calculating relative treatment time
     group_by(Participant_ID, Day, Treatment) %>% 
     arrange(Timestamp) %>%
-    dplyr::mutate(BaseTreatmentTime=as.numeric(Timestamp)-as.numeric(head(Timestamp, 1))) %>%
+    dplyr::mutate(TreatmentTime=as.numeric(Timestamp)-as.numeric(head(Timestamp, 1))) %>%
     
     do(curate_baseline_time(.)) %>% 
     
-    group_by(Participant_ID, Day, Treatment) %>% 
-    arrange(BaseTreatmentTime) %>%
-    dplyr::mutate(TreatmentTime=BaseTreatmentTime-head(BaseTreatmentTime, 1)) %>%
+    # group_by(Participant_ID, Day, Treatment) %>% 
+    # arrange(BaseTreatmentTime) %>%
+    # dplyr::mutate(TreatmentTime=BaseTreatmentTime-head(BaseTreatmentTime, 1)) %>%
     
     dplyr::select(Participant_ID,
            Day,
            Treatment,
            Timestamp,
            Sinterface_Time,
-           BaseTreatmentTime,
+           # BaseTreatmentTime,
            TreatmentTime,
            
            # Raw_Noisy_PP,
@@ -845,7 +861,7 @@ refactor_and_export_all_subj_data <- function(all_subj_df) {
   }
   
   
-  # View(all_subj_df)
+  View(all_subj_df)
   # write_log_msg(levels(factor(all_subj_df$Application)), curation_log_file)
   write_log_msg(paste0('Total relative time mismatch row: ', nrow(all_subj_df[all_subj_df$Sinterface_Time != all_subj_df$TreatmentTime, ])), curation_log_file)
   
