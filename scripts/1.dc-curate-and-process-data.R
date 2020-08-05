@@ -169,12 +169,16 @@ reduce_noise_and_downsample_newFFT <- function(session_dir, pp_file_name, sessio
     # print(11111111111111111)
     
     pp_df <- pp_df %>% 
+      mutate(PP_RAW_NOISE=PP) %>% 
       filter(!(PP %in% as.list(outliers)))
     
     # print(22222222222222222)
     # print(head(pp_df, 2))
     # mutate(ReportEmail=case_when(Treatment %in% c('ST', 'DT')~1,
     #                              TRUE~NA))
+  } else {
+    pp_df <- pp_df %>%
+      mutate(PP_RAW_NOISE=PP)
   }
   
 
