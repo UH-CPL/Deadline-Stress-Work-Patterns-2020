@@ -718,11 +718,32 @@ refactor_and_export_all_subj_data <- function(all_subj_df) {
   # # # # This is for T001 & T003, for whom we only noted the break times
   # # # all_subj_df[is.na(all_subj_df$Ontologies) & all_subj_df$Treatment=='WS' & all_subj_df$Participant_ID=='T001', ]$Ontologies <- 'Working'
   # # # all_subj_df[is.na(all_subj_df$Ontologies) & all_subj_df$Treatment=='WS' & all_subj_df$Participant_ID=='T003', ]$Ontologies <- 'C - Writing/Reading'
-  #################################################################################
   
   
+  #----------------------------------- T005 - Day5 -------------------------------------------#
   all_subj_df <- all_subj_df[!(all_subj_df$Participant_ID=="T005" & all_subj_df$Day=="Day4"), ]
   all_subj_df$Day[all_subj_df$Day=="Day5"] <- "Day4"
+  
+  #############################################################################################
+  #############################################################################################
+  
+  
+  
+  
+  
+  
+  
+  baseline_curated_time_df <- custom_read_csv(file.path(curated_data_dir, utility_data_dir, baseline_curated_time_file_name))
+  print(baseline_curated_time_df)
+  
+  
+  
+  
+  
+  
+  
+  
+  
   
   # print(head(all_subj_df, 2))
   all_subj_df <- all_subj_df %>%
@@ -754,7 +775,7 @@ refactor_and_export_all_subj_data <- function(all_subj_df) {
            Sinterface_Time,
            TreatmentTime,
            
-           Raw_Noisy_PP,
+           # Raw_Noisy_PP,
            Raw_PP,
            PP,
            
@@ -806,14 +827,14 @@ curate_data <- function() {
   
   # sapply(subj_list, function(subj_name) {
   # sapply(subj_list[2], function(subj_name) {
-  sapply(c('T003', 'T005'), function(subj_name) {
-  # sapply(c('T005'), function(subj_name) {
+  # sapply(c('T003', 'T005'), function(subj_name) {
+  sapply(c('T005'), function(subj_name) {
 
     subj_dir <- file.path(raw_data_dir, grp_dir, subj_name)
     day_list <- get_dir_list(subj_dir)
     
-    sapply(day_list, function(day_serial) {
-    # sapply(day_list[4], function(day_serial) {
+    # sapply(day_list, function(day_serial) {
+    sapply(day_list[4], function(day_serial) {
       tryCatch({
         write_log_msg(paste0('\n----------\n', subj_name, '-', day_serial, "\n----------"), curation_log_file)
         

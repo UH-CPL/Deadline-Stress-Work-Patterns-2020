@@ -120,6 +120,7 @@ boxcox_transformation <- 'boxcox'
 
 
 subj_list_file_name <- 'subj_list.csv'
+baseline_curated_time_file_name <- 'baseline_curated_time.csv'
 
 
 ###############################################################
