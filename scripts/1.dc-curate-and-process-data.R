@@ -260,7 +260,7 @@ curate_rb_session_data <- function(subj_name, day_serial) {
   
   rb_start_time <- convert_s_interface_date(convert_marker_date(rb_marker_df$startTimestamp[1]))
   rb_end_time <- convert_s_interface_date(convert_marker_date(rb_marker_df$EndTimestamp[1]))
-  
+      
   # write_log_msg(paste0('Baseline start time: ', rb_start_time), curation_log_file)
   # write_log_msg(paste0('Baseline end time: ', rb_end_time), curation_log_file)
   
@@ -693,6 +693,48 @@ merge_iwatch_data <- function(subj_name, day_serial, full_day_df) {
   return(full_day_df)
 }
 
+curate_baseline_time_for_row <- function(rb_row, df) {
+  # subj <- rb_row$Subject_ID
+  # day <- rb_row$Day
+  # start_time <- rb_row$StartTime
+  # end_time <- rb_row$EndTime
+  # 
+  # print(paste(typeof(subj), typeof(day), typeof(start_time), typeof(end_time)))
+  # print(paste(subj, day, start_time, end_time))
+  
+  # print(head(df, 2))
+  
+  # temp_df <- df %>% 
+  #   filter(Participant_ID==rb_row$Subject_ID & 
+  #              Day==rb_row$Day &
+  #              Treatment=="RB" &
+  #              (TreatmentTime<=rb_row$StartTime |
+  #              TreatmentTime>=rb_row$EndTime)
+  #          )
+  # 
+  # print(head(temp_df$TreatmentTime, 2))
+  
+  
+  df <- df %>%
+    filter(!(Participant_ID==rb_row$Subject_ID &
+               Day==rb_row$Day &
+               Treatment=='RB' &
+               (BaseTreatmentTime<=rb_row$StartTime | BaseTreatmentTime>=rb_row$EndTime)))
+  
+  df
+}
+
+curate_baseline_time <- function(df) {
+  rb_curated_time_df <- custom_read_csv(file.path(curated_data_dir, utility_data_dir, baseline_curated_time_file_name))
+  # print(rb_curated_time_df)
+  
+  for(i in rownames(rb_curated_time_df)) {
+    df <- curate_baseline_time_for_row(rb_curated_time_df[i, ], df)
+  }
+  
+  df
+}
+
 
 refactor_and_export_all_subj_data <- function(all_subj_df) {
   #################################################################################
@@ -727,23 +769,9 @@ refactor_and_export_all_subj_data <- function(all_subj_df) {
   #############################################################################################
   #############################################################################################
   
-  
-  
-  
-  
-  
-  
-  baseline_curated_time_df <- custom_read_csv(file.path(curated_data_dir, utility_data_dir, baseline_curated_time_file_name))
-  print(baseline_curated_time_df)
-  
-  
-  
-  
-  
-  
-  
-  
-  
+
+  # all_subj_df <- curate_baseline_time(all_subj_df)
+  # View(all_subj_df)
   
   # print(head(all_subj_df, 2))
   all_subj_df <- all_subj_df %>%
@@ -766,13 +794,20 @@ refactor_and_export_all_subj_data <- function(all_subj_df) {
     ## Calculating relative treatment time
     group_by(Participant_ID, Day, Treatment) %>% 
     arrange(Timestamp) %>%
-    dplyr::mutate(TreatmentTime=as.numeric(Timestamp)-as.numeric(head(Timestamp, 1))) %>%
+    dplyr::mutate(BaseTreatmentTime=as.numeric(Timestamp)-as.numeric(head(Timestamp, 1))) %>%
+    
+    do(curate_baseline_time(.)) %>% 
+    
+    group_by(Participant_ID, Day, Treatment) %>% 
+    arrange(BaseTreatmentTime) %>%
+    dplyr::mutate(TreatmentTime=BaseTreatmentTime-head(BaseTreatmentTime, 1)) %>%
     
     dplyr::select(Participant_ID,
            Day,
            Treatment,
            Timestamp,
            Sinterface_Time,
+           BaseTreatmentTime,
            TreatmentTime,
            
            # Raw_Noisy_PP,
@@ -810,7 +845,7 @@ refactor_and_export_all_subj_data <- function(all_subj_df) {
   }
   
   
-  # View(all_subj_df)
+  View(all_subj_df)
   # write_log_msg(levels(factor(all_subj_df$Application)), curation_log_file)
   write_log_msg(paste0('Total relative time mismatch row: ', nrow(all_subj_df[all_subj_df$Sinterface_Time != all_subj_df$TreatmentTime, ])), curation_log_file)
   
@@ -823,18 +858,18 @@ curate_data <- function() {
   
   # subj_list <- get_dir_list(file.path(raw_data_dir, grp_dir))
   subj_list <- custom_read_csv(file.path(curated_data_dir, utility_data_dir, subj_list_file_name))$Subject
-  print(subj_list)
+  # print(subj_list)
   
   # sapply(subj_list, function(subj_name) {
   # sapply(subj_list[2], function(subj_name) {
-  # sapply(c('T003', 'T005'), function(subj_name) {
-  sapply(c('T005'), function(subj_name) {
+  sapply(c('T003', 'T005'), function(subj_name) {
+  # sapply(c('T005'), function(subj_name) {
 
     subj_dir <- file.path(raw_data_dir, grp_dir, subj_name)
     day_list <- get_dir_list(subj_dir)
     
-    # sapply(day_list, function(day_serial) {
-    sapply(day_list[4], function(day_serial) {
+    sapply(day_list, function(day_serial) {
+    # sapply(day_list[3], function(day_serial) {
       tryCatch({
         write_log_msg(paste0('\n----------\n', subj_name, '-', day_serial, "\n----------"), curation_log_file)
         

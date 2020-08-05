@@ -268,6 +268,7 @@ format_activity_app_usage_data <- function() {
            Treatment,
            Timestamp,
            Sinterface_Time,
+           BaseTreatmentTime,
            TreatmentTime,
            
            Raw_PP,
