@@ -58,8 +58,8 @@ remove_peaks <- T
 smooth_pp_signals <- F#Oiii....REMEMBER TO COMMENT OUT - Raw_Noisy_PP in script 1 & 6
 
 #-------------------------------------------------------------------------------------------- 1
-# source(file.path(script_dir, '1.dc-curate-and-process-data.R'))
-# curate_data()
+source(file.path(script_dir, '1.dc-curate-and-process-data.R'))
+curate_data()
 
 
 #-------------------------------------------------------------------------------------------- 2
@@ -98,19 +98,19 @@ merge_all_data()
 
 
 #-------------------------------------------------------------------------------------------- 20.3
-# source(file.path(script_dir, 'vs-validation_plots.R'))
-# draw_validation_plots()
+source(file.path(script_dir, 'vs-validation_plots.R'))
+draw_validation_plots()
 
 
 #-------------------------------------------------------------------------------------------- 10.2
-# source(file.path(script_dir, 'vs-deadline-effect.R'))
-# generate_format_table()
+source(file.path(script_dir, 'vs-deadline-effect.R'))
+generate_format_table()
 
 
 
 #-------------------------------------------------------------------------------------------- 10.3
-# source(file.path(script_dir, 'vs-activity-pp-box-plot-report.R'))
-# generate_activity_pp_box_plots()
+source(file.path(script_dir, 'vs-activity-pp-box-plot-report.R'))
+generate_activity_pp_box_plots()
 
 
 
