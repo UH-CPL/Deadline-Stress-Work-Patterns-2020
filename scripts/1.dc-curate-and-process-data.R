@@ -169,7 +169,7 @@ reduce_noise_and_downsample_newFFT <- function(session_dir, pp_file_name, sessio
     # print(11111111111111111)
     
     pp_df <- pp_df %>% 
-      mutate(PP_RAW_NOISE=PP) %>% 
+      mutate(Raw_Noisy_PP=PP) %>% 
       filter(!(PP %in% as.list(outliers)))
     
     # print(22222222222222222)
@@ -178,7 +178,7 @@ reduce_noise_and_downsample_newFFT <- function(session_dir, pp_file_name, sessio
     #                              TRUE~NA))
   } else {
     pp_df <- pp_df %>%
-      mutate(PP_RAW_NOISE=PP)
+      mutate(Raw_Noisy_PP=PP)
   }
   
 
@@ -728,6 +728,7 @@ refactor_and_export_all_subj_data <- function(all_subj_df) {
   all_subj_df <- all_subj_df %>%
     dplyr::rename(Sinterface_Time=Time,
            Activities=Ontologies,
+           # Raw_Noisy_PP=PP_RAW_NOISE,
            Raw_PP=PP,
            PP=NR_PP,
            E4_HR=HR,
@@ -753,6 +754,7 @@ refactor_and_export_all_subj_data <- function(all_subj_df) {
            Sinterface_Time,
            TreatmentTime,
            
+           Raw_Noisy_PP,
            Raw_PP,
            PP,
            
