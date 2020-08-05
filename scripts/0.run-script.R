@@ -48,8 +48,6 @@ transformation_parameter <- log_transformation
 
 
 
-
-
 #-------------------------#
 #-----Function Calling----#
 #-------------------------#
@@ -57,6 +55,7 @@ transformation_parameter <- log_transformation
 
 sd_val <- 3
 remove_peaks <- T
+smooth_pp_signals <- F
 
 #-------------------------------------------------------------------------------------------- 1
 source(file.path(script_dir, '1.dc-curate-and-process-data.R'))
