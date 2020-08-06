@@ -861,7 +861,7 @@ refactor_and_export_all_subj_data <- function(all_subj_df) {
   }
   
   
-  View(all_subj_df)
+  # View(all_subj_df)
   # write_log_msg(levels(factor(all_subj_df$Application)), curation_log_file)
   write_log_msg(paste0('Total relative time mismatch row: ', nrow(all_subj_df[all_subj_df$Sinterface_Time != all_subj_df$TreatmentTime, ])), curation_log_file)
   
