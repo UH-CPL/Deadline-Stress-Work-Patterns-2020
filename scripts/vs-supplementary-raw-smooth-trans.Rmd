@@ -178,6 +178,91 @@ draw_signal_plots <- function(test=F) {
     }
   }
 }
+
+draw_signal_plot_for_paper <- function(test=F) {
+
+  subj_list <- c('T017')
+  day_list <- c('Day2')
+  # day_list <- unique(full_df$Day)
+
+  
+  for (subj in subj_list) {
+    subj_df <- full_df %>% filter(Participant_ID==subj)
+    
+    for (day in day_list) {
+      day_df <- subj_df %>% filter(Day==day) 
+      
+      for (signal in signal_list) {
+        signal_df <- get_signal_data(day_df, signal)
+        
+        for (treatment in unique(day_df$Treatment)) {
+          treatment_df <- day_df %>% 
+            filter(Treatment==treatment) 
+          
+          if (signal=='iWatch_HR') {
+            treatment_df <- treatment_df %>%
+              na.omit()
+          }
+          
+          message(paste(subj, day, signal, treatment))
+          
+          if (nrow(treatment_df)>0) {
+            plot <- ggplot(data=treatment_df, aes(x=TreatmentTime)) + 
+              geom_line(aes_string(y=paste0('Raw_', signal)),
+                        color='gray',
+                        alpha = 0.6)  
+          
+          if(signal %in% colnames(treatment_df)) {
+            plot <- plot +
+                geom_line(aes_string(y=signal),
+                        color='blue',
+                        alpha = 0.8) 
+            }
+            
+            plot <- plot +
+              scale_x_continuous(breaks = pretty_breaks(n=20)) +
+                                 # labels = abs(pretty(20))) +
+              # scale_x_continuous(breaks = pretty_breaks(n=treatment_df$TreatmentTime),
+              #                    labels = abs(pretty(treatment_df$TreatmentTime))) +
+              xlab('Time [s]') +
+              ylab(bquote(paste('PP [',''^'o','C',''^2,']')))
+            
+            plot <- plot +
+              theme_bw() +
+              theme(
+                  panel.grid.major = element_blank(),
+                  panel.grid.minor = element_blank(),
+                  axis.line = element_line(colour = "black"),
+                  text=element_text(size=32),
+                  axis.text = element_text(size=24),
+                  axis.text.x = element_text(angle = 45, hjust=1),  ## vjust = 0.5
+                  plot.title = element_text(hjust=0.5, size=22)
+                  )
+            
+            print(plot)
+
+            save_plot(file.path(project_dir, plots_dir, 'raw-smooth-signals',
+                            paste0(subj, '_', day, '_', treatment, '_', signal)), 
+                  plot,
+                  24,
+                  8
+                  )
+            
+            plot <- ggplot(data=treatment_df, aes(x=TreatmentTime)) +
+              geom_line(aes_string(y=paste0('Trans_', signal)),
+                        color='green',
+                        alpha = 0.8) +
+              xlab('Time [s]') +
+              ylab(paste0('ln( ', signal, ' )'))
+            
+            print(get_themed_plot(plot))
+          }
+        }
+      }
+    }
+  }
+}
+
 ```
 
 
@@ -198,6 +283,9 @@ read_data()
 signal_list <<- c('PP')
 
 # draw_signal_plots(test=TRUE)
-draw_signal_plots()
+# draw_signal_plots()
+
+
+draw_signal_plot_for_paper()
 ```
 
