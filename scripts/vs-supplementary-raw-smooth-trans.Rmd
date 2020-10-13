@@ -237,7 +237,7 @@ draw_signal_plot_for_paper <- function(test=F) {
             save_plot(file.path(project_dir, plots_dir, 'raw-smooth-signals',
                             paste0(subj, '_', day, '_', treatment, '_', signal)), 
                   plot,
-                  32,
+                  24,
                   8
                   )
             
