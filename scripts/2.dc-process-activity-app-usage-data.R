@@ -234,6 +234,16 @@ get_masked_data <- function(all_subj_df) {
   return(all_subj_df)
 }
 
+remove_pp_for_out <- function(all_subj_df) {
+  # all_subj_df <- all_subj_df %>%
+  #   mutate(Raw_PP = replace(PP, Reduced_Activities_QC1=="Out" & Raw_PP!="NA", NA),
+  #          PP = replace(PP, Reduced_Activities_QC1=="Out" & PP!="NA", NA))
+  
+  all_subj_df <- all_subj_df %>%
+    mutate(Raw_PP = replace(PP, Reduced_Activities_QC1=="Out", NA),
+           PP = replace(PP, Reduced_Activities_QC1=="Out", NA))
+}
+
 
 get_final_activities_and_app_usage <- function(all_subj_df) {
   
@@ -251,6 +261,10 @@ get_final_activities_and_app_usage <- function(all_subj_df) {
   
   ## 4. Generate masked data
   all_subj_df <- get_masked_data(all_subj_df)
+  
+  
+  ## 5. Remove PP when out
+  all_subj_df <- remove_pp_for_out(all_subj_df)
   
   
   return(all_subj_df)

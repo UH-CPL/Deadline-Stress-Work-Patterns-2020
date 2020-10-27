@@ -55,7 +55,7 @@ transformation_parameter <- log_transformation
 
 sd_val <- 3
 remove_peaks <- T
-smooth_pp_signals <- F#Oiii....REMEMBER TO COMMENT OUT - Raw_Noisy_PP in script 1 & 6
+smooth_pp_signals <- F #Oiii....REMEMBER TO COMMENT OUT - Raw_Noisy_PP in script 1 & 6
 
 #-------------------------------------------------------------------------------------------- 1
 source(file.path(script_dir, '1.dc-curate-and-process-data.R'))
