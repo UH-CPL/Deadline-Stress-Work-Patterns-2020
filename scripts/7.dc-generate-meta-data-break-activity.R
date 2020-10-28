@@ -57,7 +57,9 @@ generate_meta_data_break_activity <- function() {
           # StartTime=head(Timestamp, 1),
           # EndTime=tail(Timestamp, 1),
           Mean_Trans_PP=mean(Trans_PP, na.rm = TRUE),
-          SegmentTime=n())
+          SegmentTime=n(),
+          BreakTime=sum(Reduced_Activities_QC1=="Out", na.rm = T),
+          WorkingTime=SegmentTime-BreakTime)
   
   convert_to_csv(segment_meta_data_df, file.path(physiological_data_path, segment_meta_data_df_file_name))
 }
