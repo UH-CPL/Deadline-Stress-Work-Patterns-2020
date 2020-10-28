@@ -53,11 +53,11 @@ generate_meta_data_break_activity <- function() {
   
   segment_meta_data_df <- segment_df %>%
     dplyr::group_by(Participant_ID, Day, Segment) %>%
-    summarize(Mean_Trans_PP=mean(Trans_PP, na.rm = TRUE),
-              SegmentTime=n(),
-              StartTime=head(Timestamp, 1),
-              EndTime=tail(Timestamp, 1))
-  
+    summarize(
+          # StartTime=head(Timestamp, 1),
+          # EndTime=tail(Timestamp, 1),
+          Mean_Trans_PP=mean(Trans_PP, na.rm = TRUE),
+          SegmentTime=n())
   
   convert_to_csv(segment_meta_data_df, file.path(physiological_data_path, segment_meta_data_df_file_name))
 }
