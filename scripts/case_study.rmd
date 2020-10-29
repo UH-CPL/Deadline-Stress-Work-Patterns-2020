@@ -1,0 +1,408 @@
+---
+title: "CaseStudy"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(grid)
+library(gridExtra)
+library(dplyr)
+library(ggpubr)
+#install.packages('DataCombine')
+library(DataCombine)
+library(dplyr)
+library(reshape2)
+library(tidyr)
+library(stringr)
+library(plyr)
+library(ggplot2)
+library(dplyr)
+library(miceadds)
+library(gtools)
+library(ggpubr)
+library(gvlma)
+library(MASS)
+library(reshape2)
+library(ggcorrplot)
+library(GGally)
+library(ggnewscale)
+library(scales)
+library(cowplot)
+library(tidyverse)  # data manipulation
+library(cluster)    # clustering algorithms
+library(factoextra)
+library(dendextend)
+library(FeatureImpCluster)
+library(flexclust)
+library(DMwR)
+library("FactoMineR")
+library(dummies)
+library(data.table)
+library("ggdendro")
+```
+
+```{r, echo=FALSE}
+
+current_dir <- getwd()
+setwd('..')
+root_dir <- getwd()
+data_dir <- file.path(root_dir, 'curated-data/physiological-data')
+# plot_dir <- 'C:/Users/soton/Documents/R/@CPLResearchProjects/Deadline-Stress-Work-Patterns-2020/plots/CaseStudy'
+plot_dir <- file.path(root_dir,'plots/CaseStudy')
+data_file_name<-'full_df.csv'
+curated_data_dir <- file.path(root_dir, 'curated-data/physiological-data')
+Data<-read.csv(file.path(data_dir,data_file_name),stringsAsFactors = FALSE)
+# Data<-subset(Data, Participant_ID=="T005" | Participant_ID=="T013" & Treatment=="WS")
+
+# Data<-subset(Data, Participant_ID=="T005" & Treatment=="WS")
+# factor(Data$Participant_ID)
+# colnames(Data)
+```
+
+
+```{r, echo=FALSE}
+# levels(factor(Data$Reduced_Activities_QC1))
+
+Data1<- subset(Data, Reduced_Activities_QC1=="Out" & Trans_PP!="NA")
+
+# Data <- Data %>%
+#      mutate(Trans_PP = replace(Trans_PP, Reduced_Activities_QC1=="Out" & Trans_PP!="NA", NA))
+
+
+file_name='Out_PP.csv'
+write.csv(Data1,file.path(curated_data_dir, file_name), row.names = FALSE)
+
+```
+
+
+
+
+```{r, echo=FALSE}
+data_file_name<-'qc1_normalized_mean_v1.csv'
+
+Normalized_mean<-read.csv(file.path(data_dir,data_file_name),stringsAsFactors = FALSE)
+Normalized_mean<-subset(Normalized_mean, select = -c(E4_EDA,iWatch_HR,Treatment, E4_HR ))
+Normalized_mean<-subset(Normalized_mean, Participant_ID=="T005" | Participant_ID=="T013")
+
+
+
+data_file_name<-'qc1_transformed_mean_v1.csv'
+BL_Transformed_mean<-read.csv(file.path(data_dir,data_file_name),stringsAsFactors = FALSE)
+BL_Transformed_mean<-subset(BL_Transformed_mean, select = -c(E4_EDA,iWatch_HR, E4_HR ))
+BL_Transformed_mean<-subset(BL_Transformed_mean, Treatment =="RB")
+BL_Transformed_mean<-subset(BL_Transformed_mean, Participant_ID=="T005" | Participant_ID=="T013")
+```
+
+
+
+```{r, echo=FALSE}
+# yaxis_title = bquote(paste(Delta, ' ln(PP) [ ',''^'o','C',''^2,' ]'))
+# plot_workingsession <-
+#   function(fun.data, fun.x, fun.y, mean_line, Day) {
+#     if (Day=="Day4"){
+#       xaxis_title = "Time [s]"
+#     } else {
+#       xaxis_title =""
+#     }
+#     t <- ggplot(data = fun.data) +
+#       geom_line(aes(x = fun.x,
+#                     y = fun.y,
+#                     colour = Participant_ID)) +
+#       geom_hline(
+#         aes(yintercept = mean_line$PP[1], colour = mean_line$Participant_ID[1]),
+#         size = 1.5,
+#         linetype = "dashed",
+#         show.legend = FALSE
+#       ) +
+#       geom_hline(
+#         aes(yintercept = mean_line$PP[2], colour = mean_line$Participant_ID[2]),
+#         size = 1.5,
+#         linetype = "dashed",
+#         show.legend = FALSE
+#       ) +
+#       theme_bw() +
+#       theme(
+#         plot.title = element_text(hjust = 0.5),
+#         panel.grid.major = element_blank(),
+#         panel.grid.minor = element_blank(),
+#         axis.line = element_line(colour = "black"),
+#         legend.position = "bottom",
+#         legend.title = element_blank(),
+#         legend.text = element_text(size = 12, face="bold"),
+#         legend.key.size = unit(1,"cm")) +
+#       scale_y_continuous(limits = c(-1,1), sec.axis = dup_axis(name = Day, labels = NULL)) +
+#       guides(linetype = guide_legend(override.aes = list(size = 5))) +
+#       labs(x = xaxis_title, y = yaxis_title)
+#     # print(t)
+#     return(t)
+#   }
+```
+
+
+
+```{r, echo=FALSE}
+# subject_name_list<-levels(factor(Data$Participant_ID))
+# 
+# final_list<-list()
+# 
+# Day_No<-factor(Data$Day)
+# numberOfDay=nlevels(Day_No)
+# 
+# for (i in 1:numberOfDay) {
+#   mean_v1_df <- tibble()
+#   
+#   Day=levels(Day_No)[i]
+#   DF_Sub<-subset(Data, Day==levels(Day_No)[i])
+#   
+#   
+#   mean_session<-subset(Normalized_mean, Day==levels(Day_No)[i])
+#   mean_Baseline<-subset(BL_Transformed_mean, Day==levels(Day_No)[i])
+#   
+#   Partipant<-factor(DF_Sub$Participant_ID)
+#   numberOfPartipant=nlevels(Partipant)
+#   
+#   
+#   for (j in 1:numberOfPartipant){
+#     Subject<-subset(DF_Sub, Participant_ID==levels(Partipant)[j])
+#     Subject$Trans_PP = Subject$Trans_PP - mean_Baseline$PP[j]
+#     mean_v1_df <- rbind(mean_v1_df, Subject)
+#     
+#   }
+#   
+#   # T005_pp = DF_Sub$Trans_PP[DF_Sub$Participant_ID=="T005"] - mean_Baseline$PP[1]
+#   # T013_pp = DF_Sub$Trans_PP[DF_Sub$Participant_ID=="T013"] - mean_Baseline$PP[2]
+#   
+#   # DF_Sub$Trans_PP_mean = cbind(T005_pp, T013_pp)
+#   
+#   plot = plot_workingsession(mean_v1_df, mean_v1_df$TreatmentTime, mean_v1_df$Trans_PP, mean_session, Day)
+#   final_list[[length(final_list) + 1]] <- plot
+# 
+# }
+# 
+# plots=ggarrange(plotlist = final_list, nrow = 4, ncol = 1, common.legend = TRUE, legend = "bottom")
+```
+
+
+
+```{r, echo=FALSE}
+current_dir <- getwd()
+setwd('..')
+root_dir <- getwd()
+data_dir <- file.path(root_dir, 'curated-data/physiological-data')
+data_file_name<-'Activity_Data.csv'
+
+Activity_Data<-read.csv(file.path(data_dir,data_file_name),stringsAsFactors = FALSE)
+
+
+Activity_Data$C_R_W = Activity_Data$R + Activity_Data$W
+Activity_Data$Other = Activity_Data$SA + Activity_Data$SP + Activity_Data$I
+
+Activity_Data <- Activity_Data[,-c(3:4,6:8)]
+
+Activity_Data<-Activity_Data %>% 
+  rowwise() %>% 
+      dplyr::mutate(Multitask = (100 - sum(c_across(3:5))))
+Activity_Data<- subset(Activity_Data, Participant_ID!="T019")
+
+
+```
+
+```{r, echo=FALSE}
+Draw_alltogether_disrupted_Items <- function(Data_Frame, Title) {
+  plot_alltogether_disrupted <-
+    ggplot(Data_Frame, aes(
+      x = factor(Participant_ID),
+      fill = variable,
+      y = value
+    )) +
+    geom_bar(position = "stack", stat = "identity") +
+    facet_grid( ~ Day, scales = "free") +
+    labs(x = "", y = "[ % ]", title = Title) +
+    scale_fill_manual(
+      values = c("gray92", "salmon", "forestgreen", "dodgerblue2"),
+      labels = c("Multitask", "Read/Write", "Out", "Other")
+    ) +
+    theme(
+      strip.text.x = element_text(size = 16, face = "bold"),
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank(),
+      axis.title.y = element_text( size = 16), 
+      plot.title = element_text(hjust = 0.5),
+      axis.text.x = element_text(
+        face = "bold",
+        size = 16 ,
+        angle = 30,
+        hjust = 1
+      ),
+      axis.text.y = element_text(face = "bold", size = 16),
+      legend.position = "bottom",
+      legend.title = element_blank(),
+      legend.text = element_text(size = 16, face = "bold")
+    ) + guides(fill = guide_legend(
+      nrow = 1,
+      keywidth = 0.2,
+      keyheight = 0.2,
+      default.unit = "inch"
+    ))
+  return(plot_alltogether_disrupted)
+}
+
+```
+
+```{r, echo=FALSE}
+Activity_melt <-
+  melt(Activity_Data[, c(
+    'Participant_ID',
+    'Day',
+    'Multitask',
+    'C_R_W',
+    'Out',
+    'Other'
+  )])
+
+```
+
+
+
+```{r, echo=FALSE}
+Draw_activity_per_day <- function(Data_Frame, Title, Sub_order, point ) {
+  plot_alltogether_disrupted <-
+    ggplot(Data_Frame, aes(
+      x = factor(Participant_ID),
+      fill = variable,
+      y = value
+    )) +
+    geom_bar(position = "stack", stat = "identity") +
+    labs(x = "", y = "[ % ]", title = Title) +
+    scale_fill_manual(
+      values = c("gray92", "salmon", "forestgreen", "dodgerblue2"),
+      labels = c("Multitask", "Read/Write", "Out", "Other")
+    ) +
+    geom_vline(xintercept = point, color="blue", size=1)+
+    scale_x_discrete(limits = Sub_order)+
+    theme(
+      strip.text.x = element_text(size = 14, face = "bold"),
+      axis.title.y = element_text( size = 13),
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank(),
+      plot.title = element_text(hjust = 0.5),
+      axis.text.x = element_text(
+        face = "bold",
+        size = 12 ,
+        angle = 30,
+        hjust = 1
+      ),
+      axis.text.y = element_text(face = "bold", size = 12),
+      legend.position = "bottom",
+      legend.title = element_blank(),
+      legend.text = element_text(size = 12, face = "bold")
+    ) + guides(fill = guide_legend(
+      nrow = 1,
+      keywidth = 0.2,
+      keyheight = 0.2,
+      default.unit = "inch"
+    ))
+  return(plot_alltogether_disrupted)
+}
+```
+
+
+
+```{r, echo=FALSE}
+
+activity_list<-list()
+
+Day_No<-factor(Activity_melt$Day)
+numberOfDay=nlevels(Day_No)
+
+order1 = c( "T005", "T015", "T001", "T003", "T013", "T007", "T017", "T009", "T011" )
+order2 = c( "T001", "T017", "T011", "T005", "T009", "T003", "T015", "T007", "T013")
+order3 = c("T009", "T005", "T017", "T003", "T013", "T007", "T015", "T011", "T001")
+order4 = c("T001", "T007", "T009", "T005", "T011", "T017", "T015", "T003", "T013")
+
+orders = list(order1, order2, order3, order4)
+hline = c(2.5, 5.5, 2.5, 5.5)
+
+for (i in 1:numberOfDay) {
+  
+    Day=levels(Day_No)[i]
+    Activity_day<-subset(Activity_melt, Day==levels(Day_No)[i])
+    Activity_plot <- Draw_activity_per_day(Activity_day,Day, orders[[i]], hline[i])
+    print(Activity_plot)
+    activity_list[[length(activity_list) + 1]] <- Activity_plot
+}
+
+
+
+
+
+plots_activity=ggarrange(plotlist = activity_list, nrow = 4, ncol = 1, common.legend = TRUE, legend = "bottom")
+
+
+full_path<-file.path(plot_dir,"Activity_All_Ordered.pdf",sep="")
+  ggsave(full_path, plots_activity, width = 8.5, height = 11, units = "in")
+  
+
+  Activity_melt<- subset(Activity_melt, Participant_ID=="T005" | Participant_ID=="T013")
+
+
+proposal_Distupted_ina_bar <- Draw_alltogether_disrupted_Items(Activity_melt,"")
+proposal_Distupted_ina_bar
+
+full_path<-file.path(plot_dir,"Activity_T005_T013.pdf",sep="")
+  ggsave(full_path, proposal_Distupted_ina_bar, width = 14, height = 8, units = "in")
+```
+
+
+
+
+
+```{r, echo=FALSE}
+data_file_name<-'qc1_normalized_mean_v1.csv'
+
+Normalized_mean<-read.csv(file.path(data_dir,data_file_name),stringsAsFactors = FALSE)
+Normalized_mean<-subset(Normalized_mean, select = -c(E4_EDA,iWatch_HR,Treatment, E4_HR ))
+
+data_file_name<-'Activity_Data.csv'
+
+Activity_Data<-read.csv(file.path(data_dir,data_file_name),stringsAsFactors = FALSE)
+
+
+Normalized_mean$RW <- Activity_Data$R + Activity_Data$W
+Normalized_mean$Out <- Activity_Data$Out
+
+```
+
+
+\newpage
+## Model1 with PP ~ Day + Out
+
+```{r, echo=FALSE}
+fit1 <- lm(PP ~ Day + Out, data = Normalized_mean )
+summary(fit1)
+
+anova(fit1)
+```
+
+
+\newpage
+## Model2 with PP ~ Day + Out + RW + Out*RW
+```{r, echo=FALSE}
+fit2 <- lm(PP ~ Day + Out + RW + Out*RW, data = Normalized_mean )
+summary(fit2)
+
+anova(fit2)
+```
+
+
+\newpage
+## Model2 with PP ~ Out + RW + Out*RW
+```{r, echo=FALSE}
+fit3 <- lm(PP ~ Out + RW + Out*RW, data = Normalized_mean )
+summary(fit3)
+
+anova(fit3)
+```
+

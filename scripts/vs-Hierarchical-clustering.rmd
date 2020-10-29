@@ -1,0 +1,757 @@
+---
+title: "Unsupervised Clustering with Principal Component Analysis (PCA)"
+output:
+  html_document:
+    df_print: paged
+  word_document: default
+  pdf_document: 
+    fig_caption: yes
+---
+\pagenumbering{gobble}
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(grid)
+library(gridExtra)
+library(dplyr)
+library(ggpubr)
+#install.packages('DataCombine')
+library(DataCombine)
+library(dplyr)
+library(reshape2)
+library(tidyr)
+library(stringr)
+library(plyr)
+library(ggplot2)
+library(dplyr)
+library(miceadds)
+library(gtools)
+library(ggpubr)
+library(gvlma)
+library(MASS)
+library(reshape2)
+library(ggcorrplot)
+library(GGally)
+library(ggnewscale)
+library(scales)
+library(cowplot)
+library(tidyverse)  # data manipulation
+library(cluster)    # clustering algorithms
+library(factoextra)
+library(dendextend)
+library(FeatureImpCluster)
+library(flexclust)
+library(DMwR)
+library("FactoMineR")
+library(dummies)
+library(data.table)
+library("ggdendro")
+```
+
+
+```{r, echo=FALSE}
+# https://uc-r.github.io/hc_clustering
+# complete linkage clustering: It computes all pairwise dissimilarities between the elements in cluster 1 and the elements in cluster 2, and considers the largest value (i.e., maximum value) of these dissimilarities as the distance between the two clusters. It tends to produce more compact clusters.
+
+# Minimum or single linkage clustering: It computes all pairwise dissimilarities between the elements in cluster 1 and the elements in cluster 2, and considers the smallest of these dissimilarities as a linkage criterion. It tends to produce long, “loose” clusters.
+
+# Mean or average linkage clustering: It computes all pairwise dissimilarities between the elements in cluster 1 and the elements in cluster 2, and considers the average of these dissimilarities as the distance between the two clusters.
+
+# Centroid linkage clustering: It computes the dissimilarity between the centroid for cluster 1 (a mean vector of length p variables) and the centroid for cluster 2.
+
+# Ward’s minimum variance method: It minimizes the total within-cluster variance. At each step the pair of clusters with minimum between-cluster distance are merged.
+```
+
+
+```{r, echo=FALSE}
+Draw_dendogram_day1 <- function(cluster, Day, title) {
+  # cluster=hc5
+  dend <- as.dendrogram(cluster)
+  dendr <- dendro_data(dend, type = "rectangle")
+  clust    <- cutree(cluster,k=2) 
+  clust.df <- data.frame(label=names(clust), cluster=factor(clust))
+  clust.df$cluster<-2
+  clust.df$cluster[3]<-1
+  clust.df$cluster[8]<-1
+  clust.df$cluster<-as.factor(clust.df$cluster)
+  
+  dendr[["labels"]] <- merge(dendr[["labels"]],clust.df, by="label")
+  
+  p <- ggplot(data=segment(dendr)) +
+    geom_segment(aes(
+      x = x,
+      y = y,
+      xend = xend,
+      yend = yend, 
+      
+    )) +
+    geom_text(
+      data =label(dendr),
+      aes(x, y, label = label, color=cluster),
+      hjust = 1,
+      angle = 90,
+      size = 3
+    ) +theme_minimal()+
+    theme(
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank(),
+      # plot.title = element_text(hjust = -0.05, vjust=2.12, size = 20, face = "bold", margin=margin(10,0,0,0)),
+      axis.text.x = element_blank(),
+      legend.position = 'none'
+    )+
+    labs(x = "", y = Day)+
+    ylim(-1, 7)+
+    ggtitle(title)
+  
+  print(p)
+ return(p)
+
+}
+```
+
+```{r, echo=FALSE}
+Draw_dendogram_day3 <- function(cluster, Day, title) {
+  
+
+  dend1 <- as.dendrogram(cluster)
+  dend <- reorder(dend1, 10:1)
+  dendr <- dendro_data(dend, type = "rectangle")
+  clust    <- cutree(cluster,k=2) 
+  clust.df <- data.frame(label=names(clust), cluster=factor(clust))
+  
+  clust.df$cluster<-2
+  clust.df$cluster[3]<-1
+  clust.df$cluster[5]<-1
+  
+  clust.df$cluster<-as.factor(clust.df$cluster)
+  dendr[["labels"]] <- merge(dendr[["labels"]],clust.df, by="label")
+  
+  
+  p <- ggplot(data=segment(dendr)) +
+  # p <- ggplot(data=x1) +
+    geom_segment(aes(
+      x = x,
+      y = y,
+      xend = xend,
+      yend = yend, 
+      
+    )) +
+    geom_text(
+      data =label(dendr),
+      aes(x, y, label = label, color=cluster),
+      hjust = 1,
+      angle = 90,
+      size = 3
+    ) +theme_minimal()+
+    theme(
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank(),
+      plot.title = element_text(hjust = 0.5),
+      axis.text.x = element_blank(),
+      legend.position = 'none'
+    )+
+    labs(x = "", y = "Day3")+
+    ylim(-1, 7)
+  
+  print(p)
+  return(p)
+}
+```
+
+```{r, echo=FALSE}
+Draw_dendogram_day4 <- function(cluster, Day, title) {
+  dend1 <- as.dendrogram(cluster)
+  dend <- reorder(dend1, 1:9)
+  dendr <- dendro_data(dend, type = "rectangle")
+  clust    <- cutree(cluster,k=2) 
+  clust.df <- data.frame(label=names(clust), cluster=factor(clust))
+  
+
+  clust.df$cluster<-as.factor(clust.df$cluster)
+  dendr[["labels"]] <- merge(dendr[["labels"]],clust.df, by="label")
+  
+  p <- ggplot(data=segment(dendr)) +
+  # p <- ggplot(data=x1) +
+    geom_segment(aes(
+      x = x,
+      y = y,
+      xend = xend,
+      yend = yend, 
+      
+    )) +
+    geom_text(
+      data =label(dendr),
+      aes(x, y, label = label, color=cluster),
+      hjust = 1,
+      angle = 90,
+      size = 3
+    ) +theme_minimal()+
+    theme(
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank(),
+      plot.title = element_text(hjust = 0.5),
+      axis.text.x = element_blank(),
+      legend.position = 'none'
+    )+
+    labs(x = "", y = "Day4")+
+    ylim(-1, 7)
+  
+  print(p)
+  return(p)
+}
+```
+
+```{r, echo=FALSE}
+Draw_dendogram <- function(cluster, Day, title) {
+  dend <- as.dendrogram(cluster)
+  dendr <- dendro_data(dend, type = "rectangle")
+  clust    <- cutree(cluster,k=2) 
+  clust.df <- data.frame(label=names(clust), cluster=factor(clust))
+  dendr[["labels"]] <- merge(dendr[["labels"]],clust.df, by="label")
+  
+  p <- ggplot(data=segment(dendr)) +
+    geom_segment(aes(
+      x = x,
+      y = y,
+      xend = xend,
+      yend = yend, 
+      
+    )) +
+    geom_text(
+      data =label(dendr),
+      aes(x, y, label = label, color=cluster),
+      hjust = 1,
+      angle = 90,
+      size = 3
+    ) +theme_minimal()+
+    theme(
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank(),
+      plot.title = element_text(hjust = 0.5),
+      axis.text.x = element_blank(),
+      legend.position = 'none'
+    )+
+    labs(x = "", y = Day)+
+    ylim(-1, 7)+
+    ggtitle(title)
+  
+  print(p)
+  return(p)
+
+}
+```
+
+
+
+```{r, echo=FALSE}
+Draw_dendogram_trait <- function(cluster, Day, title) {
+  dend1 <- as.dendrogram(cluster)
+  dend <- reorder(dend1, 9:1)
+  dendr <- dendro_data(dend, type = "rectangle")
+  clust    <- cutree(cluster,k=2)
+  clust.df <- data.frame(label=names(clust), cluster=factor(clust))
+  
+  clust.df$cluster<-2
+  clust.df$cluster[5]<-1
+  clust.df$cluster[9]<-1
+  clust.df$cluster<-as.factor(clust.df$cluster)
+  dendr[["labels"]] <- merge(dendr[["labels"]],clust.df, by="label")
+  
+
+  
+  p <- ggplot(data=segment(dendr)) +
+    geom_segment(aes(
+      x = x,
+      y = y,
+      xend = xend,
+      yend = yend, 
+      
+    )) +
+    geom_text(
+      data =label(dendr),
+      aes(x, y, label = label, color=cluster),
+      hjust = 1,
+      angle = 90,
+      size = 3
+    ) +theme_minimal()+
+    theme(
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank(),
+      plot.title = element_text(hjust = 0.5),
+      axis.text.x = element_blank(),
+      legend.position = 'none'
+    )+
+    labs(x = "", y = Day)+
+    ylim(-1, 7)+
+    ggtitle(title)
+  
+  print(p)
+  return(p)
+
+}
+```
+
+```{r,echo=FALSE}
+current_dir <- getwd()
+setwd('..')
+root_dir <- getwd()
+data_dir <- file.path(root_dir, 'curated-data/physiological-data')
+plot_dir <- file.path(root_dir, 'plots/cluster_pca')
+data_file_name<-'qc1_transformed_mean_v1.csv'
+Scale_marker=TRUE
+```
+
+```{r, echo=FALSE}
+Main_DF<-read.csv(file.path(data_dir,data_file_name),stringsAsFactors = FALSE)
+Main_DF<-subset(Main_DF, select = -c(E4_EDA,iWatch_HR ))
+Main_DF<-subset(Main_DF, Participant_ID!="T019")
+
+
+Cluster_DF <- data.frame(matrix(ncol = 9, nrow = 9))
+x <- c("Participant_ID", "Day1_PP", "Day2_PP", "Day3_PP", "Day4_PP","Day1_HR","Day2_HR", "Day3_HR", "Day4_HR")
+colnames(Cluster_DF) <- x
+
+Cluster_DF$Participant_ID<-levels(factor(Main_DF$Participant_ID))
+rownames(Cluster_DF)<-Cluster_DF$Participant_ID
+
+Cluster_DF$Participant_ID<-NULL
+
+Day_No<-factor(Main_DF$Day)
+numberOfDay=nlevels(Day_No)
+      for (j in 1:numberOfDay) {
+        Cluster_DF_WS<-subset(Main_DF, Day==levels(Day_No)[j] & Main_DF$Treatment=="WS")
+        Cluster_DF[j]<- Cluster_DF_WS$PP
+      }
+
+
+      for (j in 1:numberOfDay) {
+        Cluster_DF_WS<-subset(Main_DF, Day==levels(Day_No)[j] & Main_DF$Treatment=="WS")
+        Cluster_DF[j+4]<- Cluster_DF_WS$E4_HR
+      }
+
+Cluster_DF$PP<-Cluster_DF$Day2_PP-Cluster_DF$Day3_PP
+Cluster_DF$HR<-Cluster_DF$Day2_HR-Cluster_DF$Day3_HR
+
+
+Cluster_DF$Day1_PP<-NULL
+Cluster_DF$Day2_PP<-NULL
+Cluster_DF$Day3_PP<-NULL
+Cluster_DF$Day4_PP<-NULL
+
+Cluster_DF$Day1_HR<-NULL
+Cluster_DF$Day2_HR<-NULL
+Cluster_DF$Day3_HR<-NULL
+Cluster_DF$Day4_HR<-NULL
+
+data_file_name <- "Questionnaire Data.csv"
+DF_Bib<-read.csv(file.path(data_dir,data_file_name),stringsAsFactors = FALSE)
+
+Cluster_DF$Trait_anxiety<- DF_Bib$Trait_anxiety
+```
+
+
+
+
+## Clustering with PP-HR-Trait Anxiety
+```{r, echo=FALSE}
+Cluster_DF_PP_HR_Trait_scaled<-as.data.frame(scale(Cluster_DF)) 
+set.seed(123)
+res.pca <- PCA(Cluster_DF_PP_HR_Trait_scaled, scale = Scale_marker, graph = FALSE)
+
+d <- dist(Cluster_DF_PP_HR_Trait_scaled, method = "euclidean")
+hc5 <- hclust(d, method = "complete" )
+
+
+plot_dendogram<-Draw_dendogram_trait(hc5, "", "Cluster Dendrogram")
+
+plot_vec<-fviz_pca_var(res.pca,
+             col.var = "contrib", # Color by contributions to the PC
+             gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
+             repel = TRUE     # Avoid text overlapping
+             )+ labs(title ="Variables Contributions")+ theme(plot.title = element_text(hjust = 0.5))
+
+
+main_plot<-ggarrange(plot_dendogram, plot_vec, nrow = 2, ncol = 1)
+
+title <- ggdraw() + draw_label("Clustering and PCA on PP HR and Trait anxiety", fontface='bold')
+final_plot<-plot_grid(title,main_plot, ncol = 1, rel_heights = c(.05, 1))
+
+
+full_path<-file.path(plot_dir,"Day2_Day3.pdf",sep="")
+  ggsave(full_path, final_plot, width = 8.5, height = 11, units = "in")
+  
+
+```
+
+
+
+```{r, echo=FALSE}
+current_dir <- getwd()
+setwd('..')
+root_dir <- getwd()
+data_dir <- file.path(root_dir, 'curated-data/physiological-data')
+#data_file_name<-'qc99_all_subj.csv'
+data_file_name<-'Activity_Data.csv'
+
+Activity_Data_all<-read.csv(file.path(data_dir,data_file_name),stringsAsFactors = FALSE)
+
+Activity_Data_all$Com_R_W<- rowSums(Activity_Data_all[,(3:4)])
+Activity_Data_all$Others<- rowSums(Activity_Data_all[,(6:8)])
+
+
+Activity_Data_all<-subset(Activity_Data_all, Participant_ID!="T019")
+
+
+data_file_name <- "EndDaySurveyWithResult.csv"
+Questionnaire_Data<-read.csv(file.path(data_dir,data_file_name),stringsAsFactors = FALSE)
+
+
+# Questionnaire_Data<-read.csv("C:/Users/soton/Documents/R/DeadlineProject/Questionnaire/@EndDay/Data/EndDaySurveyWithResult.csv",stringsAsFactors = FALSE)
+Questionnaire_Data$Nasa<-rowSums(Questionnaire_Data[,(4:9)])
+
+
+
+
+# data_file_name<-'qc1_transformed_mean_v1.csv'
+data_file_name<-'qc1_normalized_mean_v1.csv'
+
+Main_DF<-read.csv(file.path(data_dir,data_file_name),stringsAsFactors = FALSE)
+Main_DF<-subset(Main_DF, select = -c(E4_EDA,iWatch_HR ))
+Main_DF<-subset(Main_DF, Participant_ID!="T019")
+
+
+Cluster_DF <- data.frame(matrix(ncol = 9, nrow = 9))
+x <- c("Participant_ID", "Day1_PP", "Day2_PP", "Day3_PP", "Day4_PP","Day1_HR","Day2_HR", "Day3_HR", "Day4_HR")
+colnames(Cluster_DF) <- x
+
+Cluster_DF$Participant_ID<-levels(factor(Main_DF$Participant_ID))
+rownames(Cluster_DF)<-Cluster_DF$Participant_ID
+
+Cluster_DF$Participant_ID<-NULL
+
+Day_No<-factor(Main_DF$Day)
+numberOfDay=nlevels(Day_No)
+      for (j in 1:numberOfDay) {
+        Cluster_DF_WS<-subset(Main_DF, Day==levels(Day_No)[j] & Main_DF$Treatment=="WS")
+        Cluster_DF[j]<- Cluster_DF_WS$PP
+      }
+      for (j in 1:numberOfDay) {
+        Cluster_DF_WS<-subset(Main_DF, Day==levels(Day_No)[j] & Main_DF$Treatment=="WS")
+        Cluster_DF[j+4]<- Cluster_DF_WS$E4_HR
+      }
+
+Cluster_DF[is.na(Cluster_DF)] <- 0.11
+# Rank=c(3,2,2,1,1,3,1,1,3)
+```
+
+
+## Clustering Day1 on PP HR Activity Data and NASA
+```{r, echo=FALSE}
+# Activity_Data_all$State<-scale(Questionnaire_Data$Sum)
+# Activity_Data_all$Com_R_W<-scale(Activity_Data_all$Com_R_W)
+# Activity_Data_all$Out<-scale(Activity_Data_all$Out)
+
+
+# Activity_Data_all$Nasa<-Questionnaire_Data$Nasa
+Activity_Data_all$Others<-NULL
+
+ 
+Activity_Data_Day1<-subset(Activity_Data_all, Day=="Day1")
+
+Activity_Data_Day1$PP<- Cluster_DF$Day1_PP
+# Activity_Data_Day1$HR<- Cluster_DF$Day1_HR
+
+rownames(Activity_Data_Day1)<-Activity_Data_Day1$Participant_ID
+Activity_Data_Day1$Participant_ID<-NULL
+Activity_Data_Day1$Day<-NULL
+# Activity_Data_Day1$Out<-NULL
+
+# Activity_Data_Day1$HR<-NULL
+Activity_Data_Day1<-Activity_Data_Day1[, -c(1, 2, 4, 5, 6)]
+```
+
+```{r, echo=FALSE}
+Activity_Data_Day1_scaled<- as.data.frame(scale(Activity_Data_Day1)) 
+# temp=scale(Activity_Data_Day1$Com_R_W)
+
+# d <- dist(Activity_Data_Day1, method = "euclidean")
+d <- dist(Activity_Data_Day1_scaled, method = "euclidean")
+hc5 <- hclust(d, method = "complete")
+
+# day1_dend<-plot(hc5, cex = 0.6, hang = -1, sub = "", xlab = "")
+# day1_dend <-Draw_dendogram_day1(hc5, "Day1", "a")
+day1_dend <-Draw_dendogram_day1(hc5, "Day1", "")
+# day1_dend
+# res.pca <- PCA(Activity_Data_Day1, scale = Scale_marker, graph = FALSE)
+res.pca <- PCA(Activity_Data_Day1_scaled, scale = Scale_marker, graph = FALSE)
+
+day1_vect <- fviz_pca_var(
+  res.pca,
+  col.var = "contrib",
+  # Color by contributions to the PC
+  gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
+  repel = TRUE
+) + theme(legend.position = 'none')+
+  # labs(title = "b") + theme(plot.title = element_text(hjust = -0.6, vjust=2.12, size = 20, face = "bold", margin=margin(10,0,0,0)))
+  labs(title = "")
+day1_vect
+# ggarrange(day1_dend,day1_vect, nrow = 2, ncol = 1)
+```
+
+
+
+
+## Clustering Day2 on PP HR Activity Data and NASA
+
+```{r, echo=FALSE}
+Activity_Data_Day2<-subset(Activity_Data_all, Day=="Day2")
+
+Activity_Data_Day2$PP<- Cluster_DF$Day2_PP
+# Activity_Data_Day2$HR<- Cluster_DF$Day2_HR
+
+rownames(Activity_Data_Day2)<-Activity_Data_Day2$Participant_ID
+Activity_Data_Day2$Participant_ID<-NULL
+Activity_Data_Day2$Day<-NULL
+Activity_Data_Day2<-Activity_Data_Day2[, -c(1, 2, 4, 5, 6)]
+```
+
+```{r, echo=FALSE}
+set.seed(123)
+Activity_Data_Day2_scaled<- as.data.frame(scale(Activity_Data_Day2)) 
+
+# d <- dist(Activity_Data_Day2, method = "euclidean")
+d <- dist(Activity_Data_Day2_scaled, method = "euclidean")
+hc5 <- hclust(d, method = "complete" )
+
+day2_dend<-Draw_dendogram(hc5, "Day2", "")
+# day2_dend
+
+# res.pca <- PCA(Activity_Data_Day2, scale = Scale_marker, graph = FALSE)
+res.pca <- PCA(Activity_Data_Day2_scaled, scale = Scale_marker, graph = FALSE)
+
+day2_vect<-fviz_pca_var(res.pca,
+             col.var = "contrib", # Color by contributions to the PC
+             gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
+             repel = TRUE,  
+             title=""# Avoid text overlapping
+             )+theme(legend.position = 'none')
+day2_vect
+```
+
+
+
+
+
+## Clustering Day3 on PP HR Activity Data and NASA
+```{r, echo=FALSE}
+Activity_Data_Day3<-subset(Activity_Data_all, Day=="Day3")
+
+Activity_Data_Day3$PP<- Cluster_DF$Day3_PP
+# Activity_Data_Day3$HR<- Cluster_DF$Day3_HR
+
+rownames(Activity_Data_Day3)<-Activity_Data_Day3$Participant_ID
+Activity_Data_Day3$Participant_ID<-NULL
+Activity_Data_Day3$Day<-NULL
+Activity_Data_Day3<-Activity_Data_Day3[, -c(1, 2, 4, 5, 6)]
+```
+
+```{r,echo=FALSE}
+
+Activity_Data_Day3_scaled<-as.data.frame(scale(Activity_Data_Day3))
+
+# d <- dist(Activity_Data_Day3, method = "euclidean")
+d <- dist(Activity_Data_Day3_scaled, method = "euclidean")
+hc5 <- hclust(d, method = "complete" )
+# day3_dend<-Draw_dendogram(hc5, "Day3", "")
+day3_dend<-Draw_dendogram_day3(hc5, "Day3", "")
+# day3_dend
+# res.pca <- PCA(Activity_Data_Day3, scale = Scale_marker, graph = FALSE)
+res.pca <- PCA(Activity_Data_Day3_scaled, scale = Scale_marker, graph = FALSE)
+day3_vect<-fviz_pca_var(res.pca,
+             col.var = "contrib", # Color by contributions to the PC
+             gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
+             repel = TRUE,
+             title=""# Avoid text overlapping
+             )+theme(legend.position = 'none')
+day3_vect
+# + labs(title ="Variables Contributions")+ theme(plot.title = element_text(hjust = 0.5))
+```
+
+
+## Clustering Day4 on PP HR Activity Data and NASA
+```{r, echo=FALSE}
+Activity_Data_Day4<-subset(Activity_Data_all, Day=="Day4")
+
+Activity_Data_Day4$PP<- Cluster_DF$Day4_PP
+# Activity_Data_Day4$HR<- Cluster_DF$Day4_HR
+
+rownames(Activity_Data_Day4)<-Activity_Data_Day4$Participant_ID
+Activity_Data_Day4$Participant_ID<-NULL
+Activity_Data_Day4$Day<-NULL
+
+Activity_Data_Day4<-Activity_Data_Day4[, -c(1, 2, 4, 5, 6)]
+```
+
+
+
+```{r, echo=FALSE}
+Activity_Data_Day4_scaled<-as.data.frame(scale(Activity_Data_Day4)) 
+set.seed(123)
+# d <- dist(Activity_Data_Day4, method = "euclidean")
+d <- dist(Activity_Data_Day4_scaled, method = "euclidean")
+hc5 <- hclust(d, method = "complete")
+day4_dend <-Draw_dendogram_day4(hc5, "Day4", "")
+
+# res.pca <- PCA(Activity_Data_Day4, scale = Scale_marker, graph = FALSE)
+res.pca <- PCA(Activity_Data_Day4_scaled, scale = Scale_marker, graph = FALSE)
+day4_vect <-fviz_pca_var(
+  res.pca,
+  col.var = "contrib",
+  # Color by contributions to the PC
+  gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
+  repel = TRUE,     # Avoid text overlapping, 
+  title=""
+)+theme(legend.position = 'none')
+
+# day4_dend
+day4_vect
+```
+
+
+
+```{r,echo=FALSE}
+
+dendrograms<- ggarrange(day1_dend, day2_dend, day3_dend, day4_dend, nrow = 4, ncol = 1)
+pcas<- ggarrange(day1_vect, day2_vect, day3_vect, day4_vect, nrow = 4, ncol = 1)
+
+dendrograms <- arrangeGrob(dendrograms, top = textGrob(tolower(paste0("a")),
+                                        x = unit(0, "npc"),
+                                        y = unit(1, "npc"),
+                                        vjust = 2, 
+                                        hjust = -1.5,
+                                        just = c("left","top"),
+                                        gp = gpar(col="black", fontsize=22, fontface="bold")
+                                       ))
+
+pcas <- arrangeGrob(pcas, top = textGrob(tolower(paste0("b")),
+                                        x = unit(0, "npc"),
+                                        y = unit(1, "npc"),
+                                        vjust = 2, 
+                                        hjust = -1.5,
+                                        just = c("left","top"),
+                                        gp = gpar(col="black", fontsize=22, fontface="bold")
+                                       ))
+
+final_plot<-plot_grid(dendrograms, pcas, ncol = 2)
+
+# main_plot<-plot_grid(
+#   day1_dend,day1_vect,
+#   day2_dend,day2_vect,
+#   day3_dend,day3_vect,
+#   day4_dend,day4_vect,
+#   nrow = 4,ncol = 2
+#           )
+# final_plot<-plot_grid(main_plot, ncol = 1, rel_heights = c(.04, 1))
+
+
+
+full_path<-file.path(plot_dir,"Cluster_Pca_col.pdf",sep="")
+  ggsave(full_path, final_plot, width = 8.5, height = 11, units = "in")
+```
+
+
+
+```{r, echo=FALSE}
+draw_boxplot <- function(Day, title) {
+  box_plot<- ggplot(Day, aes(
+    x = factor(variable),
+    y = value,
+    fill = Cluster_Group
+  )) +
+    geom_boxplot(position=position_dodge(1)) +
+    theme_minimal() +
+    theme(
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank(),
+      # plot.title = element_text(hjust = -0.05, vjust=2.12,size = 20, face = "bold", margin=margin(10,0,5,0)),
+      legend.title = element_blank(),
+      legend.position = 'none',
+      axis.text.x = element_text(
+        face = "bold",
+        size = 10
+      ),
+    ) +
+    labs(x = "", y = "", title = title)
+  print(box_plot)
+  return(box_plot)
+}
+```
+
+
+```{r, echo=FALSE}
+Cluster_DF_PP_HR_Trait_scaled$Cluster_Group<-c("Cluster2","Cluster2", "Cluster2", "Cluster2", "Cluster1", "Cluster2", "Cluster2", "Cluster2", "Cluster1")
+trail_day2<-melt(Cluster_DF_PP_HR_Trait_scaled)
+trait_day2_boxplot<-draw_boxplot(trail_day2, "")
+
+trait_day2_boxplot
+
+
+final_plot<-ggarrange(
+  plot_dendogram,trait_day2_boxplot,
+  nrow = 2,ncol = 1
+          )
+
+
+full_path<-file.path(plot_dir,"trait_hr_pp.pdf",sep="")
+  ggsave(full_path, final_plot, width = 8.5, height = 11, units = "in")
+
+```
+
+
+```{r, echo=FALSE}
+Activity_Data_Day1_scaled$Cluster_Group<-c("Cluster2","Cluster2", "Cluster1", "Cluster2", "Cluster2", "Cluster2", "Cluster2", "Cluster1", "Cluster2")
+day1<-melt(Activity_Data_Day1_scaled)
+day1_boxplot<-draw_boxplot(day1, "")
+
+Activity_Data_Day2_scaled$Cluster_Group<-c("Cluster1","Cluster2", "Cluster1", "Cluster2", "Cluster1", "Cluster1", "Cluster2", "Cluster2", "Cluster1")
+day2<-melt(Activity_Data_Day2_scaled)
+day2_boxplot<-draw_boxplot(day2, "")
+
+Activity_Data_Day3_scaled$Cluster_Group<-c("Cluster2","Cluster2", "Cluster1", "Cluster2", "Cluster1", "Cluster2", "Cluster2", "Cluster2", "Cluster2")
+day3<-melt(Activity_Data_Day3_scaled)
+day3_boxplot<-draw_boxplot(day3, "")
+
+Activity_Data_Day4_scaled$Cluster_Group<-c("Cluster1","Cluster2", "Cluster1", "Cluster1", "Cluster1", "Cluster1", "Cluster2", "Cluster2", "Cluster2")
+day4<-melt(Activity_Data_Day4_scaled)
+day4_boxplot<-draw_boxplot(day4, "")
+
+
+
+box_plots<- ggarrange(day1_boxplot, day2_boxplot, day3_boxplot, day4_boxplot, nrow = 4, ncol = 1)
+
+box_plots <- arrangeGrob(box_plots, top = textGrob(tolower(paste0("b")),
+                                        x = unit(0, "npc"),
+                                        y = unit(1, "npc"),
+                                        vjust = 2, 
+                                        hjust = -1.5,
+                                        just = c("left","top"),
+                                        gp = gpar(col="black", fontsize=22, fontface="bold")
+                                       ))
+
+
+# final_plot<-ggarrange(
+#   day1_dend,day1_boxplot,
+#   day2_dend,day2_boxplot,
+#   day3_dend,day3_boxplot,
+#   day4_dend,day4_boxplot,
+#   nrow = 4,ncol = 2
+#           )
+final_plot<-plot_grid(dendrograms, box_plots, ncol = 2)
+
+
+full_path<-file.path(plot_dir,"Cluster_Boxplots_col.pdf",sep="")
+  ggsave(full_path, final_plot, width = 8.5, height = 11, units = "in")
+  
+```
+
+
