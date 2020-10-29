@@ -63,12 +63,6 @@ Data_to_plot <- melt(Merged_Data[, c(
     'WorkingTime'
   )])
 
-
-
-
-# Time_line_date <- Data %>% 
-#     dplyr::select(Participant_ID) %>%
-#     mutate(Time = sequence(BreakTime, WorkingTime))
   
 ```
 
@@ -128,10 +122,6 @@ for (j in 1:numberOfDay) {
   ggsave(full_path, plot_segment, width = 8.5, height = 11, units = "in")
   
 }
-
-```
-
-```{r}
 
 ```
 
