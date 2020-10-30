@@ -88,6 +88,9 @@ VirtualCommunicationApps = '^QQ$|^Skype$|^FaceTime$|^Slack$|^WeChat$|^Messages$|
 application_usage_pattern ='Other Activities' 
 
 
+Activity_pattern = '^R$|^R+W$|^W$|^W+R$'
+Out_pattern = '^Out$|^Out+SA$'
+
 ## 1. Timestamp -->    Extract whatever inside []                 -->   \\[(.*)\\]
 ## 2. Application -->  Extract whatever after the space of []     -->   (.*)
 mac_data_pattern <- '\\[(.*)\\] (.*)'

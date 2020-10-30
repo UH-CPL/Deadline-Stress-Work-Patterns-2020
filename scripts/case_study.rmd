@@ -49,21 +49,31 @@ current_dir <- getwd()
 setwd('..')
 root_dir <- getwd()
 data_dir <- file.path(root_dir, 'curated-data/physiological-data')
-# plot_dir <- 'C:/Users/soton/Documents/R/@CPLResearchProjects/Deadline-Stress-Work-Patterns-2020/plots/CaseStudy'
 plot_dir <- file.path(root_dir,'plots/CaseStudy')
 data_file_name<-'full_df.csv'
 curated_data_dir <- file.path(root_dir, 'curated-data/physiological-data')
 Data<-read.csv(file.path(data_dir,data_file_name),stringsAsFactors = FALSE)
-# Data<-subset(Data, Participant_ID=="T005" | Participant_ID=="T013" & Treatment=="WS")
 
-# Data<-subset(Data, Participant_ID=="T005" & Treatment=="WS")
-# factor(Data$Participant_ID)
-# colnames(Data)
+
+
 ```
 
 
+
+```{r}
+Activity_pattern = '^R$|^R+W$|^W$|^W+R$'
+Out_pattern = '^Out$|^Out+SA$'
+
+Data <- Data %>% 
+      mutate(Segments_Activity = case_when(
+        str_detect(Reduced_Activities_QC1, Activity_pattern)~'RW',
+                                           str_detect(Reduced_Activities_QC1, Out_pattern)~'Out', Treatment=='WS'~'Other'))
+Data <- Data %>%
+  mutate(Segments_Activity = replace(Segments_Activity, is.na(Reduced_Activities_QC1), NA))
+levels(factor(Data$Segments_Activity))
+```
+
 ```{r, echo=FALSE}
-# levels(factor(Data$Reduced_Activities_QC1))
 
 Data1<- subset(Data, Reduced_Activities_QC1=="Out" & Trans_PP!="NA")
 

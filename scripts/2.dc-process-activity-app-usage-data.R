@@ -182,6 +182,13 @@ get_final_activities <- function(all_subj_df) {
 
   #######################################Reduced Ontoloties########################
   
+  all_subj_df <- all_subj_df %>% 
+    mutate(Segments_Activity = case_when(
+      str_detect(Reduced_Activities_QC1, Activity_pattern)~'RW',
+      str_detect(Reduced_Activities_QC1, Out_pattern)~'Out', Treatment=='WS'~'Other'))
+  all_subj_df <- all_subj_df %>%
+    mutate(Segments_Activity = replace(Segments_Activity, is.na(Reduced_Activities_QC1), NA))
+  
 
   
   ############################--------------------Application--------------------############################
@@ -310,6 +317,8 @@ format_activity_app_usage_data <- function() {
            Reduced_Activity_One,
            Reduced_Activity_Two,
            Reduced_Activity_Three,
+           
+           Segments_Activity,
            
            Application,
            Application_QC1,
