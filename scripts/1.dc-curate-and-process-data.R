@@ -876,10 +876,8 @@ curate_data <- function() {
   subj_list <- custom_read_csv(file.path(curated_data_dir, utility_data_dir, subj_list_file_name))$Subject
   # print(subj_list)
   
-  sapply(subj_list, function(subj_name) {
-  # sapply(subj_list[2], function(subj_name) {
-  # sapply(c('T003', 'T005'), function(subj_name) {
-  # sapply(c('T005'), function(subj_name) {
+  # sapply(subj_list, function(subj_name) {
+  sapply(c('T003', 'T005'), function(subj_name) {
 
     subj_dir <- file.path(raw_data_dir, grp_dir, subj_name)
     day_list <- get_dir_list(subj_dir)

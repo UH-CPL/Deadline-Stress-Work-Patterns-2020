@@ -40,7 +40,9 @@ merge_all_data <- function() {
                  Raw_PP, Raw_E4_EDA, Raw_E4_HR, Raw_iWatch_HR, 
                  Activities, Activities_QC1, Activities_QC2, Activity_One, Activity_Two, Activity_Three,
                  Reduced_Activities_QC1, Reduced_Activity_One, Reduced_Activity_Two, Reduced_Activity_Three,
-                 Application, Application_QC1, Application_QC2, Application_QC3, Reduced_Application, Reduced_Application_final,
+                 Segments_Activity,
+                 Application, Application_QC1, Application_QC2, Application_QC3, 
+                 Reduced_Application, Reduced_Application_final,
                  Mask)
   
   ############################################################################################
@@ -126,6 +128,8 @@ merge_all_data <- function() {
       Reduced_Activity_One, 
       Reduced_Activity_Two, 
       Reduced_Activity_Three,
+      
+      Segments_Activity,
       
       # Application, 
       # Application_QC1, 
