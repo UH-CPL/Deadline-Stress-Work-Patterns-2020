@@ -47,56 +47,44 @@ generate_meta_data_break_activity <- function() {
   #################################################################################################################
 
   
+  
   segment_df <- custom_read_csv(file.path(physiological_data_path, segment_df_file_name))
 
   segment_meta_data_df_1 <- segment_df %>%
     dplyr::group_by(Participant_ID, Day) %>%
     summarize(Length_Day=n(),
-              Mean_PP_BR=mean(Trans_PP[Segments_Activity=="Out" & Segment==1], na.rm = TRUE),
-              Length_BR=length(Trans_PP[Segments_Activity=="Out" & Segment==1])) %>%
+              Mean_PP_RestingBaseline=mean(Trans_PP[Segments_Activity=="Out" & Segment==1], na.rm = TRUE),
+              Length_RestingBaseline=length(Trans_PP[Segments_Activity=="Out" & Segment==1])) %>%
     ungroup()
     
-    
-  segment_meta_data_df_2 <- segment_df %>%
+  segment_meta_data_df <- segment_df %>%
     dplyr::group_by(Participant_ID, Day, Segment) %>%
     summarize(
-          ## StartTime=head(Timestamp, 1),
-          ## EndTime=tail(Timestamp, 1),
-      
-          # Mean_Trans_PP=mean(Trans_PP, na.rm = TRUE),
-      
-          SegmentLength=n(),
-          
-          # BreakTime=sum(Segments_Activity=="Out", na.rm = T),
-          BreakTime=sum(Segments_Activity=="Out"),
-          ReadingWritingTime=sum(Segments_Activity=="RW"),
-          Mean_PP_RW=mean(Trans_PP[Segments_Activity=="RW"], na.rm = TRUE),
-          OtherActivitiesTime=sum(Segments_Activity=="Other"),
-          Mean_PP_Other=mean(Trans_PP[Segments_Activity=="Other"], na.rm = TRUE))
-
-
-  
-  segment_meta_data_df <- segment_meta_data_df_1 %>% 
-    merge(segment_meta_data_df_2, by=c("Participant_ID", "Day")) %>%
+          ### StartTime=head(Timestamp, 1),
+          ### EndTime=tail(Timestamp, 1),
+          Length_Segment=n(),
+          Length_Break=sum(Segments_Activity=="Out"),
+          Length_Reading_Writing=sum(Segments_Activity=="RW"),
+          Mean_PP_Reading_Writing=mean(Trans_PP[Segments_Activity=="RW"], na.rm = TRUE),
+          Length_Other_Activities=sum(Segments_Activity=="Other"),
+          Mean_PP_Other_Activities=mean(Trans_PP[Segments_Activity=="Other"], na.rm = TRUE)) %>% 
+    merge(segment_meta_data_df_1, by=c("Participant_ID", "Day")) %>%
     select(
       Participant_ID,
       Day,
       Length_Day,
       Segment,
-      SegmentLength,
-      Length_BR,
-      Mean_PP_BR,
-      BreakTime,
-      ReadingWritingTime,
-      Mean_PP_RW,
-      OtherActivitiesTime,
-      Mean_PP_Other
+      Length_Segment,
+      Length_RestingBaseline,
+      Mean_PP_RestingBaseline,
+      Length_Break,
+      Length_Reading_Writing,
+      Mean_PP_Reading_Writing,
+      Length_Other_Activities,
+      Mean_PP_Other_Activities
     )
   
-  # View(segment_meta_data_df)
-  # View(segment_meta_data_df_1)
-  # View(segment_meta_data_df_2)
-  
+  View(segment_meta_data_df)
   convert_to_csv(segment_meta_data_df, file.path(physiological_data_path, segment_meta_data_df_file_name))
 }
 
