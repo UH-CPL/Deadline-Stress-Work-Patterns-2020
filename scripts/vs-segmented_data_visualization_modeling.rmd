@@ -1,0 +1,205 @@
+---
+title: "Segmented_data"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(grid)
+library(gridExtra)
+library(dplyr)
+library(ggpubr)
+library(DataCombine)
+library(dplyr)
+library(reshape2)
+library(tidyr)
+library(stringr)
+library(plyr)
+library(ggplot2)
+library(dplyr)
+library(miceadds)
+library(gtools)
+library(ggpubr)
+library(gvlma)
+library(MASS)
+library(reshape2)
+```
+
+```{r, echo=FALSE}
+current_dir <- getwd()
+setwd('..')
+root_dir <- getwd()
+data_dir <- file.path(root_dir, 'curated-data/physiological-data')
+plot_dir <- file.path(root_dir,'plots/CaseStudy')
+data_file_name<-'segment_meta_data_df.csv'
+curated_data_dir <- file.path(root_dir, 'curated-data/physiological-data')
+Data<-read.csv(file.path(data_dir,data_file_name),stringsAsFactors = FALSE)
+
+questionnaire_data_file <- 'Questionnaire Data.csv'
+Q_Data <- read.csv(file.path(data_dir,questionnaire_data_file),stringsAsFactors = FALSE)
+Q_Data <- Q_Data[,-c(1, 3:34 )]
+```
+
+
+```{r}
+Q_Data$Gender = c("Male", "Female", "Male", "Female", "Male", "Female", "Female", "Male", "Male")
+```
+
+```{r, echo=FALSE}
+Data$Segment <- paste0("Seg-",Data$Segment)
+Data$Normalized_PP_mean_RW = Data$Mean_PP_Reading_Writing - Data$Mean_PP_RestingBaseline
+Data$Normalized_PP_mean_Other = Data$Mean_PP_Other_Activities - Data$Mean_PP_RestingBaseline
+
+
+Merged_Data <- merge(x = Data, y = Q_Data, by = "Participant_ID")
+Merged_Data = Merged_Data %>% arrange(Participant_ID, Day, Segment)
+
+Merged_Data = Merged_Data[with (Merged_Data, order(Participant_ID, Day, Segment)), ]
+
+# dd[with(dd, order(-z, b)), ]
+
+Segmented_Data = Merged_Data[,c(
+  'Participant_ID',
+  'Gender',
+  'Trait_anxiety',
+  'Personality_AB',
+  'BFI_.Agreeableness',
+  'BFI_.Conscientiousness',
+  'BFI_.Extraversion',
+  'BFI_.Neuroticism',
+  'BFI_.Openness',
+  'StartDay_S.Anxiety.Before.Deadline',
+  'EndDay_S.Anxiety.Before.Deadline',
+  'StartDay_S.Anxiety.After.Deadline',
+  'EndDay_S.Anxiety.After.Deadline',
+  'Day',
+  'Length_Day',
+  'Segment',
+  'Length_Segment',
+  'Length_RestingBaseline',
+  'Mean_PP_RestingBaseline',
+  'Length_Break',
+  'Length_Reading_Writing',
+  'Mean_PP_Reading_Writing',
+  'Length_Other_Activities',
+  'Mean_PP_Other_Activities'
+)]
+
+
+file_name='Meta_data_with_psychometric.csv'
+write.csv(Segmented_Data,file.path(curated_data_dir, file_name), row.names = FALSE)
+
+# Data$Mean_PP_Reading_Writing
+Data_to_plot <- melt(Merged_Data[, c(
+    'Participant_ID',
+    'Day',
+    'Segment',
+    'Length_Break',
+    'Length_Reading_Writing',
+    'Length_Other_Activities'
+  )])
+```
+
+
+```{r, echo=FALSE}
+boxplot(Normalized_PP_mean_RW, Normalized_PP_mean_Other, data = Data)
+
+ggplot(data = Data) +
+  ggboxplot(Normalized_PP_mean_RW)
+```
+
+```{r, echo=FALSE}
+yaxis_title = bquote(paste(' ln(PP) [ ', '' ^ 'o', 'C', '' ^ 2, ' ]'))
+
+participant_No = factor(Data_to_plot$Participant_ID)
+participant_number = nlevels(participant_No)
+for (i in 1:participant_number) {
+  Participant_day <-
+    subset(Data_to_plot, Participant_ID == levels(participant_No)[i])
+  Day_No <- factor(Participant_day$Day)
+  numberOfDay = nlevels(Day_No)
+  for (j in 1:numberOfDay) {
+    Segments_Day <- subset(Participant_day, Day == levels(Day_No)[j])
+    # Segments_Day<- reorder(Segments_Day$variable)
+    
+    title = paste(levels(participant_No)[i], levels(Day_No)[j])
+    
+    plot <-
+      ggplot(Segments_Day, aes(fill = variable, y = value, x = Segment)) +
+      geom_bar(position = "stack", stat = "identity") +
+      theme_minimal() +
+      theme(
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        # plot.title = element_text(hjust = -0.05, vjust=2.12,size = 20, face = "bold", margin=margin(10,0,5,0)),
+        legend.title = element_blank(),
+        legend.position = 'bottom',
+        axis.text.x = element_text(face = "bold", size = 10),
+        axis.text.y = element_text(face = "bold", size = 10),
+        axis.title.x = element_text(face = "bold", size = 10),
+        axis.title.y = element_text(face = "bold", size = 10),
+        plot.title = element_text(hjust = 0.5)
+      ) + xlab("Segments") + ylab("Time [s]") + ggtitle(title)
+    
+    print(plot)
+    
+    # Segments_Day <- subset(Data, Day == levels(Day_No)[j])
+    # 
+    # plot_pp_line <- ggplot(data = Segments_Day) +
+    #   geom_hline(
+    #     aes(yintercept = Normalized_PP_mean_RW, colour = Segment),
+    #     size = 1.5,
+    #     linetype = "dashed"
+    #   ) +
+    #   theme_minimal() +
+    #   theme(
+    #     panel.grid.major = element_blank(),
+    #     panel.grid.minor = element_blank(),
+    #     legend.title = element_blank(),
+    #     legend.position = 'bottom',
+    #     axis.text.y = element_text(face = "bold", size = 10),
+    #     axis.title.y = element_text(face = "bold", size = 10)
+    #   ) + ylab(yaxis_title)
+    # print(plot_pp_line)
+    
+    # plot_segment = ggarrange(plot, plot_pp_line, nrow = 2, ncol = 1)
+    # plot_name=paste0(levels(Day_No)[j],".pdf")
+    #
+    #
+    # full_path<-file.path(plot_dir,plot_name,sep="")
+    # ggsave(full_path, plot_segment, width = 8.5, height = 11, units = "in")
+    
+  }
+  
+}
+
+```
+
+
+\newpage
+## Model1 with Normalized_mean_RW ~ Length_Break + Length_Reading_Writing + Length_Other_Activities
+```{r, echo=FALSE}
+model1 = lm(Normalized_PP_mean_RW ~ Length_Break + Length_Reading_Writing + Length_Other_Activities, data = Merged_Data)
+summary(model1)
+anova(model1)
+```
+
+\newpage
+## Model2 with Normalized_mean_RW ~ Length_Break + Length_Reading_Writing + Length_Other_Activities + Trait_anxiety
+```{r, echo=FALSE}
+model2 = lm(Normalized_PP_mean_RW ~ Length_Break + Length_Reading_Writing + Length_Other_Activities + Trait_anxiety, data = Merged_Data)
+summary(model2)
+anova(model2)
+```
+
+
+\newpage
+## Model3 with Normalized_mean_RW ~ Length_Break + Length_Reading_Writing + Length_Other_Activities + Normalized_mean_Other
+```{r, echo=FALSE}
+model3 = lm(Normalized_PP_mean_RW ~ Length_Break + Length_Reading_Writing + Length_Other_Activities + Normalized_PP_mean_Other, data = Merged_Data)
+summary(model3)
+anova(model3)
+```

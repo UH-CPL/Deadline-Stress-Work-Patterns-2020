@@ -61,16 +61,19 @@ Data<-read.csv(file.path(data_dir,data_file_name),stringsAsFactors = FALSE)
 
 
 ```{r}
-Activity_pattern = '^R$|^R+W$|^W$|^W+R$'
-Out_pattern = '^Out$|^Out+SA$'
-
-Data <- Data %>% 
-      mutate(Segments_Activity = case_when(
-        str_detect(Reduced_Activities_QC1, Activity_pattern)~'RW',
-                                           str_detect(Reduced_Activities_QC1, Out_pattern)~'Out', Treatment=='WS'~'Other'))
-Data <- Data %>%
-  mutate(Segments_Activity = replace(Segments_Activity, is.na(Reduced_Activities_QC1), NA))
-levels(factor(Data$Segments_Activity))
+# 
+# Activity_pattern = '^R$|^R[+]W$|^W$|^W[+]R$'
+# Out_pattern = 'Out'
+# 
+# Data <- Data %>% 
+#       mutate(Segments_Activity = case_when(
+#         str_detect(Reduced_Activities_QC1, Activity_pattern)~'RW',
+#                                            str_detect(Reduced_Activities_QC1, Out_pattern)~'Out', Treatment=='WS'~'Other'))
+# Data <- Data %>%
+#   mutate(Segments_Activity = replace(Segments_Activity, is.na(Reduced_Activities_QC1), NA))
+# 
+# count(Data$Segments_Activity)
+# count(Data$Reduced_Activities_QC1)
 ```
 
 ```{r, echo=FALSE}
