@@ -59,8 +59,6 @@ Merged_Data = Merged_Data %>% arrange(Participant_ID, Day, Segment)
 
 Merged_Data = Merged_Data[with (Merged_Data, order(Participant_ID, Day, Segment)), ]
 
-# dd[with(dd, order(-z, b)), ]
-
 Segmented_Data = Merged_Data[,c(
   'Participant_ID',
   'Gender',
@@ -92,7 +90,6 @@ Segmented_Data = Merged_Data[,c(
 file_name='Meta_data_with_psychometric.csv'
 write.csv(Segmented_Data,file.path(curated_data_dir, file_name), row.names = FALSE)
 
-# Data$Mean_PP_Reading_Writing
 Data_to_plot <- melt(Merged_Data[, c(
     'Participant_ID',
     'Day',
@@ -103,13 +100,6 @@ Data_to_plot <- melt(Merged_Data[, c(
   )])
 ```
 
-
-```{r, echo=FALSE}
-boxplot(Normalized_PP_mean_RW, Normalized_PP_mean_Other, data = Data)
-
-ggplot(data = Data) +
-  ggboxplot(Normalized_PP_mean_RW)
-```
 
 ```{r, echo=FALSE}
 yaxis_title = bquote(paste(' ln(PP) [ ', '' ^ 'o', 'C', '' ^ 2, ' ]'))
