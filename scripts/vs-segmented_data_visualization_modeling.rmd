@@ -169,10 +169,33 @@ for (i in 1:participant_number) {
 ```
 
 
+
+```{r, echo=FALSE}
+yaxis_title = bquote(paste('ln(PP) [ ',''^'o','C',''^2,' ]'))
+participant_No = factor(Merged_Data$Participant_ID)
+participant_number = nlevels(participant_No)
+for (i in 1:participant_number) {
+  subject <- subset(Merged_Data, Participant_ID == levels(participant_No)[i])
+  
+  plot <- ggplot(subject, aes(fill = Segment, y = Mean_PP_Reading_Writing, x = Day)) +
+    geom_bar(position = "dodge", stat = "identity") +
+    theme_minimal() +
+    theme(
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank(),
+      legend.title = element_blank(),
+      legend.position = 'bottom',
+      axis.text.x = element_text(face = "bold", size = 10),
+      plot.title = element_text(hjust = 0.5)
+    ) + ggtitle(levels(participant_No)[i]) + ylab(yaxis_title)
+  print(plot)
+}  
+```
+
 \newpage
 ## Model1 with Normalized_mean_RW ~ Length_Break + Length_Reading_Writing + Length_Other_Activities
 ```{r, echo=FALSE}
-model1 = lm(Normalized_PP_mean_RW ~ Length_Break + Length_Reading_Writing + Length_Other_Activities, data = Merged_Data)
+model1 = lm(Normalized_PP_mean_RW ~ Length_Break + Length_Reading_Writing + Length_Other_Activities + Gender, data = Merged_Data)
 summary(model1)
 anova(model1)
 ```
@@ -189,6 +212,7 @@ anova(model2)
 \newpage
 ## Model3 with Normalized_mean_RW ~ Length_Break + Length_Reading_Writing + Length_Other_Activities + Normalized_mean_Other
 ```{r, echo=FALSE}
+# Merged_Data$Gender <- relevel(Merged_Data$Gender, ref = "Male")
 model3 = lm(Normalized_PP_mean_RW ~ Length_Break + Length_Reading_Writing + Length_Other_Activities + Normalized_PP_mean_Other, data = Merged_Data)
 summary(model3)
 anova(model3)
