@@ -215,14 +215,14 @@ get_final_activities <- function(all_subj_df) {
 
 convert_Out_to_na <- function(all_subj_df) {
   
-  physiological_data_path <- file.path(project_dir, curated_data_dir, physiological_data_dir)
+  # physiological_data_path <- file.path(project_dir, curated_data_dir, physiological_data_dir)
   
   
   #################################################################################################################
   # data_file_name <- 'mini_full_df.csv'
-  data_file_name <- full_df_file_name
+  # data_file_name <- full_df_file_name
   
-  segment_df <- custom_read_csv(file.path(physiological_data_path, data_file_name)) %>%
+  segment_df <- all_subj_df %>%
     dplyr::select(Participant_ID, Day, Treatment,
                   Timestamp, Sinterface_Time, TreatmentTime,
                   Trans_PP,
