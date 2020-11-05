@@ -26,6 +26,7 @@ library(ggpubr)
 library(gvlma)
 library(MASS)
 library(reshape2)
+library(zoo)
 ```
 
 
@@ -41,14 +42,20 @@ curated_data_dir <- file.path(root_dir, 'curated-data/physiological-data')
 Data1<-read.csv(file.path(data_dir,data_file_name),stringsAsFactors = FALSE)
 
 
-
-# data_file_name<-'segment_df.csv'
-# curated_data_dir <- file.path(root_dir, 'curated-data/physiological-data')
-# segment_df<-read.csv(file.path(data_dir,data_file_name),stringsAsFactors = FALSE)
-# 
-# Data1$Segment= segment_df$Segment
+count(factor(Data1$Segments_Activity))
 ```
 
+```{r, echo=FALSE}
+  Data1$Segments_Activity<-NULL
+  Data1 <- Data1 %>% 
+    mutate(Segments_Activity = case_when(
+      str_detect(Reduced_Activities_QC1, Activity_pattern)~'RW',
+      str_detect(Reduced_Activities_QC1, Out_pattern)~'Out', Treatment=='WS'~'Other'))
+  
+  Data1 <- Data1 %>%
+    mutate(Segments_Activity = replace(Segments_Activity, is.na(Reduced_Activities_QC1), NA))
+
+```
 
 
 ```{r, echo=FALSE}
@@ -68,8 +75,9 @@ segment_df <- Data1 %>%
            Segment=na.locf0(Segment)) %>%
     dplyr::select(-Counter)
 
-  View(segment_df)
+  # View(segment_df)
 levels(factor(segment_df$Segment))
+count(factor(segment_df$Segments_Activity))
 ```
 
 
@@ -85,18 +93,20 @@ levels(factor(segment_df$Segment))
   segment_meta_data_df <- segment_df %>%
     dplyr::group_by(Participant_ID, Day, Segment) %>%
     dplyr::summarize(
-          ### StartTime=head(Timestamp, 1),
-          ### EndTime=tail(Timestamp, 1),
+          StartTime=head(Timestamp, 1),
+          EndTime=tail(Timestamp, 1),
           Length_Segment=n(),
-          Length_Break=sum(Segments_Activity=="Out"),
-          Length_Reading_Writing=sum(Segments_Activity=="RW"),
+          Length_Break=sum(Segments_Activity=="Out", na.rm = TRUE),
+          Length_Reading_Writing=sum(Segments_Activity=="RW", na.rm = TRUE),
           Mean_PP_Reading_Writing=mean(Trans_PP[Segments_Activity=="RW"], na.rm = TRUE),
-          Length_Other_Activities=sum(Segments_Activity=="Other"),
+          Length_Other_Activities=sum(Segments_Activity=="Other", na.rm = TRUE),
           Mean_PP_Other_Activities=mean(Trans_PP[Segments_Activity=="Other"], na.rm = TRUE)) %>% 
     merge(segment_meta_data_df_1, by=c("Participant_ID", "Day")) %>%
     dplyr::select(
       Participant_ID,
       Day,
+      StartTime,
+      EndTime,
       Length_Day,
       Segment,
       Length_Segment,
@@ -120,8 +130,9 @@ levels(factor(segment_df$Segment))
 segment_meta_data_df_filtered <- segment_meta_data_df %>% filter(Length_Break < 30)
 
 
-
 count(segment_df$Reduced_Activities_QC1)
+count(segment_df$Segments_Activity)
+
 for (i in 1:nrow(segment_meta_data_df_filtered)) {
   segment_df <- segment_df %>%
     dplyr::mutate(
@@ -154,19 +165,11 @@ segment_df <- segment_df %>%
     mutate(Reduced_Activity_Three = replace(Reduced_Activity_Three, is.na(Reduced_Activities_QC1), NA))
 
 count(segment_df$Reduced_Activities_QC1)
-
-segment_df$Segment<-NULL
-# segment_df$Segments_Activity<-NULL
+count(segment_df$Segments_Activity)
 
 
 
-  # segment_df <- segment_df %>%
-  #   mutate(Segments_Activity = case_when(
-  #     str_detect(Reduced_Activities_QC1, Activity_pattern)~'RW',
-  #     str_detect(Reduced_Activities_QC1, Out_pattern)~'Out', Treatment=='WS'~'Other'))
-  # segment_df <- segment_df %>%
-  #   mutate(Segments_Activity = replace(Segments_Activity, is.na(Reduced_Activities_QC1), NA))
-
+segment_df <- segment_df %>% filter(!is.na(Segments_Activity))
 
 file_name='Full_Df_Segment.csv'
 write.csv(segment_df,file.path(curated_data_dir, file_name), row.names = FALSE)
@@ -204,7 +207,6 @@ Merged_Data = Merged_Data %>% arrange(Participant_ID, Day, Segment)
 
 Merged_Data = Merged_Data[with (Merged_Data, order(Participant_ID, Day, Segment)), ]
 
-Merged_Data = Merged_Data[Merged_Data$Length_Break > 7, ]
 
 Segmented_Data = Merged_Data[,c(
   'Participant_ID',

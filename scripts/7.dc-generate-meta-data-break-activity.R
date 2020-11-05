@@ -32,6 +32,7 @@ generate_meta_data_break_activity <- function() {
   data_file_name <- 'Full_Df_Segment.csv'
 
   segment_df <- custom_read_csv(file.path(physiological_data_path, data_file_name)) %>%
+    filter(!is.na(Segments_Activity)) %>% 
     dplyr::select(Participant_ID, Day, Treatment,
                   Timestamp, Sinterface_Time, TreatmentTime,
                   Trans_PP,
@@ -68,10 +69,10 @@ generate_meta_data_break_activity <- function() {
           ### StartTime=head(Timestamp, 1),
           ### EndTime=tail(Timestamp, 1),
           Length_Segment=n(),
-          Length_Break=sum(Segments_Activity=="Out"),
-          Length_Reading_Writing=sum(Segments_Activity=="RW"),
+          Length_Break=sum(Segments_Activity=="Out", na.rm = TRUE),
+          Length_Reading_Writing=sum(Segments_Activity=="RW", na.rm = TRUE),
           Mean_PP_Reading_Writing=mean(Trans_PP[Segments_Activity=="RW"], na.rm = TRUE),
-          Length_Other_Activities=sum(Segments_Activity=="Other"),
+          Length_Other_Activities=sum(Segments_Activity=="Other", na.rm = TRUE),
           Mean_PP_Other_Activities=mean(Trans_PP[Segments_Activity=="Other"], na.rm = TRUE)) %>% 
     merge(segment_meta_data_df_1, by=c("Participant_ID", "Day")) %>%
     dplyr::select(
