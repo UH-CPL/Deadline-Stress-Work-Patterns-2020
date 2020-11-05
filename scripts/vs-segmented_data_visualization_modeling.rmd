@@ -36,59 +36,45 @@ root_dir <- getwd()
 data_dir <- file.path(root_dir, 'curated-data/physiological-data')
 plot_dir <- file.path(root_dir,'plots/CaseStudy')
 data_file_name<-'full_df.csv'
+# data_file_name<-'Full_Df_Segment.csv'
 curated_data_dir <- file.path(root_dir, 'curated-data/physiological-data')
 Data1<-read.csv(file.path(data_dir,data_file_name),stringsAsFactors = FALSE)
 
 
 
-data_file_name<-'segment_df.csv'
-curated_data_dir <- file.path(root_dir, 'curated-data/physiological-data')
-segment_df<-read.csv(file.path(data_dir,data_file_name),stringsAsFactors = FALSE)
-
-Data1$Segment= segment_df$Segment
+# data_file_name<-'segment_df.csv'
+# curated_data_dir <- file.path(root_dir, 'curated-data/physiological-data')
+# segment_df<-read.csv(file.path(data_dir,data_file_name),stringsAsFactors = FALSE)
+# 
+# Data1$Segment= segment_df$Segment
 ```
 
 
 
 ```{r, echo=FALSE}
-# library(zoo)
-# 
-# 
-# 
-#   # Data1 <- Data1 %>% 
-#   #   mutate(Segments_Activity = case_when(
-#   #     str_detect(Reduced_Activities_QC1, Activity_pattern)~'RW',
-#   #     str_detect(Reduced_Activities_QC1, Out_pattern)~'Out', Treatment=='WS'~'Other'))
-#   # Data1 <- Data1 %>%
-#   #   mutate(Segments_Activity = replace(Segments_Activity, is.na(Reduced_Activities_QC1), NA))
-# 
-# 
-# Data <- Data1 %>%
-#     dplyr::select(Participant_ID, Day, Treatment,
-#                   Timestamp, Sinterface_Time, TreatmentTime,
-#                   Trans_PP,
-#                   Segments_Activity,
-#                   Mask) %>%
-#     mutate(Segments_Activity=case_when(Treatment=="RB"~"Out",
-#                                             TRUE~.$Segments_Activity)) %>%
-#     dplyr::group_by(Participant_ID, Day) %>%
-#     mutate(Counter=sequence(rle(as.character(Segments_Activity))$lengths),
-#            Segment=case_when(Segments_Activity=="Out" & Counter==1~1, TRUE~0),
-#            Segment=ifelse(Segment==1, cumsum(Segment==1), NA),
-#            Segment=na.locf0(Segment)) %>%
-#     dplyr::select(-Counter)
-# 
-# 
-levels(factor(Data1$Segment))
-# file_name='Full_Df_Segment.csv'
-# write.csv(Data1,file.path(curated_data_dir, file_name), row.names = FALSE)
+
+segment_df <- Data1 %>%
+    # dplyr::select(Participant_ID, Day, Treatment,
+    #               Timestamp, Sinterface_Time, TreatmentTime,
+    #               Trans_PP,
+    #               Segments_Activity,
+    #               Mask) %>%
+    dplyr::mutate(Segments_Activity=case_when(Treatment=="RB"~"Out",
+                                            TRUE~.$Segments_Activity)) %>%
+    dplyr::group_by(Participant_ID, Day) %>%
+    dplyr::mutate(Counter=sequence(rle(as.character(Segments_Activity))$lengths),
+           Segment=case_when(Segments_Activity=="Out" & Counter==1~1, TRUE~0),
+           Segment=ifelse(Segment==1, cumsum(Segment==1), NA),
+           Segment=na.locf0(Segment)) %>%
+    dplyr::select(-Counter)
+
+  View(segment_df)
+levels(factor(segment_df$Segment))
 ```
 
 
 
-```{r}
-# segment_df= Data
-
+```{r, echo=FALSE}
   segment_meta_data_df_1 <- segment_df %>%
     dplyr::group_by(Participant_ID, Day) %>%
     dplyr::summarize(Length_Day=n(),
@@ -122,6 +108,8 @@ levels(factor(Data1$Segment))
       Length_Other_Activities,
       Mean_PP_Other_Activities
     )
+  
+  View(segment_meta_data_df)
 ```
 
 
@@ -131,27 +119,57 @@ levels(factor(Data1$Segment))
 
 segment_meta_data_df_filtered <- segment_meta_data_df %>% filter(Length_Break < 30)
 
+
+
+count(segment_df$Reduced_Activities_QC1)
 for (i in 1:nrow(segment_meta_data_df_filtered)) {
-  
-  Data1 <- Data1 %>%
+  segment_df <- segment_df %>%
     dplyr::mutate(
       Reduced_Activities_QC1 = case_when(
-          Participant_ID == segment_meta_data_df_filtered$Participant_ID[i] &
-          Day == segment_meta_data_df_filtered$Day[i] & 
-          Reduced_Activities_QC1 == "Out" & 
-          Segment == segment_meta_data_df_filtered$Segment[i]~"NA",
+        Participant_ID == segment_meta_data_df_filtered$Participant_ID[i] &
+          Day == segment_meta_data_df_filtered$Day[i] &
+          Reduced_Activities_QC1 == "Out" &
+          Segment == segment_meta_data_df_filtered$Segment[i] ~ "NA",
         TRUE ~ Reduced_Activities_QC1
+      ),
+      Segments_Activity = case_when(
+        Participant_ID == segment_meta_data_df_filtered$Participant_ID[i] &
+          Day == segment_meta_data_df_filtered$Day[i] &
+          Segments_Activity == "Out" &
+          Segment == segment_meta_data_df_filtered$Segment[i] ~ "NA",
+        TRUE ~ Segments_Activity
       )
     )
 }
 
-Data1 <- Data1 %>%
-    dplyr::mutate_at(vars(Reduced_Activities_QC1),na_if,"NA")
 
-Data1 <- Data1 %>%
+
+segment_df <- segment_df %>%
+    dplyr::mutate_at(vars(Reduced_Activities_QC1),na_if,"NA") %>% 
+    dplyr::mutate_at(vars(Segments_Activity),na_if,"NA")
+
+segment_df <- segment_df %>%
     mutate(Reduced_Activity_One = replace(Reduced_Activity_One, is.na(Reduced_Activities_QC1), NA)) %>% 
     mutate(Reduced_Activity_Two = replace(Reduced_Activity_Two, is.na(Reduced_Activities_QC1), NA)) %>% 
     mutate(Reduced_Activity_Three = replace(Reduced_Activity_Three, is.na(Reduced_Activities_QC1), NA))
+
+count(segment_df$Reduced_Activities_QC1)
+
+segment_df$Segment<-NULL
+# segment_df$Segments_Activity<-NULL
+
+
+
+  # segment_df <- segment_df %>%
+  #   mutate(Segments_Activity = case_when(
+  #     str_detect(Reduced_Activities_QC1, Activity_pattern)~'RW',
+  #     str_detect(Reduced_Activities_QC1, Out_pattern)~'Out', Treatment=='WS'~'Other'))
+  # segment_df <- segment_df %>%
+  #   mutate(Segments_Activity = replace(Segments_Activity, is.na(Reduced_Activities_QC1), NA))
+
+
+file_name='Full_Df_Segment.csv'
+write.csv(segment_df,file.path(curated_data_dir, file_name), row.names = FALSE)
 
 ```
 

@@ -10,11 +10,11 @@ library(zoo)
 #-------------------------#
 #-----GLOBAL VARIABLES----#
 #-------------------------#
-# script_dir <- dirname(rstudioapi::getSourceEditorContext()$path)
-# project_dir <- dirname(script_dir)
-# setwd(project_dir)
+script_dir <- dirname(rstudioapi::getSourceEditorContext()$path)
+project_dir <- dirname(script_dir)
+setwd(project_dir)
 # 
-# source(file.path(script_dir, 'us-common-functions.R'))
+source(file.path(script_dir, 'us-common-functions.R'))
 
 
 
@@ -28,7 +28,8 @@ generate_meta_data_break_activity <- function() {
   
   #################################################################################################################
   # data_file_name <- 'mini_full_df.csv'
-  data_file_name <- full_df_file_name
+  # data_file_name <- full_df_file_name
+  data_file_name <- 'Full_Df_Segment.csv'
 
   segment_df <- custom_read_csv(file.path(physiological_data_path, data_file_name)) %>%
     dplyr::select(Participant_ID, Day, Treatment,
@@ -36,14 +37,14 @@ generate_meta_data_break_activity <- function() {
                   Trans_PP,
                   Segments_Activity,
                   Mask) %>%
-    mutate(Segments_Activity=case_when(Treatment=="RB"~"Out",
+    dplyr::mutate(Segments_Activity=case_when(Treatment=="RB"~"Out",
                                             TRUE~.$Segments_Activity)) %>%
     dplyr::group_by(Participant_ID, Day) %>%
-    mutate(Counter=sequence(rle(as.character(Segments_Activity))$lengths),
+    dplyr::mutate(Counter=sequence(rle(as.character(Segments_Activity))$lengths),
            Segment=case_when(Segments_Activity=="Out" & Counter==1~1, TRUE~0),
            Segment=ifelse(Segment==1, cumsum(Segment==1), NA),
            Segment=na.locf0(Segment)) %>%
-    select(-Counter)
+    dplyr::select(-Counter)
 
   View(segment_df)
 
@@ -56,14 +57,14 @@ generate_meta_data_break_activity <- function() {
 
   segment_meta_data_df_1 <- segment_df %>%
     dplyr::group_by(Participant_ID, Day) %>%
-    summarize(Length_Day=n(),
+    dplyr::summarize(Length_Day=n(),
               Mean_PP_RestingBaseline=mean(Trans_PP[Segments_Activity=="Out" & Segment==1], na.rm = TRUE),
               Length_RestingBaseline=length(Trans_PP[Segments_Activity=="Out" & Segment==1])) %>%
     ungroup()
     
   segment_meta_data_df <- segment_df %>%
     dplyr::group_by(Participant_ID, Day, Segment) %>%
-    summarize(
+    dplyr::summarize(
           ### StartTime=head(Timestamp, 1),
           ### EndTime=tail(Timestamp, 1),
           Length_Segment=n(),
@@ -73,7 +74,7 @@ generate_meta_data_break_activity <- function() {
           Length_Other_Activities=sum(Segments_Activity=="Other"),
           Mean_PP_Other_Activities=mean(Trans_PP[Segments_Activity=="Other"], na.rm = TRUE)) %>% 
     merge(segment_meta_data_df_1, by=c("Participant_ID", "Day")) %>%
-    select(
+    dplyr::select(
       Participant_ID,
       Day,
       Length_Day,
@@ -96,7 +97,7 @@ generate_meta_data_break_activity <- function() {
 #-------------------------#
 #-------Main Program------#
 #-------------------------#
-# generate_meta_data_break_activity()
+generate_meta_data_break_activity()
 
 
 
