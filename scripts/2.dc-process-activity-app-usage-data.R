@@ -182,12 +182,9 @@ get_final_activities <- function(all_subj_df) {
 
   #######################################Reduced Ontoloties########################
   
-  all_subj_df <- all_subj_df %>% 
-    mutate(Segments_Activity = case_when(
-      str_detect(Reduced_Activities_QC1, Activity_pattern)~'RW',
-      str_detect(Reduced_Activities_QC1, Out_pattern)~'Out', Treatment=='WS'~'Other'))
+
   all_subj_df <- all_subj_df %>%
-    mutate(Segments_Activity = replace(Segments_Activity, is.na(Reduced_Activities_QC1), NA))
+    mutate(Reduced_Activities_QC1 = replace(Reduced_Activities_QC1, is.na(Reduced_Activity_One), NA))
   
 
   
@@ -213,45 +210,57 @@ get_final_activities <- function(all_subj_df) {
 
 convert_out_to_na <- function(all_subj_df) {
   
-  physiological_data_path <- file.path(project_dir, curated_data_dir, physiological_data_dir)
+  all_subj_df <- all_subj_df %>% 
+    mutate(Segments_Activity = case_when(
+      str_detect(Reduced_Activities_QC1, Activity_pattern)~'RW',
+      str_detect(Reduced_Activities_QC1, Out_pattern)~'Out', Treatment=='WS'~'Other'))
+  all_subj_df <- all_subj_df %>%
+    mutate(Segments_Activity = replace(Segments_Activity, is.na(Reduced_Activities_QC1), NA))
+  
   
   #################################################################################################################
-  # data_file_name <- 'mini_full_df.csv'
-  # data_file_name <- full_df_file_name
-  segment_df <- all_subj_df %>%
-    filter(!is.na(Segments_Activity)) %>% 
-    dplyr::select(Participant_ID, Day, Treatment,
-                  Timestamp, Sinterface_Time, TreatmentTime,
-                  Segments_Activity,
-                  Mask) %>%
-    dplyr::mutate(Segments_Activity=case_when(Treatment=="RB"~"Out",
-                                              TRUE~.$Segments_Activity)) %>%
+
+  all_subj_df <- all_subj_df %>%
+    dplyr::mutate(Segments_Activity = case_when(Treatment == "RB" ~ "Out", TRUE ~ .$Segments_Activity))
+  View(all_subj_df)
+  
+  segment_df_NA <-
+    all_subj_df %>% filter(is.na(Segments_Activity))
+  
+  View(segment_df_NA)
+  # file_name='segment_df_NA.csv'
+  # write.csv(segment_df_NA,file.path(curated_data_dir, file_name), row.names = FALSE)
+  
+  
+  all_subj_df <- all_subj_df %>%
+    filter(!is.na(Segments_Activity)) %>%
     dplyr::group_by(Participant_ID, Day) %>%
-    dplyr::mutate(Counter=sequence(rle(as.character(Segments_Activity))$lengths),
-                  Segment=case_when(Segments_Activity=="Out" & Counter==1~1, TRUE~0),
-                  Segment=ifelse(Segment==1, cumsum(Segment==1), NA),
-                  Segment=na.locf0(Segment)) %>%
+    dplyr::mutate(
+      Counter = sequence(rle(as.character(Segments_Activity))$lengths),
+      Segment = case_when(Segments_Activity == "Out" &
+                            Counter == 1 ~ 1, TRUE ~ 0),
+      Segment = ifelse(Segment == 1, cumsum(Segment == 1), NA),
+      Segment = na.locf0(Segment)
+    ) %>%
     dplyr::select(-Counter)
+  # View(all_subj_df)
   
-  # View(segment_df)
   #################################################################################################################
-  # segment_df <- custom_read_csv(file.path(physiological_data_path, segment_df_file_name))
   
-  segment_meta_data_df_1 <- segment_df %>%
+  segment_meta_data_df_1 <- all_subj_df %>%
     dplyr::group_by(Participant_ID, Day) %>%
-    dplyr::summarize(Length_Day=n()) %>%
+    dplyr::summarize(Length_Day = n()) %>%
     ungroup()
   
-  segment_meta_data_df <- segment_df %>%
+  segment_meta_data_df <- all_subj_df %>%
     dplyr::group_by(Participant_ID, Day, Segment) %>%
     dplyr::summarize(
-      ### StartTime=head(Timestamp, 1),
-      ### EndTime=tail(Timestamp, 1),
-      Length_Segment=n(),
-      Length_Break=sum(Segments_Activity=="Out", na.rm = TRUE),
-      Length_Reading_Writing=sum(Segments_Activity=="RW", na.rm = TRUE),
-      Length_Other_Activities=sum(Segments_Activity=="Other", na.rm = TRUE)) %>% 
-    merge(segment_meta_data_df_1, by=c("Participant_ID", "Day")) %>%
+      Length_Segment = n(),
+      Length_Break = sum(Segments_Activity == "Out", na.rm = TRUE),
+      Length_Reading_Writing = sum(Segments_Activity == "RW", na.rm = TRUE),
+      Length_Other_Activities = sum(Segments_Activity == "Other", na.rm = TRUE)
+    ) %>%
+    merge(segment_meta_data_df_1, by = c("Participant_ID", "Day")) %>%
     dplyr::select(
       Participant_ID,
       Day,
@@ -263,10 +272,13 @@ convert_out_to_na <- function(all_subj_df) {
       Length_Other_Activities
     )
   
-  # View(segment_meta_data_df)
-  # convert_to_csv(segment_meta_data_df, file.path(physiological_data_path, segment_meta_data_df_file_name))
+  View(segment_meta_data_df)
   
-  segment_meta_data_df_filtered <- segment_meta_data_df %>% filter(Length_Break < 30)
+  
+  segment_meta_data_df_filtered <-
+    segment_meta_data_df %>% filter(Length_Break < 30)
+  View(segment_meta_data_df_filtered)
+  
   
   for (i in 1:nrow(segment_meta_data_df_filtered)) {
     all_subj_df <- all_subj_df %>%
@@ -289,21 +301,25 @@ convert_out_to_na <- function(all_subj_df) {
   }
   
   all_subj_df <- all_subj_df %>%
-    dplyr::mutate_at(vars(Reduced_Activities_QC1),na_if,"NA") %>% 
-    dplyr::mutate_at(vars(Segments_Activity),na_if,"NA")
+    dplyr::mutate_at(vars(Reduced_Activities_QC1), na_if, "NA") %>%
+    dplyr::mutate_at(vars(Segments_Activity), na_if, "NA")
   
   all_subj_df <- all_subj_df %>%
-    mutate(Reduced_Activity_One = replace(Reduced_Activity_One, is.na(Reduced_Activities_QC1), NA)) %>% 
-    mutate(Reduced_Activity_Two = replace(Reduced_Activity_Two, is.na(Reduced_Activities_QC1), NA)) %>% 
+    mutate(Reduced_Activity_One = replace(Reduced_Activity_One, is.na(Reduced_Activities_QC1), NA)) %>%
+    mutate(Reduced_Activity_Two = replace(Reduced_Activity_Two, is.na(Reduced_Activities_QC1), NA)) %>%
     mutate(Reduced_Activity_Three = replace(Reduced_Activity_Three, is.na(Reduced_Activities_QC1), NA))
-
+  
+  
+  all_subj_df <- rbind.fill(all_subj_df, segment_df_NA)
+  
   return(all_subj_df)
 }
 
 get_exact_computer_app_usage_time <- function(all_subj_df) {
-  
-  all_subj_df <- all_subj_df %>% 
-    mutate(Application_QC2=case_when(str_detect(Activities_QC1, computer_usage_pattern)~Application_QC1))
+  all_subj_df <- all_subj_df %>%
+    mutate(Application_QC2 = case_when(
+      str_detect(Activities_QC1, computer_usage_pattern) ~ Application_QC1
+    ))
   ## CHECK FOR DEFAULT VALUE!!!
   
   
@@ -330,9 +346,6 @@ get_masked_data <- function(all_subj_df) {
 }
 
 remove_pp_for_out <- function(all_subj_df) {
-  # all_subj_df <- all_subj_df %>%
-  #   mutate(Raw_PP = replace(PP, Reduced_Activities_QC1=="Out" & Raw_PP!="NA", NA),
-  #          PP = replace(PP, Reduced_Activities_QC1=="Out" & PP!="NA", NA))
   
   all_subj_df <- all_subj_df %>%
     mutate(Raw_PP = replace(PP, Reduced_Activities_QC1=="Out", NA),
