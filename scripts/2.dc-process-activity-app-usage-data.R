@@ -207,16 +207,13 @@ get_final_activities <- function(all_subj_df) {
                                                           Treatment=='WS'~ Reduced_Application)) 
   ############################--------------------Application--------------------############################
   
-  
-  
   return(all_subj_df)
 }
 
 
-convert_Out_to_na <- function(all_subj_df) {
+convert_out_to_na <- function(all_subj_df) {
   
-  # physiological_data_path <- file.path(project_dir, curated_data_dir, physiological_data_dir)
-  
+  physiological_data_path <- file.path(project_dir, curated_data_dir, physiological_data_dir)
   
   #################################################################################################################
   # data_file_name <- 'mini_full_df.csv'
@@ -225,7 +222,6 @@ convert_Out_to_na <- function(all_subj_df) {
     filter(!is.na(Segments_Activity)) %>% 
     dplyr::select(Participant_ID, Day, Treatment,
                   Timestamp, Sinterface_Time, TreatmentTime,
-                  Trans_PP,
                   Segments_Activity,
                   Mask) %>%
     dplyr::mutate(Segments_Activity=case_when(Treatment=="RB"~"Out",
@@ -237,17 +233,13 @@ convert_Out_to_na <- function(all_subj_df) {
                   Segment=na.locf0(Segment)) %>%
     dplyr::select(-Counter)
   
-  View(segment_df)
+  # View(segment_df)
   #################################################################################################################
-  
-  
-  segment_df <- custom_read_csv(file.path(physiological_data_path, segment_df_file_name))
+  # segment_df <- custom_read_csv(file.path(physiological_data_path, segment_df_file_name))
   
   segment_meta_data_df_1 <- segment_df %>%
     dplyr::group_by(Participant_ID, Day) %>%
-    dplyr::summarize(Length_Day=n(),
-                     Mean_PP_RestingBaseline=mean(Trans_PP[Segments_Activity=="Out" & Segment==1], na.rm = TRUE),
-                     Length_RestingBaseline=length(Trans_PP[Segments_Activity=="Out" & Segment==1])) %>%
+    dplyr::summarize(Length_Day=n()) %>%
     ungroup()
   
   segment_meta_data_df <- segment_df %>%
@@ -258,9 +250,7 @@ convert_Out_to_na <- function(all_subj_df) {
       Length_Segment=n(),
       Length_Break=sum(Segments_Activity=="Out", na.rm = TRUE),
       Length_Reading_Writing=sum(Segments_Activity=="RW", na.rm = TRUE),
-      Mean_PP_Reading_Writing=mean(Trans_PP[Segments_Activity=="RW"], na.rm = TRUE),
-      Length_Other_Activities=sum(Segments_Activity=="Other", na.rm = TRUE),
-      Mean_PP_Other_Activities=mean(Trans_PP[Segments_Activity=="Other"], na.rm = TRUE)) %>% 
+      Length_Other_Activities=sum(Segments_Activity=="Other", na.rm = TRUE)) %>% 
     merge(segment_meta_data_df_1, by=c("Participant_ID", "Day")) %>%
     dplyr::select(
       Participant_ID,
@@ -268,21 +258,15 @@ convert_Out_to_na <- function(all_subj_df) {
       Length_Day,
       Segment,
       Length_Segment,
-      Length_RestingBaseline,
-      Mean_PP_RestingBaseline,
       Length_Break,
       Length_Reading_Writing,
-      Mean_PP_Reading_Writing,
-      Length_Other_Activities,
-      Mean_PP_Other_Activities
+      Length_Other_Activities
     )
   
-  View(segment_meta_data_df)
-  convert_to_csv(segment_meta_data_df, file.path(physiological_data_path, segment_meta_data_df_file_name))
-  
+  # View(segment_meta_data_df)
+  # convert_to_csv(segment_meta_data_df, file.path(physiological_data_path, segment_meta_data_df_file_name))
   
   segment_meta_data_df_filtered <- segment_meta_data_df %>% filter(Length_Break < 30)
-  
   
   for (i in 1:nrow(segment_meta_data_df_filtered)) {
     all_subj_df <- all_subj_df %>%
@@ -313,7 +297,6 @@ convert_Out_to_na <- function(all_subj_df) {
     mutate(Reduced_Activity_Two = replace(Reduced_Activity_Two, is.na(Reduced_Activities_QC1), NA)) %>% 
     mutate(Reduced_Activity_Three = replace(Reduced_Activity_Three, is.na(Reduced_Activities_QC1), NA))
 
-  
   return(all_subj_df)
 }
 
@@ -379,8 +362,8 @@ get_final_activities_and_app_usage <- function(all_subj_df) {
   all_subj_df <- remove_pp_for_out(all_subj_df)
   
   
-  ##6. Remove Out when subject was In
-  all_subj_df <- convert_Out_to_na(all_subj_df)
+  ## 6. Remove out when subject was in
+  all_subj_df <- convert_out_to_na(all_subj_df)
   
   
   return(all_subj_df)

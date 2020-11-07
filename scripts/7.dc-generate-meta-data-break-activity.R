@@ -10,11 +10,11 @@ library(zoo)
 #-------------------------#
 #-----GLOBAL VARIABLES----#
 #-------------------------#
-script_dir <- dirname(rstudioapi::getSourceEditorContext()$path)
-project_dir <- dirname(script_dir)
-setwd(project_dir)
+# script_dir <- dirname(rstudioapi::getSourceEditorContext()$path)
+# project_dir <- dirname(script_dir)
+# setwd(project_dir)
 # 
-source(file.path(script_dir, 'us-common-functions.R'))
+# source(file.path(script_dir, 'us-common-functions.R'))
 
 
 
@@ -28,8 +28,8 @@ generate_meta_data_break_activity <- function() {
   
   #################################################################################################################
   # data_file_name <- 'mini_full_df.csv'
-  # data_file_name <- full_df_file_name
-  data_file_name <- 'Full_Df_Segment.csv'
+  data_file_name <- full_df_file_name
+  # data_file_name <- 'Full_Df_Segment.csv'
 
   segment_df <- custom_read_csv(file.path(physiological_data_path, data_file_name)) %>%
     filter(!is.na(Segments_Activity)) %>% 
@@ -98,7 +98,7 @@ generate_meta_data_break_activity <- function() {
 #-------------------------#
 #-------Main Program------#
 #-------------------------#
-generate_meta_data_break_activity()
+# generate_meta_data_break_activity()
 
 
 

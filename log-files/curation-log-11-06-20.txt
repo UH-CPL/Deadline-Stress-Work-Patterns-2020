@@ -1,0 +1,170 @@
+
+----------
+T009-Day1
+----------
+Processing.....Resting Baseline
+Processing.....Working Session
+Merging.....e4 data
+Merging.....iwatch data
+Smoothing.....signals
+smoothing...EDA
+smoothing...HR
+smoothing...iWatch_HR
+Fixing.....missing working session data
+Merging.....all subj data
+
+----------
+T009-Day2
+----------
+Processing.....Resting Baseline
+Processing.....Working Session
+Merging.....e4 data
+Merging.....iwatch data
+Smoothing.....signals
+smoothing...EDA
+smoothing...HR
+smoothing...iWatch_HR
+Fixing.....missing working session data
+Merging.....all subj data
+
+----------
+T009-Day3
+----------
+Processing.....Resting Baseline
+Processing.....Working Session
+Merging.....e4 data
+Merging.....iwatch data
+Smoothing.....signals
+smoothing...EDA
+smoothing...HR
+smoothing...iWatch_HR
+Fixing.....missing working session data
+Merging.....all subj data
+
+----------
+T009-Day4
+----------
+Processing.....Resting Baseline
+Processing.....Working Session
+Merging.....e4 data
+Merging.....iwatch data
+Smoothing.....signals
+smoothing...EDA
+smoothing...HR
+smoothing...iWatch_HR
+Fixing.....missing working session data
+Merging.....all subj data
+
+----------
+T011-Day1
+----------
+Processing.....Resting Baseline
+Processing.....Working Session
+Merging.....e4 data
+Merging.....iwatch data
+Smoothing.....signals
+smoothing...EDA
+smoothing...HR
+smoothing...iWatch_HR
+Fixing.....missing working session data
+Merging.....all subj data
+
+----------
+T011-Day2
+----------
+Processing.....Resting Baseline
+Processing.....Working Session
+Merging.....e4 data
+Merging.....iwatch data
+Smoothing.....signals
+smoothing...EDA
+smoothing...HR
+smoothing...iWatch_HR
+Fixing.....missing working session data
+Merging.....all subj data
+
+----------
+T011-Day3
+----------
+Processing.....Resting Baseline
+Processing.....Working Session
+Merging.....e4 data
+Merging.....iwatch data
+Smoothing.....signals
+smoothing...EDA
+smoothing...HR
+smoothing...iWatch_HR
+Fixing.....missing working session data
+Merging.....all subj data
+
+----------
+T011-Day4
+----------
+Processing.....Resting Baseline
+Processing.....Working Session
+Merging.....e4 data
+Merging.....iwatch data
+Smoothing.....signals
+smoothing...EDA
+smoothing...HR
+smoothing...iWatch_HR
+Fixing.....missing working session data
+Merging.....all subj data
+
+----------
+T015-Day1
+----------
+Processing.....Resting Baseline
+Processing.....Working Session
+Merging.....e4 data
+Merging.....iwatch data
+Smoothing.....signals
+smoothing...EDA
+smoothing...HR
+smoothing...iWatch_HR
+Fixing.....missing working session data
+Merging.....all subj data
+
+----------
+T015-Day2
+----------
+Processing.....Resting Baseline
+Processing.....Working Session
+Merging.....e4 data
+Merging.....iwatch data
+Smoothing.....signals
+smoothing...EDA
+smoothing...HR
+smoothing...iWatch_HR
+Fixing.....missing working session data
+Merging.....all subj data
+
+----------
+T015-Day3
+----------
+Processing.....Resting Baseline
+Processing.....Working Session
+Merging.....e4 data
+Merging.....iwatch data
+Smoothing.....signals
+smoothing...EDA
+smoothing...HR
+smoothing...iWatch_HR
+Fixing.....missing working session data
+Merging.....all subj data
+
+----------
+T015-Day4
+----------
+Processing.....Resting Baseline
+Processing.....Working Session
+Merging.....e4 data
+Merging.....iwatch data
+Smoothing.....signals
+smoothing...EDA
+smoothing...HR
+smoothing...iWatch_HR
+Fixing.....missing working session data
+Merging.....all subj data
+Finally...refactoring all subj data
+Total relative time mismatch row: 2886
