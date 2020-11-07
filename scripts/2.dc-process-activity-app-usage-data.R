@@ -222,12 +222,12 @@ convert_out_to_na <- function(all_subj_df) {
 
   all_subj_df <- all_subj_df %>%
     dplyr::mutate(Segments_Activity = case_when(Treatment == "RB" ~ "Out", TRUE ~ .$Segments_Activity))
-  View(all_subj_df)
+  # View(all_subj_df)
   
   segment_df_NA <-
     all_subj_df %>% filter(is.na(Segments_Activity))
   
-  View(segment_df_NA)
+  # View(segment_df_NA)
   # file_name='segment_df_NA.csv'
   # write.csv(segment_df_NA,file.path(curated_data_dir, file_name), row.names = FALSE)
   
@@ -272,12 +272,12 @@ convert_out_to_na <- function(all_subj_df) {
       Length_Other_Activities
     )
   
-  View(segment_meta_data_df)
+  # View(segment_meta_data_df)
   
   
   segment_meta_data_df_filtered <-
     segment_meta_data_df %>% filter(Length_Break < 30)
-  View(segment_meta_data_df_filtered)
+  # View(segment_meta_data_df_filtered)
   
   
   for (i in 1:nrow(segment_meta_data_df_filtered)) {
