@@ -65,8 +65,9 @@ generate_meta_data_break_activity <- function() {
   segment_meta_data_df <- segment_df %>%
     dplyr::group_by(Participant_ID, Day, Segment) %>%
     dplyr::summarize(
-          ### StartTime=head(Timestamp, 1),
-          ### EndTime=tail(Timestamp, 1),
+          StartTime=head(Timestamp, 1),
+          EndTime=tail(Timestamp, 1),
+          DiffTimeStamp=difftime(EndTime, StartTime, units = "secs"),
           Length_Segment=n(),
           Length_Break=sum(Segments_Activity=="Out", na.rm = TRUE),
           Length_Reading_Writing=sum(Segments_Activity=="RW", na.rm = TRUE),
@@ -78,6 +79,9 @@ generate_meta_data_break_activity <- function() {
       Participant_ID,
       Day,
       Length_Day,
+      StartTime,
+      EndTime,
+      DiffTimeStamp,
       Segment,
       Length_Segment,
       Length_RestingBaseline,
