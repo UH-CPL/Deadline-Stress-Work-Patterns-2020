@@ -789,6 +789,7 @@ refactor_and_export_all_subj_data <- function(all_subj_df) {
   # all_subj_df <- curate_baseline_time(all_subj_df)
   # View(all_subj_df)
   
+  
   # print(head(all_subj_df, 2))
   all_subj_df <- all_subj_df %>%
     dplyr::rename(Sinterface_Time=Time,
@@ -802,6 +803,9 @@ refactor_and_export_all_subj_data <- function(all_subj_df) {
            Raw_E4_EDA=Raw_EDA,
            ) %>% 
     
+    group_by(Participant_ID, Day, Treatment, Sinterface_Time) %>%
+    slice(1) %>% 
+    ungroup() %>% 
     
   # Raw_EDA=EDA,
   # Raw_HR=HR,

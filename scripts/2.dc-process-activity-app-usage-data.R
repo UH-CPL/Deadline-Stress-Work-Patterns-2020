@@ -274,31 +274,33 @@ convert_out_to_na <- function(all_subj_df) {
   
   # View(segment_meta_data_df)
   
-  
   segment_meta_data_df_filtered <-
     segment_meta_data_df %>% filter(Length_Break < 30)
+  
   # View(segment_meta_data_df_filtered)
   
-  
-  for (i in 1:nrow(segment_meta_data_df_filtered)) {
-    all_subj_df <- all_subj_df %>%
-      dplyr::mutate(
-        Reduced_Activities_QC1 = case_when(
-          Participant_ID == segment_meta_data_df_filtered$Participant_ID[i] &
-            Day == segment_meta_data_df_filtered$Day[i] &
-            Reduced_Activities_QC1 == "Out" &
-            Segment == segment_meta_data_df_filtered$Segment[i] ~ "NA",
-          TRUE ~ Reduced_Activities_QC1
-        ),
-        Segments_Activity = case_when(
-          Participant_ID == segment_meta_data_df_filtered$Participant_ID[i] &
-            Day == segment_meta_data_df_filtered$Day[i] &
-            Segments_Activity == "Out" &
-            Segment == segment_meta_data_df_filtered$Segment[i] ~ "NA",
-          TRUE ~ Segments_Activity
+  if (nrow(segment_meta_data_df_filtered)>0) {
+    for (i in 1:nrow(segment_meta_data_df_filtered)) {
+      all_subj_df <- all_subj_df %>%
+        dplyr::mutate(
+          Reduced_Activities_QC1 = case_when(
+            Participant_ID == segment_meta_data_df_filtered$Participant_ID[i] &
+              Day == segment_meta_data_df_filtered$Day[i] &
+              Reduced_Activities_QC1 == "Out" &
+              Segment == segment_meta_data_df_filtered$Segment[i] ~ "NA",
+            TRUE ~ Reduced_Activities_QC1
+          ),
+          Segments_Activity = case_when(
+            Participant_ID == segment_meta_data_df_filtered$Participant_ID[i] &
+              Day == segment_meta_data_df_filtered$Day[i] &
+              Segments_Activity == "Out" &
+              Segment == segment_meta_data_df_filtered$Segment[i] ~ "NA",
+            TRUE ~ Segments_Activity
+          )
         )
-      )
+    }
   }
+  
   
   all_subj_df <- all_subj_df %>%
     dplyr::mutate_at(vars(Reduced_Activities_QC1), na_if, "NA") %>%

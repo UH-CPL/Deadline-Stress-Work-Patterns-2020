@@ -86,6 +86,11 @@ merge_all_data <- function() {
 
     dplyr::full_join(qc0_df, by='Timestamp') %>%
     dplyr::full_join(qc_df, by='Timestamp') %>%
+    
+    
+    group_by(Participant_ID, Day, Treatment, Sinterface_Time) %>%
+    slice(1) %>% 
+    ungroup() %>% 
 
 
     arrange(Participant_ID, Day, Treatment, TreatmentTime) %>%

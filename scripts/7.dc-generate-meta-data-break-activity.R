@@ -25,7 +25,6 @@ library(zoo)
 generate_meta_data_break_activity <- function() {
   physiological_data_path <- file.path(project_dir, curated_data_dir, physiological_data_dir)
   
-  
   #################################################################################################################
   # data_file_name <- 'mini_full_df.csv'
   data_file_name <- full_df_file_name
@@ -53,6 +52,10 @@ generate_meta_data_break_activity <- function() {
 
   
   
+  
+  
+  
+  #################################################################################################################
   segment_df <- custom_read_csv(file.path(physiological_data_path, segment_df_file_name))
 
   segment_meta_data_df_1 <- segment_df %>%
@@ -67,13 +70,15 @@ generate_meta_data_break_activity <- function() {
     dplyr::summarize(
           StartTime=head(Timestamp, 1),
           EndTime=tail(Timestamp, 1),
-          DiffTimeStamp=difftime(EndTime, StartTime, units = "secs"),
+          DiffTimeStamp=as.numeric(difftime(EndTime, StartTime, units = "secs")+1),
           Length_Segment=n(),
+          DiffPercentage=100*(DiffTimeStamp-Length_Segment)/DiffTimeStamp,
           Length_Break=sum(Segments_Activity=="Out", na.rm = TRUE),
           Length_Reading_Writing=sum(Segments_Activity=="RW", na.rm = TRUE),
           Mean_PP_Reading_Writing=mean(Trans_PP[Segments_Activity=="RW"], na.rm = TRUE),
           Length_Other_Activities=sum(Segments_Activity=="Other", na.rm = TRUE),
           Mean_PP_Other_Activities=mean(Trans_PP[Segments_Activity=="Other"], na.rm = TRUE)) %>% 
+    # dplyr::mutate(DiffPercentage=100*(DiffTimeStamp-Length_Segment)/DiffTimeStamp) %>% 
     merge(segment_meta_data_df_1, by=c("Participant_ID", "Day")) %>%
     dplyr::select(
       Participant_ID,
@@ -82,6 +87,7 @@ generate_meta_data_break_activity <- function() {
       StartTime,
       EndTime,
       DiffTimeStamp,
+      DiffPercentage,
       Segment,
       Length_Segment,
       Length_RestingBaseline,
@@ -95,6 +101,33 @@ generate_meta_data_break_activity <- function() {
   
   # View(segment_meta_data_df)
   convert_to_csv(segment_meta_data_df, file.path(physiological_data_path, segment_meta_data_df_file_name))
+  #################################################################################################################
+  
+  
+  
+  #################################################################################################################
+  #    Eiii Jaura, Eikhane Code Korbi :P
+  #################################################################################################################
+}
+
+
+investigate_data <- function() {
+  physiological_data_path <- file.path(project_dir, curated_data_dir, physiological_data_dir)
+  
+  #################################################################################################################
+  # data_file_name <- qc0_raw_file_name
+  # data_file_name <- qc0_final_file_name
+  # data_file_name <- qc1_file_name
+  data_file_name <- full_df_file_name
+  
+  investigation_df <- custom_read_csv(file.path(physiological_data_path, data_file_name)) %>%
+    dplyr::group_by(Participant_ID, Day, Treatment, Sinterface_Time) %>%
+    dplyr::summarize(Duplicate_Row=n()) %>% 
+    filter(Duplicate_Row>1)
+  
+  # View(segment_df)
+  convert_to_csv(investigation_df, file.path(physiological_data_path, paste0("investigation_", data_file_name)))
+  #################################################################################################################
 }
 
 
@@ -102,6 +135,7 @@ generate_meta_data_break_activity <- function() {
 #-------Main Program------#
 #-------------------------#
 # generate_meta_data_break_activity()
+# investigate_data()
 
 
 
