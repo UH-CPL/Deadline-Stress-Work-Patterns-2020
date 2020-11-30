@@ -26,28 +26,29 @@ generate_meta_data_break_activity <- function() {
   physiological_data_path <- file.path(project_dir, curated_data_dir, physiological_data_dir)
   
   #################################################################################################################
-  # data_file_name <- 'mini_full_df.csv'
-  data_file_name <- full_df_file_name
-  # data_file_name <- 'Full_Df_Segment.csv'
-
-  segment_df <- custom_read_csv(file.path(physiological_data_path, data_file_name)) %>%
-    filter(!is.na(Segments_Activity)) %>% 
-    dplyr::select(Participant_ID, Day, Treatment,
-                  Timestamp, Sinterface_Time, TreatmentTime,
-                  Trans_PP,
-                  Segments_Activity,
-                  Mask) %>%
-    dplyr::mutate(Segments_Activity=case_when(Treatment=="RB"~"Out",
-                                            TRUE~.$Segments_Activity)) %>%
-    dplyr::group_by(Participant_ID, Day) %>%
-    dplyr::mutate(Counter=sequence(rle(as.character(Segments_Activity))$lengths),
-           Segment=case_when(Segments_Activity=="Out" & Counter==1~1, TRUE~0),
-           Segment=ifelse(Segment==1, cumsum(Segment==1), NA),
-           Segment=na.locf0(Segment)) %>%
-    dplyr::select(-Counter)
-
-  # View(segment_df)
-  convert_to_csv(segment_df, file.path(physiological_data_path, segment_df_file_name))
+  # # data_file_name <- 'Full_Df_Segment.csv'
+  # # data_file_name <- 'mini_full_df.csv'
+  # data_file_name <- full_df_file_name
+  #
+  # 
+  # segment_df <- custom_read_csv(file.path(physiological_data_path, data_file_name)) %>%
+  #   filter(!is.na(Segments_Activity)) %>% 
+  #   dplyr::select(Participant_ID, Day, Treatment,
+  #                 Timestamp, Sinterface_Time, TreatmentTime,
+  #                 Trans_PP,
+  #                 Segments_Activity,
+  #                 Mask) %>%
+  #   dplyr::mutate(Segments_Activity=case_when(Treatment=="RB"~"Out",
+  #                                           TRUE~.$Segments_Activity)) %>%
+  #   dplyr::group_by(Participant_ID, Day) %>%
+  #   dplyr::mutate(Counter=sequence(rle(as.character(Segments_Activity))$lengths),
+  #          Segment=case_when(Segments_Activity=="Out" & Counter==1~1, TRUE~0),
+  #          Segment=ifelse(Segment==1, cumsum(Segment==1), NA),
+  #          Segment=na.locf0(Segment)) %>%
+  #   dplyr::select(-Counter)
+  # 
+  # # View(segment_df)
+  # convert_to_csv(segment_df, file.path(physiological_data_path, segment_df_file_name))
   #################################################################################################################
 
   
@@ -79,7 +80,22 @@ generate_meta_data_break_activity <- function() {
           Mean_PP_Reading_Writing=mean(Trans_PP[Segments_Activity=="RW"], na.rm = TRUE),
           Length_Other_Activities=sum(Segments_Activity=="Other", na.rm = TRUE),
           Mean_PP_Other_Activities=mean(Trans_PP[Segments_Activity=="Other"], na.rm = TRUE)) %>% 
+    dplyr::ungroup() %>% 
+    
+    
+    dplyr::mutate(Segment_Order_Percentage=lag(Length_Segment)) %>% 
+    
+    # dplyr::mutate(Segment_Order_Percentage=c(NA, .$Length_Segment[-1])) %>% 
+    # dplyr::mutate(Segment_Order_Percentage=c(NA, .$Length_Segment[1])) %>% 
+    # Segment_Order_Percentage=case_when(Segment==1~0,
+    #                                    TRUE~.$Segment_Order_Percentage)) %>%
+    # Segment_Order_Percentage=case_when(Segment==1~runif(1, min=0.5, max=1.5)[1],
+    #                                    TRUE~.$Segment_Order_Percentage)) %>%
     # dplyr::mutate(DiffPercentage=100*(DiffTimeStamp-Length_Segment)/DiffTimeStamp) %>% 
+    # dplyr::mutate(Segment_Order_Percentage=case_when(Segment==1~runif(1, min=0.5, max=1.5)[1],
+    #                                                  TRUE~.$Segments_Activity)) %>% 
+    
+    
     merge(segment_meta_data_df_1, by=c("Participant_ID", "Day")) %>%
     dplyr::select(
       Participant_ID,
@@ -92,6 +108,7 @@ generate_meta_data_break_activity <- function() {
       DiffTimeSec,
       Segment,
       Length_Segment,
+      Segment_Order_Percentage,
       Length_RestingBaseline,
       Mean_PP_RestingBaseline,
       Length_Break,
@@ -101,7 +118,7 @@ generate_meta_data_break_activity <- function() {
       Mean_PP_Other_Activities
     )
   
-  # View(segment_meta_data_df)
+  View(segment_meta_data_df)
   convert_to_csv(segment_meta_data_df, file.path(physiological_data_path, segment_meta_data_df_file_name))
   #################################################################################################################
   
