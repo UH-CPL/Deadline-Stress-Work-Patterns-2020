@@ -82,8 +82,19 @@ generate_meta_data_break_activity <- function() {
           Mean_PP_Other_Activities=mean(Trans_PP[Segments_Activity=="Other"], na.rm = TRUE)) %>% 
     dplyr::ungroup() %>% 
     
+    dplyr::mutate(Segment_Order_Percentage=lag(Length_Segment),
+                  Segment_Order_Percentage=case_when(Segment==1~0.75,
+                                                     TRUE~as.double(Segment_Order_Percentage))) %>% 
     
-    dplyr::mutate(Segment_Order_Percentage=lag(Length_Segment)) %>% 
+    
+    
+    # dplyr::mutate(
+      # Segment_Order_Percentage=case_when(Segment==1~runif(1, min=0.5, max=1.5),
+      # Segment_Order_Percentage=case_when(Segment==1~0.75,
+      #                                      TRUE~as.double(Segment_Order_Percentage))) %>%
+    
+    # dplyr::mutate(Segment_Order_Percentage=case_when(Segment==1~runif(1, min=0.5, max=1.5)[1],
+    #                                                  TRUE~.$lag(Length_Segment))) %>%
     
     # dplyr::mutate(Segment_Order_Percentage=c(NA, .$Length_Segment[-1])) %>% 
     # dplyr::mutate(Segment_Order_Percentage=c(NA, .$Length_Segment[1])) %>% 
