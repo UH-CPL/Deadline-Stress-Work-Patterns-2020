@@ -83,7 +83,7 @@ generate_meta_data_break_activity <- function() {
     dplyr::ungroup() %>% 
     
     dplyr::mutate(Segment_Order_Percentage=lag(Length_Segment),
-                  Segment_Order_Percentage=case_when(Segment==1~0.75,
+                  Segment_Order_Percentage=case_when(Segment==1~0,
                                                      TRUE~as.double(Segment_Order_Percentage))) %>% 
     
     
@@ -108,6 +108,8 @@ generate_meta_data_break_activity <- function() {
     
     
     merge(segment_meta_data_df_1, by=c("Participant_ID", "Day")) %>%
+    dplyr::mutate(Segment_Order_Percentage=round(100*Segment_Order_Percentage/Length_Day, 0)) %>% 
+    
     dplyr::select(
       Participant_ID,
       Day,
