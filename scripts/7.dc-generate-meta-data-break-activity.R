@@ -85,16 +85,14 @@ generate_meta_data_break_activity <- function() {
     dplyr::mutate(Segment_Order_Percentage=lag(Length_Segment),
                   Segment_Order_Percentage=case_when(Segment==1~0,
                                                      TRUE~as.double(Segment_Order_Percentage))) %>% 
-    
-    dplyr::group_by(Participant_ID, Day, Segment) %>%
-    dplyr::mutate(Segment_Order_Percentage=na.locf0(Segment_Order_Percentage)) %>% 
-    
-    
-    
-    
+  
+    dplyr::group_by(Participant_ID, Day) %>%
+    dplyr::mutate(Segment_Order_Percentage=cumsum(Segment_Order_Percentage)) %>% 
+      
     merge(segment_meta_data_df_1, by=c("Participant_ID", "Day")) %>%
-    dplyr::mutate(Segment_Order_Percentage=round(100*Segment_Order_Percentage/Length_Day, 0)) %>% 
-    
+    dplyr::mutate(Segment_Order_Percentage=round(100*Segment_Order_Percentage/Length_Day, 0),
+                  Segment_Order_Percentage=ifelse(Segment_Order_Percentage==0, 0.05, Segment_Order_Percentage)) %>%
+
     dplyr::select(
       Participant_ID,
       Day,
@@ -115,7 +113,7 @@ generate_meta_data_break_activity <- function() {
       Length_Other_Activities,
       Mean_PP_Other_Activities
     )
-  
+
   View(segment_meta_data_df)
   convert_to_csv(segment_meta_data_df, file.path(physiological_data_path, segment_meta_data_df_file_name))
   #################################################################################################################
