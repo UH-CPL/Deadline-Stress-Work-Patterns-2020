@@ -86,25 +86,10 @@ generate_meta_data_break_activity <- function() {
                   Segment_Order_Percentage=case_when(Segment==1~0,
                                                      TRUE~as.double(Segment_Order_Percentage))) %>% 
     
+    dplyr::group_by(Participant_ID, Day, Segment) %>%
+    dplyr::mutate(Segment_Order_Percentage=na.locf0(Segment_Order_Percentage)) %>% 
     
     
-    # dplyr::mutate(
-      # Segment_Order_Percentage=case_when(Segment==1~runif(1, min=0.5, max=1.5),
-      # Segment_Order_Percentage=case_when(Segment==1~0.75,
-      #                                      TRUE~as.double(Segment_Order_Percentage))) %>%
-    
-    # dplyr::mutate(Segment_Order_Percentage=case_when(Segment==1~runif(1, min=0.5, max=1.5)[1],
-    #                                                  TRUE~.$lag(Length_Segment))) %>%
-    
-    # dplyr::mutate(Segment_Order_Percentage=c(NA, .$Length_Segment[-1])) %>% 
-    # dplyr::mutate(Segment_Order_Percentage=c(NA, .$Length_Segment[1])) %>% 
-    # Segment_Order_Percentage=case_when(Segment==1~0,
-    #                                    TRUE~.$Segment_Order_Percentage)) %>%
-    # Segment_Order_Percentage=case_when(Segment==1~runif(1, min=0.5, max=1.5)[1],
-    #                                    TRUE~.$Segment_Order_Percentage)) %>%
-    # dplyr::mutate(DiffPercentage=100*(DiffTimeStamp-Length_Segment)/DiffTimeStamp) %>% 
-    # dplyr::mutate(Segment_Order_Percentage=case_when(Segment==1~runif(1, min=0.5, max=1.5)[1],
-    #                                                  TRUE~.$Segments_Activity)) %>% 
     
     
     merge(segment_meta_data_df_1, by=c("Participant_ID", "Day")) %>%
