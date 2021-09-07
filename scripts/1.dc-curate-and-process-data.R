@@ -407,7 +407,6 @@ get_app_usage_data <- function(subj_name, day_serial, ws_df) {
     # ws_df <- get_mac_app_usage_data(mac_activity_df, ws_df)
     
     
-    
     ws_df <- read.pattern(file.path(day_dir, mac_activity_file_name), pattern=mac_data_pattern) %>% 
       set_colnames(c('Timestamp', 'Application')) %>% 
       mutate_if(is.factor, as.character) %>%
@@ -485,12 +484,10 @@ get_app_usage_data <- function(subj_name, day_serial, ws_df) {
 curate_ws_session_data <- function(subj_name, day_serial, rb_df) {
   session_name <- 'WorkingSession'
   
-  
   ###################################################
   ## Get 1-fps pp signal
   ###################################################
   downsampled_pp_df <- get_downsampled_pp(subj_name, day_serial, session_name)
-  
   
   
   ###################################################
@@ -498,7 +495,6 @@ curate_ws_session_data <- function(subj_name, day_serial, rb_df) {
   ###################################################
   ws_df <- get_ontologies(subj_name, day_serial, session_name, downsampled_pp_df)
   # print(str(ws_df))
-  
   
   ###################################################
   ## Find out the app monitor log
@@ -650,45 +646,95 @@ merge_iwatch_data <- function(subj_name, day_serial, full_day_df) {
   day_dir <- file.path(raw_data_dir, grp_dir, subj_name, day_serial)
   iWatch_file_name <- get_matched_file_names_recursively(day_dir, iWatch_file_pattern)
   
-  if(!is_empty(iWatch_file_name) & (subj_name != "T015") & (subj_name != "T017")) {
+  if(!is_empty(iWatch_file_name)) {
+    hour_diff <- 5
+    time_format <- '%Y-%m-%d %H:%M:%S'
+    
+    if(subj_name %in% c("T015", "T017")) {
+      hour_diff <- 6
+      
+    } else if ((subj_name == "T019") & (day_serial %in% c('Day3', 'Day4'))) {
+      hour_diff <- 0
+      time_format <- '%Y-%m-%dT%H:%M:%S'
+    }
     
     # print(paste("All", subj_name))
     # print(head(custom_read_csv(file.path(day_dir, iWatch_file_name))), 2)
     
     full_day_df <- custom_read_csv(file.path(day_dir, iWatch_file_name)) %>% 
       dplyr::rename(Timestamp=Time,
-             iWatch_HR=HeartRate) %>% 
-      mutate(Timestamp=convert_s_interface_date(strptime(Timestamp, format='%Y-%m-%d %H:%M:%S')) - 5 * one_hour_sec) %>%
+                    iWatch_HR=HeartRate) %>% 
+      ##############################################################################################
+      # 2021-07-23T09:48:56-05:00 --> T019 - Day3 & Day4
+      # ----------------------------------------------------
+      # 2020-03-18 15:09:51       --> All others 
+      ##############################################################################################
+      mutate(Timestamp=convert_s_interface_date(strptime(substr(Timestamp, 1, 19), format=time_format)) - hour_diff * one_hour_sec) %>%
       # mutate(Timestamp=Timestamp - 5 * one_hour_sec) %>% 
       ##############################################################################################
       merge(full_day_df, by='Timestamp', all=T) ## CHECK!!! - all vs. all.x
-    ##############################################################################################
-    
-    
-    # print(str(full_day_df))
-    
-    ##############################################################################################
-    # full_day_df <- merge(full_day_df, iWatch_df, by='Timestamp', all=T)   ## CHECK!!! - all vs. all.x
-    ##############################################################################################
-  }
-  if(!is_empty(iWatch_file_name) & (subj_name == "T015" | subj_name == "T017")) {
-    print(paste("Daylight",subj_name))
-    full_day_df <- custom_read_csv(file.path(day_dir, iWatch_file_name)) %>% 
-      dplyr::rename(Timestamp=Time,
-             iWatch_HR=HeartRate) %>% 
-      mutate(Timestamp=convert_s_interface_date(strptime(Timestamp, format='%Y-%m-%d %H:%M:%S')) - 6 * one_hour_sec) %>%
-      # mutate(Timestamp=Timestamp - 5 * one_hour_sec) %>% 
       ##############################################################################################
-    merge(full_day_df, by='Timestamp', all=T) ## CHECK!!! - all vs. all.x
-    ##############################################################################################
-    
     
     # print(str(full_day_df))
     
     ##############################################################################################
     # full_day_df <- merge(full_day_df, iWatch_df, by='Timestamp', all=T)   ## CHECK!!! - all vs. all.x
     ##############################################################################################
+    
   }
+  
+  
+  # if((subj_name != "T015") & (subj_name != "T017")) {
+
+    # if ((subj_name == "T019") & (day_serial %in% c('Day3', 'Day4'))) {
+    #   
+    #   full_day_df <- custom_read_csv(file.path(day_dir, iWatch_file_name)) %>% 
+    #     dplyr::rename(Timestamp=Time,
+    #                   iWatch_HR=HeartRate) %>% 
+    #     mutate(Timestamp=convert_s_interface_date(strptime(Timestamp, format='%Y-%m-%d %H:%M:%S'))) %>%
+    #     # mutate(Timestamp=Timestamp - 5 * one_hour_sec) %>% 
+    #     ##############################################################################################
+    #     merge(full_day_df, by='Timestamp', all=T) ## CHECK!!! - all vs. all.x
+    #     ##############################################################################################
+    #   
+    # } else {
+    #   
+    #   full_day_df <- custom_read_csv(file.path(day_dir, iWatch_file_name)) %>% 
+    #     dplyr::rename(Timestamp=Time,
+    #                   iWatch_HR=HeartRate) %>% 
+    #     mutate(Timestamp=convert_s_interface_date(strptime(Timestamp, format='%Y-%m-%d %H:%M:%S')) - 5 * one_hour_sec) %>%
+    #     # mutate(Timestamp=Timestamp - 5 * one_hour_sec) %>% 
+    #     ##############################################################################################
+    #     merge(full_day_df, by='Timestamp', all=T) ## CHECK!!! - all vs. all.x
+    #     ##############################################################################################
+    # }
+
+    # print(str(full_day_df))
+    
+    ##############################################################################################
+    # full_day_df <- merge(full_day_df, iWatch_df, by='Timestamp', all=T)   ## CHECK!!! - all vs. all.x
+    ##############################################################################################
+  # }
+  
+  # if(!is_empty(iWatch_file_name) & (subj_name == "T015" | subj_name == "T017")) {
+  #   
+  #   # print(paste("Daylight", subj_name))
+  #   full_day_df <- custom_read_csv(file.path(day_dir, iWatch_file_name)) %>% 
+  #     dplyr::rename(Timestamp=Time,
+  #            iWatch_HR=HeartRate) %>% 
+  #     mutate(Timestamp=convert_s_interface_date(strptime(Timestamp, format='%Y-%m-%d %H:%M:%S')) - 6 * one_hour_sec) %>%
+  #     # mutate(Timestamp=Timestamp - 5 * one_hour_sec) %>% 
+  #     ##############################################################################################
+  #   merge(full_day_df, by='Timestamp', all=T) ## CHECK!!! - all vs. all.x
+  #   ##############################################################################################
+  #   
+  #   
+  #   # print(str(full_day_df))
+  #   
+  #   ##############################################################################################
+  #   # full_day_df <- merge(full_day_df, iWatch_df, by='Timestamp', all=T)   ## CHECK!!! - all vs. all.x
+  #   ##############################################################################################
+  # }
   
   return(full_day_df)
 }
@@ -882,13 +928,13 @@ curate_data <- function() {
   
   sapply(subj_list, function(subj_name) {
   # sapply(c('T003', 'T005'), function(subj_name) {
-  # sapply(c('T009', 'T011', 'T015'), function(subj_name) {
+  # sapply(c('T019'), function(subj_name) {
 
     subj_dir <- file.path(raw_data_dir, grp_dir, subj_name)
     day_list <- get_dir_list(subj_dir)
     
     sapply(day_list, function(day_serial) {
-    # sapply(day_list[3], function(day_serial) {
+    # sapply(day_list[1], function(day_serial) {
       tryCatch({
         write_log_msg(paste0('\n----------\n', subj_name, '-', day_serial, "\n----------"), curation_log_file)
         
