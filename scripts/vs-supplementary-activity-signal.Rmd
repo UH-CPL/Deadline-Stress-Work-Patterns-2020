@@ -137,7 +137,8 @@ draw_signal_activity_comparison_plots <- function() {
     
   } else {
     subj_list <- unique(full_df$Participant_ID)
-    subj_list <- subj_list[-length(subj_list)]
+    # subj_list <- subj_list[-length(subj_list)]
+    # subj_list <- c('T019')
     day_list <- unique(full_df$Day)
   }
   
