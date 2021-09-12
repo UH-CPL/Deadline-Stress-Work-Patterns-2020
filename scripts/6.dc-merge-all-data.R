@@ -151,18 +151,58 @@ merge_all_data <- function() {
   convert_to_csv(full_df, file.path(physiological_data_path, full_df_file_name))
   
   
+  
+  full_df_osf <- full_df %>%
+    dplyr::select(
+      Participant_ID,
+      Day,
+      Treatment,
+      Timestamp,
+      TreatmentTime,
+      
+      Trans_PP,
+      Trans_E4_EDA,
+      Trans_E4_HR,
+      Trans_iWatch_HR,
+      
+      Reduced_Activity_One, 
+      Reduced_Activity_Two, 
+      Reduced_Activity_Three,
+      Reduced_Activities_QC1,
+    
+      Reduced_Application_final
+      
+    ) %>% 
+    dplyr::rename(
+      PP=Trans_PP,
+      E4_EDA=Trans_E4_EDA,
+      E4_HR=Trans_E4_HR,
+      iWatch_HR=Trans_iWatch_HR,
+      
+      Activity1=Reduced_Activity_One, 
+      Activity2=Reduced_Activity_Two, 
+      Activity3=Reduced_Activity_Three,
+      Activities=Reduced_Activities_QC1,
+      
+      Applications=Reduced_Application_final
+    )
+    
+  
+  convert_to_csv(full_df_osf, file.path(physiological_data_path, full_df_osf_file_name))
+  
   half_subj_list <- c('T001', 'T003', 'T005', 'T007', 'T009')
   
-  full_df_1 <- full_df %>% 
+  full_df_1 <- full_df_osf %>% 
     filter(Participant_ID %in% half_subj_list)
   convert_to_csv(full_df_1, file.path(physiological_data_path, 'full_df_1.csv'))
   
-  full_df_2 <- full_df %>% 
+  full_df_2 <- full_df_osf %>% 
     filter(!(Participant_ID %in% half_subj_list))
   convert_to_csv(full_df_2, file.path(physiological_data_path, 'full_df_2.csv'))
   
-  mini_full_df <- full_df %>%
+  mini_full_df <- full_df_osf %>%
     filter(Participant_ID %in% c('T005'))
+  
   convert_to_csv(mini_full_df, file.path(physiological_data_path, 'mini_full_df.csv'))
 }
 
