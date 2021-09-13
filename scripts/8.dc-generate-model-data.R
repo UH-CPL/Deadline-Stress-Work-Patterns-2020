@@ -33,30 +33,48 @@ generate_daywise_model_data <- function() {
     dplyr::select(Participant_ID,	Day, Treatment, Applications) %>%
     dplyr::filter(Treatment=='WS') %>%
     dplyr::group_by(Participant_ID, Day) %>%
-    
     dplyr::summarize(DL=n(),
                      
-                     DW_Sec=coalesce(sum(Applications=="Document Apps"), 0),
+                     # DW_Sec=coalesce(sum(Applications=="Document Apps"), 0),
                      # EM_Sec=coalesce(sum(Applications=="Email"), 0),
                      # EA_Sec=coalesce(sum(Applications=="Entertaining Apps"), 0),
                      # PA_Sec=coalesce(sum(Applications=="Programming Apps"), 0),
                      # VC_Sec=coalesce(sum(Applications=="Virtual Communication Apps"), 0),
                      
-                     DW=round(100*coalesce(sum(Applications=="Document Apps"), 0)/n(), 2),
+                     # DW=round(100*coalesce(sum(Applications=="Document Apps"), 0)/n(), 2),
                      # EM=round(100*coalesce(sum(Applications=="Email"), 0)/n(), 2),
                      # EA=round(100*coalesce(sum(Applications=="Entertaining Apps"), 0)/n(), 2),
                      # PA=round(100*coalesce(sum(Applications=="Programming Apps"), 0)/n(), 2),
                      # VC=round(100*coalesce(sum(Applications=="Virtual Communication Apps"), 0)/n(), 2)
                      
+                     DW_Sec=length(Applications[Applications=="Document Apps" & !is.na(Applications)]),
+                     EM_Sec=length(Applications[Applications=="Email" & !is.na(Applications)]),
+                     EA_Sec=length(Applications[Applications=="Entertaining Apps" & !is.na(Applications)]),
+                     PA_Sec=length(Applications[Applications=="Programming Apps" & !is.na(Applications)]),
+                     VC_Sec=length(Applications[Applications=="Virtual Communication Apps" & !is.na(Applications)]),
+                     UT_Sec=length(Applications[Applications=="Utilities Apps" & !is.na(Applications)]),
+                     WB_Sec=length(Applications[Applications=="Web Browsing Apps" & !is.na(Applications)]),
+                     NO_APP_Sec=length(Applications[is.na(Applications)]),
+                     
+                     DW=round(100*length(Applications[Applications=="Document Apps" & !is.na(Applications)])/n(), 2),
+                     EM=round(100*length(Applications[Applications=="Email" & !is.na(Applications)])/n(), 2),
+                     EA=round(100*length(Applications[Applications=="Entertaining Apps" & !is.na(Applications)])/n(), 2),
+                     PA=round(100*length(Applications[Applications=="Programming Apps" & !is.na(Applications)])/n(), 2),
+                     VC=round(100*length(Applications[Applications=="Virtual Communication Apps" & !is.na(Applications)])/n(), 2),
+                     UT=round(100*length(Applications[Applications=="Utilities Apps" & !is.na(Applications)])/n(), 2),
+                     WB=round(100*length(Applications[Applications=="Web Browsing Apps" & !is.na(Applications)])/n(), 2),
+                     NO_APP=round(100*length(Applications[is.na(Applications)])/n(), 2),
+                     
+                     Percentage_Sum=DW+EM+EA+PA+VC+UT+WB+NO_APP
+                     
                      ) %>% 
-
     ungroup()
   
   # View(full_df)
   # View(mean_df)
   View(percentage_df)
   
-  print(unique(full_df[c("Applications")]))
+  # print(unique(full_df[c("Applications")]))
 }
 
 
