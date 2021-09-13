@@ -25,8 +25,13 @@ library(dplyr)
 generate_daywise_model_data <- function() {
   physiological_data_path <- file.path(project_dir, curated_data_dir, physiological_data_dir)
   
+  full_df <- custom_read_csv(file.path(physiological_data_path, full_df_file_name))
+  mean_df <- custom_read_csv(file.path(physiological_data_path, qc1_normalized_mean_v1_file_name))
   
   
+  
+  # View(full_df)
+  # View(mean_df)
 }
 
 
@@ -35,7 +40,7 @@ generate_daywise_model_data <- function() {
 #-------------------------#
 #-------Main Program------#
 #-------------------------#
-# generate_daywise_model_data()
+generate_daywise_model_data()
 
 
 
