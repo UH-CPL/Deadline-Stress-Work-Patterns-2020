@@ -13,7 +13,7 @@ library(dplyr)
 # script_dir <- dirname(rstudioapi::getSourceEditorContext()$path)
 # project_dir <- dirname(script_dir)
 # setwd(project_dir)
-# 
+
 # source(file.path(script_dir, 'us-common-functions.R'))
 
 
@@ -28,7 +28,7 @@ generate_daywise_model_data <- function() {
   full_df <- custom_read_csv(file.path(physiological_data_path, full_df_osf_file_name))
   mean_df <- custom_read_csv(file.path(physiological_data_path, qc1_normalized_mean_v1_file_name))
   
-  percentage_df <- full_df %>%
+  model_df <- full_df %>%
     ### Activity1, Activity2, Activity3, Activities
     dplyr::select(Participant_ID,	Day, Treatment, Applications) %>%
     dplyr::filter(Treatment=='WS') %>%
@@ -68,13 +68,15 @@ generate_daywise_model_data <- function() {
                      Percentage_Sum=DW+EM+EA+PA+VC+UT+WB+NO_APP
                      
                      ) %>% 
-    ungroup()
+    ungroup() %>% 
+    merge(mean_df, by=c('Participant_ID', 'Day'), all=T) 
   
   # View(full_df)
   # View(mean_df)
-  View(percentage_df)
-  
   # print(unique(full_df[c("Applications")]))
+  
+  # View(model_df)
+  convert_to_csv(model_df, file.path(physiological_data_path, model_df_file_name))
 }
 
 

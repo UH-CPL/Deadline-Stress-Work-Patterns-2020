@@ -160,7 +160,7 @@ segment_df_file_name <- 'segment_df.csv'
 segment_meta_data_df_file_name <- 'segment_meta_data_df.csv'
 
 
-
+model_df_file_name <- 'model_df.csv'
 
 
 full_df_file_name <- 'full_df.csv'
