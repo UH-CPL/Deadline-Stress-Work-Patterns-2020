@@ -69,7 +69,38 @@ generate_daywise_model_data <- function() {
                      
                      ) %>% 
     ungroup() %>% 
-    merge(mean_df, by=c('Participant_ID', 'Day'), all=T) 
+    merge(mean_df, by=c('Participant_ID', 'Day'), all=T) %>% 
+    dplyr::select(
+      Participant_ID,
+      Day,
+      Treatment,
+      
+      DL,
+      PP,
+      E4_HR, 
+      E4_EDA,
+      iWatch_HR,
+      
+      DW_Sec,
+      EM_Sec,
+      EA_Sec,
+      PA_Sec,
+      VC_Sec,
+      UT_Sec,
+      WB_Sec,
+      NO_APP_Sec,
+      
+      DW,
+      EM,
+      EA,
+      PA,
+      VC,
+      UT,
+      WB,
+      NO_APP,
+      
+      Percentage_Sum
+    )
   
   # View(full_df)
   # View(mean_df)
