@@ -27,6 +27,7 @@ generate_daywise_model_data <- function() {
   
   full_df <- custom_read_csv(file.path(physiological_data_path, full_df_osf_file_name))
   mean_df <- custom_read_csv(file.path(physiological_data_path, qc1_normalized_mean_v1_file_name))
+  segment_meta_data_df <- custom_read_csv(file.path(physiological_data_path, segment_meta_data_df_file_name))
   
   model_df <- full_df %>%
     ### Activity1, Activity2, Activity3, Activities
@@ -65,11 +66,17 @@ generate_daywise_model_data <- function() {
                      T_WB=round(100*length(Applications[Applications=="Web Browsing Apps" & !is.na(Applications)])/n(), 2),
                      T_NO_APP=round(100*length(Applications[is.na(Applications)])/n(), 2),
                      
-                     T_Percentage_Sum=DW+EM+EA+PA+VC+UT+WB+NO_APP
+                     T_Percentage_Sum=T_WP+T_EM+T_EA+T_PA+T_VC+T_UT+T_WB+T_NO_APP
                      
                      ) %>% 
     ungroup() %>% 
-    merge(mean_df, by=c('Participant_ID', 'Day'), all=T) %>% 
+    merge(segment_meta_data_df, by=c('Participant_ID', 'Day'), all=T) %>% 
+    
+    
+    file.path(physiological_data_path, segment_meta_data_df_file_name)
+    # 𝑡𝑂𝑢𝑡: The mean break time in seconds during the daily observation period. 
+    # 𝑓𝑂𝑢𝑡: The number of breaks per hour during the daily observation period.
+    
     dplyr::select(
       Participant_ID,
       Day,
@@ -107,7 +114,7 @@ generate_daywise_model_data <- function() {
   # View(mean_df)
   # print(unique(full_df[c("Applications")]))
   
-  # View(model_df)
+  View(model_df)
   convert_to_csv(model_df, file.path(physiological_data_path, model_df_file_name))
 }
 
