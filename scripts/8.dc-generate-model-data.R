@@ -33,7 +33,7 @@ generate_daywise_model_data <- function() {
     dplyr::select(Participant_ID,	Day, Treatment, Applications) %>%
     dplyr::filter(Treatment=='WS') %>%
     dplyr::group_by(Participant_ID, Day) %>%
-    dplyr::summarize(DL=n(),
+    dplyr::summarize(T_D=n(),
                      
                      # DW_Sec=coalesce(sum(Applications=="Document Apps"), 0),
                      # EM_Sec=coalesce(sum(Applications=="Email"), 0),
@@ -47,7 +47,7 @@ generate_daywise_model_data <- function() {
                      # PA=round(100*coalesce(sum(Applications=="Programming Apps"), 0)/n(), 2),
                      # VC=round(100*coalesce(sum(Applications=="Virtual Communication Apps"), 0)/n(), 2)
                      
-                     DW_Sec=length(Applications[Applications=="Document Apps" & !is.na(Applications)]),
+                     WP_Sec=length(Applications[Applications=="Document Apps" & !is.na(Applications)]),
                      EM_Sec=length(Applications[Applications=="Email" & !is.na(Applications)]),
                      EA_Sec=length(Applications[Applications=="Entertaining Apps" & !is.na(Applications)]),
                      PA_Sec=length(Applications[Applications=="Programming Apps" & !is.na(Applications)]),
@@ -56,16 +56,16 @@ generate_daywise_model_data <- function() {
                      WB_Sec=length(Applications[Applications=="Web Browsing Apps" & !is.na(Applications)]),
                      NO_APP_Sec=length(Applications[is.na(Applications)]),
                      
-                     DW=round(100*length(Applications[Applications=="Document Apps" & !is.na(Applications)])/n(), 2),
-                     EM=round(100*length(Applications[Applications=="Email" & !is.na(Applications)])/n(), 2),
-                     EA=round(100*length(Applications[Applications=="Entertaining Apps" & !is.na(Applications)])/n(), 2),
-                     PA=round(100*length(Applications[Applications=="Programming Apps" & !is.na(Applications)])/n(), 2),
-                     VC=round(100*length(Applications[Applications=="Virtual Communication Apps" & !is.na(Applications)])/n(), 2),
-                     UT=round(100*length(Applications[Applications=="Utilities Apps" & !is.na(Applications)])/n(), 2),
-                     WB=round(100*length(Applications[Applications=="Web Browsing Apps" & !is.na(Applications)])/n(), 2),
-                     NO_APP=round(100*length(Applications[is.na(Applications)])/n(), 2),
+                     T_WP=round(100*length(Applications[Applications=="Document Apps" & !is.na(Applications)])/n(), 2),
+                     T_EM=round(100*length(Applications[Applications=="Email" & !is.na(Applications)])/n(), 2),
+                     T_EA=round(100*length(Applications[Applications=="Entertaining Apps" & !is.na(Applications)])/n(), 2),
+                     T_PA=round(100*length(Applications[Applications=="Programming Apps" & !is.na(Applications)])/n(), 2),
+                     T_VC=round(100*length(Applications[Applications=="Virtual Communication Apps" & !is.na(Applications)])/n(), 2),
+                     T_UT=round(100*length(Applications[Applications=="Utilities Apps" & !is.na(Applications)])/n(), 2),
+                     T_WB=round(100*length(Applications[Applications=="Web Browsing Apps" & !is.na(Applications)])/n(), 2),
+                     T_NO_APP=round(100*length(Applications[is.na(Applications)])/n(), 2),
                      
-                     Percentage_Sum=DW+EM+EA+PA+VC+UT+WB+NO_APP
+                     T_Percentage_Sum=DW+EM+EA+PA+VC+UT+WB+NO_APP
                      
                      ) %>% 
     ungroup() %>% 
@@ -75,13 +75,14 @@ generate_daywise_model_data <- function() {
       Day,
       Treatment,
       
-      DL,
+      T_D,
+      
       PP,
       E4_HR, 
       E4_EDA,
       iWatch_HR,
       
-      DW_Sec,
+      WP_Sec,
       EM_Sec,
       EA_Sec,
       PA_Sec,
@@ -90,16 +91,16 @@ generate_daywise_model_data <- function() {
       WB_Sec,
       NO_APP_Sec,
       
-      DW,
-      EM,
-      EA,
-      PA,
-      VC,
-      UT,
-      WB,
-      NO_APP,
+      T_WP,
+      T_EM,
+      T_EA,
+      T_PA,
+      T_VC,
+      T_UT,
+      T_WB,
+      T_NO_APP,
       
-      Percentage_Sum
+      T_Percentage_Sum
     )
   
   # View(full_df)
