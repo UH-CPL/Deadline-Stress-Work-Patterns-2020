@@ -61,9 +61,9 @@ generate_meta_data_break_activity <- function() {
 
   segment_meta_data_df_1 <- segment_df %>%
     dplyr::group_by(Participant_ID, Day) %>%
-    dplyr::summarize(Length_Day=n(),  ## After removing NA from Segments_Activity, is it okay??
-              Mean_PP_RestingBaseline=mean(Trans_PP[Segments_Activity=="Out" & Segment==1], na.rm = TRUE),
-              Length_RestingBaseline=length(Trans_PP[Segments_Activity=="Out" & Segment==1])) %>%
+    dplyr::summarize(Length_Day=n(),  ## After removing NA from Segments_Activity, is it okay?? ##------------!!
+              Mean_PP_RestingBaseline=mean(Trans_PP[Segments_Activity=="Out" & Segment==1], na.rm = TRUE), ##------------!!
+              Length_RestingBaseline=length(Trans_PP[Segments_Activity=="Out" & Segment==1])) %>% ##------------!!
     ungroup()
     
   segment_meta_data_df <- segment_df %>%

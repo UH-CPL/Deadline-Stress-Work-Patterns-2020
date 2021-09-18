@@ -38,9 +38,9 @@ generate_daywise_model_data <- function() {
   
   model_df <- full_df %>%
     ### Activity1, Activity2, Activity3, Activities
-    # dplyr::select(Participant_ID,	Day, Treatment, Applications, Segments_Activity) %>% ##------------!!
+    # dplyr::select(Participant_ID,	Day, Treatment, Applications, Segments_Activity) %>%
     
-    dplyr::select(Participant_ID,	Day, Treatment, Reduced_Application_final, Segments_Activity) %>% ##------------!!
+    dplyr::select(Participant_ID,	Day, Treatment, Reduced_Application_final, Segments_Activity) %>%
     dplyr::rename(Applications=Reduced_Application_final) %>% 
     
     dplyr::filter(Treatment=='WS') %>%
