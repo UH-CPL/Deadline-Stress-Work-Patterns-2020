@@ -25,16 +25,28 @@ library(dplyr)
 generate_daywise_model_data <- function() {
   physiological_data_path <- file.path(project_dir, curated_data_dir, physiological_data_dir)
   
-  full_df <- custom_read_csv(file.path(physiological_data_path, full_df_osf_file_name))
+  full_df <- custom_read_csv(file.path(physiological_data_path, full_df_file_name))
   mean_df <- custom_read_csv(file.path(physiological_data_path, qc1_normalized_mean_v1_file_name))
-  segment_meta_data_df <- custom_read_csv(file.path(physiological_data_path, segment_meta_data_df_file_name))
+  segment_meta_data_df <- custom_read_csv(file.path(physiological_data_path, segment_meta_data_df_file_name)) %>% 
+    dplyr::select(Participant_ID,	Day, Segment) %>% 
+    dplyr::group_by(Participant_ID, Day) %>%
+    dplyr::summarise(Max_Segment = max(Segment)) %>% 
+    dplyr::ungroup()
+  
+  ##------------!!
+  # View(segment_meta_data_df)
   
   model_df <- full_df %>%
     ### Activity1, Activity2, Activity3, Activities
-    dplyr::select(Participant_ID,	Day, Treatment, Applications) %>%
+    # dplyr::select(Participant_ID,	Day, Treatment, Applications, Segments_Activity) %>% ##------------!!
+    
+    dplyr::select(Participant_ID,	Day, Treatment, Reduced_Application_final, Segments_Activity) %>% ##------------!!
+    dplyr::rename(Applications=Reduced_Application_final) %>% 
+    
     dplyr::filter(Treatment=='WS') %>%
     dplyr::group_by(Participant_ID, Day) %>%
     dplyr::summarize(T_D=n(),
+                     Break_Time=sum(Segments_Activity=="Out", na.rm = TRUE), ##------------!!
                      
                      # DW_Sec=coalesce(sum(Applications=="Document Apps"), 0),
                      # EM_Sec=coalesce(sum(Applications=="Email"), 0),
@@ -69,26 +81,33 @@ generate_daywise_model_data <- function() {
                      T_Percentage_Sum=T_WP+T_EM+T_EA+T_PA+T_VC+T_UT+T_WB+T_NO_APP
                      
                      ) %>% 
-    ungroup() %>% 
-    merge(segment_meta_data_df, by=c('Participant_ID', 'Day'), all=T) %>% 
+    dplyr::ungroup() %>% 
     
+    merge(mean_df, by=c('Participant_ID', 'Day'), all=T) %>%
+  
+    ##------------!!
+    merge(segment_meta_data_df, by=c('Participant_ID', 'Day'), all=T) %>%
+    dplyr::mutate(tOut=ifelse(Max_Segment==1, 0, Break_Time/(Max_Segment-1)),
+                  fOut=(Max_Segment-1)*3600/T_D) %>%
     
-    file.path(physiological_data_path, segment_meta_data_df_file_name)
-    # 𝑡𝑂𝑢𝑡: The mean break time in seconds during the daily observation period. 
-    # 𝑓𝑂𝑢𝑡: The number of breaks per hour during the daily observation period.
+    # tOut: The mean break time in seconds during the daily observation period. 
+    # fOut The number of breaks per hour during the daily observation period.
     
     dplyr::select(
       Participant_ID,
       Day,
       Treatment,
-      
+
       T_D,
-      
+
       PP,
-      E4_HR, 
+      E4_HR,
       E4_EDA,
       iWatch_HR,
-      
+
+      tOut,
+      fOut,
+
       WP_Sec,
       EM_Sec,
       EA_Sec,
@@ -97,7 +116,7 @@ generate_daywise_model_data <- function() {
       UT_Sec,
       WB_Sec,
       NO_APP_Sec,
-      
+
       T_WP,
       T_EM,
       T_EA,
@@ -106,7 +125,7 @@ generate_daywise_model_data <- function() {
       T_UT,
       T_WB,
       T_NO_APP,
-      
+
       T_Percentage_Sum
     )
   
