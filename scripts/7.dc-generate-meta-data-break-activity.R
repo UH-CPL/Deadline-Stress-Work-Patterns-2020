@@ -75,11 +75,16 @@ generate_meta_data_break_activity <- function() {
           Length_Segment=n(),
           DiffTimeSec=DiffTimeStamp-Length_Segment,
           DiffTimePercentage=100*(DiffTimeSec)/DiffTimeStamp,
+          
           Length_Break=sum(Segments_Activity=="Out", na.rm = TRUE),
           Length_Reading_Writing=sum(Segments_Activity=="RW", na.rm = TRUE),
-          Mean_PP_Reading_Writing=mean(Trans_PP[Segments_Activity=="RW"], na.rm = TRUE),
           Length_Other_Activities=sum(Segments_Activity=="Other", na.rm = TRUE),
-          Mean_PP_Other_Activities=mean(Trans_PP[Segments_Activity=="Other"], na.rm = TRUE)) %>% 
+          
+          Mean_PP_Reading_Writing=mean(Trans_PP[Segments_Activity=="RW"], na.rm = TRUE),
+          Mean_PP_Other_Activities=mean(Trans_PP[Segments_Activity=="Other"], na.rm = TRUE)
+          
+          
+          ) %>% 
     dplyr::ungroup() %>% 
     
     dplyr::mutate(Segment_Order_Percentage=lag(Length_Segment),
