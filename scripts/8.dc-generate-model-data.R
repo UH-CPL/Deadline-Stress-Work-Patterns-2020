@@ -45,7 +45,7 @@ generate_daywise_model_data <- function() {
     
     dplyr::filter(Treatment=='WS') %>%
     dplyr::group_by(Participant_ID, Day) %>%
-    dplyr::summarize(T_D=n(),
+    dplyr::summarize(T_D=n(), ##------------!!
                      Break_Time=sum(Segments_Activity=="Out", na.rm = TRUE), ##------------!!
                      
                      # DW_Sec=coalesce(sum(Applications=="Document Apps"), 0),
@@ -143,7 +143,7 @@ generate_daywise_model_data <- function() {
 #-------------------------#
 #-------Main Program------#
 #-------------------------#
-generate_daywise_model_data()
+# generate_daywise_model_data()
 
 
 
