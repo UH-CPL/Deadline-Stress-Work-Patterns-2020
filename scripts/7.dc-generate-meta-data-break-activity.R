@@ -54,9 +54,9 @@ generate_meta_data_break_activity <- function() {
   
   
   
-  
-  
-  #################################################################################################################
+  ################################################################################################################################
+  #           (end time - start time) vs. total row  --> Because after RB there was a time gap + Activity might not be continuous
+  ################################################################################################################################
   segment_df <- custom_read_csv(file.path(physiological_data_path, segment_df_file_name))
 
   segment_meta_data_df_1 <- segment_df %>%
