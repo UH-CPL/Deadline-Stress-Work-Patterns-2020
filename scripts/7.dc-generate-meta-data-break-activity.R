@@ -33,15 +33,17 @@ generate_meta_data_break_activity <- function() {
   # 
   # 
   # segment_df <- custom_read_csv(file.path(physiological_data_path, data_file_name)) %>%
-  #   # filter(!is.na(Segments_Activity)) %>%  ## What is Segments_Activity and why removing NA?? ##------------!!
   #   dplyr::select(Participant_ID, Day, Treatment,
   #                 Timestamp, Sinterface_Time, TreatmentTime,
   #                 Trans_PP,
   #                 Segments_Activity,
   #                 Reduced_Application_final,
   #                 Mask) %>%
-  #   dplyr::mutate(Applications=Reduced_Application_final) %>% 
+  #   dplyr::mutate(Applications=Reduced_Application_final) %>%
+  #   
+  #   # filter(!is.na(Segments_Activity)) %>%  ## What is Segments_Activity and why removing NA??
   #   replace_na(list(Segments_Activity = "Missing Activity")) %>%
+  #   
   #   dplyr::mutate(Segments_Activity=case_when(Treatment=="RB"~"Out",
   #                                           TRUE~.$Segments_Activity)) %>%
   #   dplyr::group_by(Participant_ID, Day) %>%
@@ -74,10 +76,10 @@ generate_meta_data_break_activity <- function() {
     dplyr::filter(Treatment=='WS') %>% 
     dplyr::group_by(Participant_ID, Day) %>%
     dplyr::summarize(
-      Length_Day=n(),  ##------------!!
+      Length_Day=n(),
       Length_Day_Timestamp=as.numeric(difftime(tail(Timestamp, 1), head(Timestamp, 1), units = "secs")+1),
       DiffLengthDaySec=Length_Day_Timestamp-Length_Day,
-      DiffLengthDayPercentage=100*(DiffLengthDaySec)/Length_Day_Timestamp, ##------------!!
+      DiffLengthDayPercentage=100*(DiffLengthDaySec)/Length_Day_Timestamp,
       ) %>%
     ungroup()
     
@@ -150,12 +152,15 @@ generate_meta_data_break_activity <- function() {
     merge(segment_meta_data_df_1, by=c("Participant_ID", "Day")) %>%
     merge(segment_meta_data_df_2, by=c("Participant_ID", "Day")) %>%
     
-    dplyr::mutate(Segment_Order_Percentage=round(100*Segment_Order_Percentage/Length_Day, 0),
+    dplyr::mutate(
+                  ################################################################################
+                  Segment_Order_Percentage=round(100*Segment_Order_Percentage/Length_Day, 0),
                   Segment_Order_Percentage=ifelse(Segment_Order_Percentage==0, 0.05, Segment_Order_Percentage),
+                  ################################################################################
 
-                  ##------------!!
-                  CT_SL=round(100*Cum_T_Segment/Length_Day, 2), ## For some cases, the CT_SL exceeds 100, because Segment_Length includes RB, but Length_Day does not
-                  ##------------!!
+                  
+                  ################################################################################
+                  CT_SL=round(100*Cum_T_Segment/Length_Day, 2), ## For some cases, the CT_SL exceeds 100, because Cum_T_Segment includes RB, but Length_Day does not
                   
                   CT_RW=round(100*Cum_T_RW/Length_Day, 2),
                   CT_Out=round(100*Cum_T_Break/Length_Day, 2),
@@ -163,8 +168,10 @@ generate_meta_data_break_activity <- function() {
                   CT_Other_Activities=round(100*Cum_T_Other_Activities/Length_Day, 2),
                   
                   CT_Activity_Sum=CT_RW+CT_Out+CT_Missing_Activity+CT_Other_Activities,
+                  ################################################################################
                   
                   
+                  ################################################################################
                   CT_WP=round(100*Cum_T_WP/Length_Day, 2),
                   CT_EM=round(100*Cum_T_EM/Length_Day, 2),
                   CT_EA=round(100*Cum_T_EA/Length_Day, 2),
@@ -175,11 +182,16 @@ generate_meta_data_break_activity <- function() {
                   CT_NO_APP=round(100*Cum_T_NO_APP/Length_Day, 2),
                   
                   CT_Application_Sum=CT_WP+CT_EM+CT_EA+CT_PA+CT_VC+CT_UT+CT_WB+CT_NO_APP,
+                  ################################################################################
                   
+                  
+                  ################################################################################
                   Mean_PP_RW_Normalized=Mean_PP_RW - Mean_PP_RestingBaseline,
                   Mean_PP_Other_Activities_Normalized=Mean_PP_Other_Activities - Mean_PP_RestingBaseline,
+                  ################################################################################
                   ) %>%
 
+    
     dplyr::mutate(T_D=Length_Day) %>% 
     dplyr::select(
       Participant_ID,
@@ -239,24 +251,17 @@ generate_meta_data_break_activity <- function() {
   
   
   
-  
   #################################################################################################################
-  # segment_meta_data_df <- segment_meta_data_df %>%
-  #   dplyr::select(
-  #     Participant_ID,
-  #     Day,
-  #     StartTime,
-  #     EndTime,
-  #     Segment
-  #     )
-  # convert_to_csv(segment_meta_data_df, file.path(physiological_data_path, "segment_start_end_time.csv"))
-  #################################################################################################################
-  
-  
-  
-  
-  #################################################################################################################
-  #    Eiii Jaura, Eikhane Code Korbi :P
+  segment_meta_data_mini_df <- segment_meta_data_df %>%
+    dplyr::select(
+      Participant_ID,
+      Day,
+      Segment,
+      CT_SL,
+      CT_Activity_Sum,
+      CT_Application_Sum
+      )
+  View(segment_meta_data_mini_df)
   #################################################################################################################
 }
 
@@ -275,7 +280,7 @@ investigate_data <- function() {
     dplyr::summarize(Duplicate_Row=n()) %>% 
     filter(Duplicate_Row>1)
   
-  # View(segment_df)
+  View(investigation_df)
   convert_to_csv(investigation_df, file.path(physiological_data_path, paste0("investigation_", data_file_name)))
   #################################################################################################################
 }

@@ -56,24 +56,15 @@ generate_daywise_model_data <- function() {
                      # UT_Sec=coalesce(sum(Applications=="Utilities Apps", na.rm = T), 0),
                      # WB_Sec=coalesce(sum(Applications=="Web Browsing Apps", na.rm = T), 0),
                      # NO_APP_Sec=coalesce(sum(is.na(Applications)), 0),
-                     # 
-                     # T_WP=round(100*WP_Sec/T_D, 2),
-                     # T_EM=round(100*EM_Sec/T_D, 2),
-                     # T_EA=round(100*EA_Sec/T_D, 2),
-                     # T_PA=round(100*PA_Sec/T_D, 2),
-                     # T_VC=round(100*VC_Sec/T_D, 2),
-                     # T_UT=round(100*UT_Sec/T_D, 2),
-                     # T_WB=round(100*WB_Sec/T_D, 2),
-                     # T_NO_APP=round(100*NO_APP_Sec/T_D, 2),
                      
-                     WP_Sec=length(Applications[Applications=="Document Apps" & !is.na(Applications)]),
-                     EM_Sec=length(Applications[Applications=="Email" & !is.na(Applications)]),
-                     EA_Sec=length(Applications[Applications=="Entertaining Apps" & !is.na(Applications)]),
-                     PA_Sec=length(Applications[Applications=="Programming Apps" & !is.na(Applications)]),
-                     VC_Sec=length(Applications[Applications=="Virtual Communication Apps" & !is.na(Applications)]),
-                     UT_Sec=length(Applications[Applications=="Utilities Apps" & !is.na(Applications)]),
-                     WB_Sec=length(Applications[Applications=="Web Browsing Apps" & !is.na(Applications)]),
-                     NO_APP_Sec=length(Applications[is.na(Applications)]),
+                     WP_Sec=sum(Applications=="Document Apps", na.rm = TRUE),
+                     EM_Sec=sum(Applications=="Email", na.rm = TRUE),
+                     EA_Sec=sum(Applications=="Entertaining Apps", na.rm = TRUE),
+                     PA_Sec=sum(Applications=="Programming Apps", na.rm = TRUE),
+                     VC_Sec=sum(Applications=="Virtual Communication Apps", na.rm = TRUE),
+                     UT_Sec=sum(Applications=="Utilities Apps", na.rm = TRUE),
+                     WB_Sec=sum(Applications=="Web Browsing Apps", na.rm = TRUE),
+                     NO_APP_Sec=sum(is.na(Applications)),
 
                      T_WP=round(100*WP_Sec/T_D, 2),
                      T_EM=round(100*EM_Sec/T_D, 2),
@@ -84,15 +75,32 @@ generate_daywise_model_data <- function() {
                      T_WB=round(100*WB_Sec/T_D, 2),
                      T_NO_APP=round(100*NO_APP_Sec/T_D, 2),
                      
+                     # WP_Sec=length(Applications[Applications=="Document Apps" & !is.na(Applications)]),
+                     # EM_Sec=length(Applications[Applications=="Email" & !is.na(Applications)]),
+                     # EA_Sec=length(Applications[Applications=="Entertaining Apps" & !is.na(Applications)]),
+                     # PA_Sec=length(Applications[Applications=="Programming Apps" & !is.na(Applications)]),
+                     # VC_Sec=length(Applications[Applications=="Virtual Communication Apps" & !is.na(Applications)]),
+                     # UT_Sec=length(Applications[Applications=="Utilities Apps" & !is.na(Applications)]),
+                     # WB_Sec=length(Applications[Applications=="Web Browsing Apps" & !is.na(Applications)]),
+                     # NO_APP_Sec=length(Applications[is.na(Applications)]),
+                     # 
+                     # T_WP=round(100*WP_Sec/T_D, 2),
+                     # T_EM=round(100*EM_Sec/T_D, 2),
+                     # T_EA=round(100*EA_Sec/T_D, 2),
+                     # T_PA=round(100*PA_Sec/T_D, 2),
+                     # T_VC=round(100*VC_Sec/T_D, 2),
+                     # T_UT=round(100*UT_Sec/T_D, 2),
+                     # T_WB=round(100*WB_Sec/T_D, 2),
+                     # T_NO_APP=round(100*NO_APP_Sec/T_D, 2),
+                     
                      T_Percentage_Sum=T_WP+T_EM+T_EA+T_PA+T_VC+T_UT+T_WB+T_NO_APP
                      
                      ) %>% 
     dplyr::ungroup() %>% 
     
     merge(mean_df, by=c('Participant_ID', 'Day'), all=T) %>%
-  
-    ##------------!!
     merge(segment_meta_data_df, by=c('Participant_ID', 'Day'), all=T) %>%
+    
     dplyr::mutate(tOut=ifelse(Max_Segment==1, 0, Break_Time/(Max_Segment-1)),
                   fOut=(Max_Segment-1)*3600/T_D) %>%
     
@@ -149,7 +157,7 @@ generate_daywise_model_data <- function() {
 #-------------------------#
 #-------Main Program------#
 #-------------------------#
-# generate_daywise_model_data()
+generate_daywise_model_data()
 
 
 
