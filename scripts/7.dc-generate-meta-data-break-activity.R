@@ -99,32 +99,23 @@ generate_meta_data_break_activity <- function() {
           Length_Other_Activities=sum(Segments_Activity=="Other", na.rm = TRUE),
           
         
-          WP_Sec=length(Applications[Applications=="Document Apps" & !is.na(Applications)]),
-          EM_Sec=length(Applications[Applications=="Email" & !is.na(Applications)]),
-          EA_Sec=length(Applications[Applications=="Entertaining Apps" & !is.na(Applications)]),
-          PA_Sec=length(Applications[Applications=="Programming Apps" & !is.na(Applications)]),
-          VC_Sec=length(Applications[Applications=="Virtual Communication Apps" & !is.na(Applications)]),
-          UT_Sec=length(Applications[Applications=="Utilities Apps" & !is.na(Applications)]),
-          WB_Sec=length(Applications[Applications=="Web Browsing Apps" & !is.na(Applications)]),
-          NO_APP_Sec=length(Applications[is.na(Applications)]),
+          # WP_Sec=length(Applications[Applications=="Document Apps" & !is.na(Applications)]),
+          # EM_Sec=length(Applications[Applications=="Email" & !is.na(Applications)]),
+          # EA_Sec=length(Applications[Applications=="Entertaining Apps" & !is.na(Applications)]),
+          # PA_Sec=length(Applications[Applications=="Programming Apps" & !is.na(Applications)]),
+          # VC_Sec=length(Applications[Applications=="Virtual Communication Apps" & !is.na(Applications)]),
+          # UT_Sec=length(Applications[Applications=="Utilities Apps" & !is.na(Applications)]),
+          # WB_Sec=length(Applications[Applications=="Web Browsing Apps" & !is.na(Applications)]),
+          # NO_APP_Sec=length(Applications[is.na(Applications)]),
           
-          
-          WP_Sec_2=sum(Applications=="Document Apps", na.rm = TRUE),
-          EM_Sec_2=sum(Applications=="Email", na.rm = TRUE),
-          EA_Sec_2=sum(Applications=="Entertaining Apps", na.rm = TRUE),
-          PA_Sec_2=sum(Applications=="Programming Apps", na.rm = TRUE),
-          VC_Sec_2=sum(Applications=="Virtual Communication Apps", na.rm = TRUE),
-          UT_Sec_2=sum(Applications=="Utilities Apps", na.rm = TRUE),
-          WB_Sec_2=sum(Applications=="Web Browsing Apps", na.rm = TRUE),
-          NO_APP_Sec_2=sum(is.na(Applications)),
-          
-          
-          
-          CT_Length_Segment=cumsum(Length_Segment),
-          CT_Length_Break=cumsum(Length_Break),
-          CT_Length_RW=cumsum(Length_RW),
-          CT_Length_Missing_Activity=cumsum(Length_Missing_Activity),
-          CT_Length_Other_Activities=cumsum(Length_Other_Activities),
+          WP_Sec=sum(Applications=="Document Apps", na.rm = TRUE),
+          EM_Sec=sum(Applications=="Email", na.rm = TRUE),
+          EA_Sec=sum(Applications=="Entertaining Apps", na.rm = TRUE),
+          PA_Sec=sum(Applications=="Programming Apps", na.rm = TRUE),
+          VC_Sec=sum(Applications=="Virtual Communication Apps", na.rm = TRUE),
+          UT_Sec=sum(Applications=="Utilities Apps", na.rm = TRUE),
+          WB_Sec=sum(Applications=="Web Browsing Apps", na.rm = TRUE),
+          NO_APP_Sec=sum(is.na(Applications)),
           
           Mean_PP_RW=mean(Trans_PP[Segments_Activity=="RW"], na.rm = TRUE),
           Mean_PP_Other_Activities=mean(Trans_PP[Segments_Activity=="Other"], na.rm = TRUE),
@@ -137,22 +128,53 @@ generate_meta_data_break_activity <- function() {
                                                      TRUE~as.double(Segment_Order_Percentage))) %>% 
   
     dplyr::group_by(Participant_ID, Day) %>%
-    dplyr::mutate(Segment_Order_Percentage=cumsum(Segment_Order_Percentage)) %>% 
+    dplyr::mutate(Segment_Order_Percentage=cumsum(Segment_Order_Percentage),
+                  
+                  Cum_T_WP=cumsum(WP_Sec),
+                  Cum_T_EM=cumsum(EM_Sec),
+                  Cum_T_EA=cumsum(EA_Sec),
+                  Cum_T_PA=cumsum(PA_Sec),
+                  Cum_T_VC=cumsum(VC_Sec),
+                  Cum_T_UT=cumsum(UT_Sec),
+                  Cum_T_WB=cumsum(WB_Sec),
+                  Cum_T_NO_APP=cumsum(NO_APP_Sec),
+                  
+                  Cum_T_Segment=cumsum(Length_Segment),
+                  Cum_T_Break=cumsum(Length_Break),
+                  Cum_T_RW=cumsum(Length_RW),
+                  Cum_T_Missing_Activity=cumsum(Length_Missing_Activity),
+                  Cum_T_Other_Activities=cumsum(Length_Other_Activities),
+                  
+                  ) %>% 
       
     merge(segment_meta_data_df_1, by=c("Participant_ID", "Day")) %>%
     merge(segment_meta_data_df_2, by=c("Participant_ID", "Day")) %>%
     
     dplyr::mutate(Segment_Order_Percentage=round(100*Segment_Order_Percentage/Length_Day, 0),
                   Segment_Order_Percentage=ifelse(Segment_Order_Percentage==0, 0.05, Segment_Order_Percentage),
-                  
+
                   ##------------!!
-                  CT_SL=round(100*CT_Length_Segment/Length_Day, 2), ## For some cases, the CT_SL exceeds 100, because Segment_Length includes RB, but Length_Day does not
+                  CT_SL=round(100*Cum_T_Segment/Length_Day, 2), ## For some cases, the CT_SL exceeds 100, because Segment_Length includes RB, but Length_Day does not
                   ##------------!!
                   
-                  CT_RW=round(100*CT_Length_RW/Length_Day, 2),
-                  CT_Out=round(100*CT_Length_Break/Length_Day, 2),
-                  CT_Missing_Activity=round(100*CT_Length_Missing_Activity/Length_Day, 2),
-                  CT_Other_Activities=round(100*CT_Length_Other_Activities/Length_Day, 2),
+                  CT_RW=round(100*Cum_T_RW/Length_Day, 2),
+                  CT_Out=round(100*Cum_T_Break/Length_Day, 2),
+                  CT_Missing_Activity=round(100*Cum_T_Missing_Activity/Length_Day, 2),
+                  CT_Other_Activities=round(100*Cum_T_Other_Activities/Length_Day, 2),
+                  
+                  CT_Activity_Sum=CT_RW+CT_Out+CT_Missing_Activity+CT_Other_Activities,
+                  
+                  
+                  CT_WP=round(100*Cum_T_WP/Length_Day, 2),
+                  CT_EM=round(100*Cum_T_EM/Length_Day, 2),
+                  CT_EA=round(100*Cum_T_EA/Length_Day, 2),
+                  CT_PA=round(100*Cum_T_PA/Length_Day, 2),
+                  CT_VC=round(100*Cum_T_VC/Length_Day, 2),
+                  CT_UT=round(100*Cum_T_UT/Length_Day, 2),
+                  CT_WB=round(100*Cum_T_WB/Length_Day, 2),
+                  CT_NO_APP=round(100*Cum_T_NO_APP/Length_Day, 2),
+                  
+                  CT_Application_Sum=CT_WP+CT_EM+CT_EA+CT_PA+CT_VC+CT_UT+CT_WB+CT_NO_APP,
                   
                   Mean_PP_RW_Normalized=Mean_PP_RW - Mean_PP_RestingBaseline,
                   Mean_PP_Other_Activities_Normalized=Mean_PP_Other_Activities - Mean_PP_RestingBaseline,
@@ -192,29 +214,17 @@ generate_meta_data_break_activity <- function() {
       CT_Out,
       CT_Missing_Activity,
       CT_Other_Activities,
+      CT_Activity_Sum,
       
-      
-      
-      WP_Sec,
-      EM_Sec,
-      EA_Sec,
-      PA_Sec,
-      VC_Sec,
-      UT_Sec,
-      WB_Sec,
-      NO_APP_Sec,
-      
-      
-      WP_Sec_2,
-      EM_Sec_2,
-      EA_Sec_2,
-      PA_Sec_2,
-      VC_Sec_2,
-      UT_Sec_2,
-      WB_Sec_2,
-      NO_APP_Sec_2,
-      
-      
+      CT_WP,
+      CT_EM,
+      CT_EA,
+      CT_PA,
+      CT_VC,
+      CT_UT,
+      CT_WB,
+      CT_NO_APP,
+      CT_Application_Sum,
       
       Mean_PP_RW,
       Mean_PP_Other_Activities,

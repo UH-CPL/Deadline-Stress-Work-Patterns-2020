@@ -48,17 +48,23 @@ generate_daywise_model_data <- function() {
     dplyr::summarize(T_D=n(), ##------------!!
                      Break_Time=sum(Segments_Activity=="Out", na.rm = TRUE), ##------------!!
                      
-                     # WP_Sec=coalesce(sum(Applications=="Document Apps"), 0),
-                     # EM_Sec=coalesce(sum(Applications=="Email"), 0),
-                     # EA_Sec=coalesce(sum(Applications=="Entertaining Apps"), 0),
-                     # PA_Sec=coalesce(sum(Applications=="Programming Apps"), 0),
-                     # VC_Sec=coalesce(sum(Applications=="Virtual Communication Apps"), 0),
-                     
-                     # WP=round(100*coalesce(sum(Applications=="Document Apps"), 0)/n(), 2),
-                     # EM=round(100*coalesce(sum(Applications=="Email"), 0)/n(), 2),
-                     # EA=round(100*coalesce(sum(Applications=="Entertaining Apps"), 0)/n(), 2),
-                     # PA=round(100*coalesce(sum(Applications=="Programming Apps"), 0)/n(), 2),
-                     # VC=round(100*coalesce(sum(Applications=="Virtual Communication Apps"), 0)/n(), 2)
+                     # WP_Sec=coalesce(sum(Applications=="Document Apps", na.rm = T), 0),
+                     # EM_Sec=coalesce(sum(Applications=="Email", na.rm = T), 0),
+                     # EA_Sec=coalesce(sum(Applications=="Entertaining Apps", na.rm = T), 0),
+                     # PA_Sec=coalesce(sum(Applications=="Programming Apps", na.rm = T), 0),
+                     # VC_Sec=coalesce(sum(Applications=="Virtual Communication Apps", na.rm = T), 0),
+                     # UT_Sec=coalesce(sum(Applications=="Utilities Apps", na.rm = T), 0),
+                     # WB_Sec=coalesce(sum(Applications=="Web Browsing Apps", na.rm = T), 0),
+                     # NO_APP_Sec=coalesce(sum(is.na(Applications)), 0),
+                     # 
+                     # T_WP=round(100*WP_Sec/T_D, 2),
+                     # T_EM=round(100*EM_Sec/T_D, 2),
+                     # T_EA=round(100*EA_Sec/T_D, 2),
+                     # T_PA=round(100*PA_Sec/T_D, 2),
+                     # T_VC=round(100*VC_Sec/T_D, 2),
+                     # T_UT=round(100*UT_Sec/T_D, 2),
+                     # T_WB=round(100*WB_Sec/T_D, 2),
+                     # T_NO_APP=round(100*NO_APP_Sec/T_D, 2),
                      
                      WP_Sec=length(Applications[Applications=="Document Apps" & !is.na(Applications)]),
                      EM_Sec=length(Applications[Applications=="Email" & !is.na(Applications)]),
@@ -68,15 +74,15 @@ generate_daywise_model_data <- function() {
                      UT_Sec=length(Applications[Applications=="Utilities Apps" & !is.na(Applications)]),
                      WB_Sec=length(Applications[Applications=="Web Browsing Apps" & !is.na(Applications)]),
                      NO_APP_Sec=length(Applications[is.na(Applications)]),
-                     
-                     T_WP=round(100*length(Applications[Applications=="Document Apps" & !is.na(Applications)])/n(), 2),
-                     T_EM=round(100*length(Applications[Applications=="Email" & !is.na(Applications)])/n(), 2),
-                     T_EA=round(100*length(Applications[Applications=="Entertaining Apps" & !is.na(Applications)])/n(), 2),
-                     T_PA=round(100*length(Applications[Applications=="Programming Apps" & !is.na(Applications)])/n(), 2),
-                     T_VC=round(100*length(Applications[Applications=="Virtual Communication Apps" & !is.na(Applications)])/n(), 2),
-                     T_UT=round(100*length(Applications[Applications=="Utilities Apps" & !is.na(Applications)])/n(), 2),
-                     T_WB=round(100*length(Applications[Applications=="Web Browsing Apps" & !is.na(Applications)])/n(), 2),
-                     T_NO_APP=round(100*length(Applications[is.na(Applications)])/n(), 2),
+
+                     T_WP=round(100*WP_Sec/T_D, 2),
+                     T_EM=round(100*EM_Sec/T_D, 2),
+                     T_EA=round(100*EA_Sec/T_D, 2),
+                     T_PA=round(100*PA_Sec/T_D, 2),
+                     T_VC=round(100*VC_Sec/T_D, 2),
+                     T_UT=round(100*UT_Sec/T_D, 2),
+                     T_WB=round(100*WB_Sec/T_D, 2),
+                     T_NO_APP=round(100*NO_APP_Sec/T_D, 2),
                      
                      T_Percentage_Sum=T_WP+T_EM+T_EA+T_PA+T_VC+T_UT+T_WB+T_NO_APP
                      
