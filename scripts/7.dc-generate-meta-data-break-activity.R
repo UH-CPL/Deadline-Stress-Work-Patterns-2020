@@ -2,6 +2,7 @@
 #--------LIBRARIES--------#
 #-------------------------#
 library(dplyr)
+library(tidyr)
 library(zoo)
 
 
@@ -25,19 +26,20 @@ library(zoo)
 generate_meta_data_break_activity <- function() {
   physiological_data_path <- file.path(project_dir, curated_data_dir, physiological_data_dir)
   
-  #################################################################################################################
+  # #################################################################################################################
   # # data_file_name <- 'Full_Df_Segment.csv'
   # # data_file_name <- 'mini_full_df.csv'
   # data_file_name <- full_df_file_name
   # 
   # 
   # segment_df <- custom_read_csv(file.path(physiological_data_path, data_file_name)) %>%
-  #   filter(!is.na(Segments_Activity)) %>%  ## What is Segments_Activity and why removing NA?? ##------------!!
+  #   # filter(!is.na(Segments_Activity)) %>%  ## What is Segments_Activity and why removing NA?? ##------------!!
   #   dplyr::select(Participant_ID, Day, Treatment,
   #                 Timestamp, Sinterface_Time, TreatmentTime,
   #                 Trans_PP,
   #                 Segments_Activity,
   #                 Mask) %>%
+  #   replace_na(list(Segments_Activity = 'Missing Activity')) %>%
   #   dplyr::mutate(Segments_Activity=case_when(Treatment=="RB"~"Out",
   #                                           TRUE~.$Segments_Activity)) %>%
   #   dplyr::group_by(Participant_ID, Day) %>%
@@ -49,7 +51,7 @@ generate_meta_data_break_activity <- function() {
   # 
   # # View(segment_df)
   # convert_to_csv(segment_df, file.path(physiological_data_path, segment_df_file_name))
-  #################################################################################################################
+  # #################################################################################################################
 
   
   
@@ -62,14 +64,23 @@ generate_meta_data_break_activity <- function() {
   segment_meta_data_df_1 <- segment_df %>%
     dplyr::group_by(Participant_ID, Day) %>%
     dplyr::summarize(
-          Length_Day=n(),  ## After removing NA from Segments_Activity, is it okay?? ##------------!!
-          Length_Day_Timestamp=as.numeric(difftime(tail(Timestamp, 1), head(Timestamp, 1), units = "secs")+1),
-          DiffLengthDaySec=Length_Day_Timestamp-Length_Day,
-          DiffLengthDayPercentage=100*(DiffLengthDaySec)/Length_Day_Timestamp,
-          
           Mean_PP_RestingBaseline=mean(Trans_PP[Segments_Activity=="Out" & Segment==1], na.rm = TRUE), ##------------!!
           Length_RestingBaseline=length(Trans_PP[Segments_Activity=="Out" & Segment==1])) %>% ##------------!!
+    ungroup() 
+  
+  segment_meta_data_df_2 <- segment_df %>%
+    dplyr::filter(Treatment=='WS') %>% 
+    dplyr::group_by(Participant_ID, Day) %>%
+    dplyr::summarize(
+      Length_Day=n(),  ## After removing NA from Segments_Activity, is it okay?? ##------------!!
+      Length_Day_Timestamp=as.numeric(difftime(tail(Timestamp, 1), head(Timestamp, 1), units = "secs")+1),
+      DiffLengthDaySec=Length_Day_Timestamp-Length_Day,
+      DiffLengthDayPercentage=100*(DiffLengthDaySec)/Length_Day_Timestamp, ##------------!!
+      ) %>%
     ungroup()
+
+  # View(segment_meta_data_df_2)
+    
     
   segment_meta_data_df <- segment_df %>%
     dplyr::group_by(Participant_ID, Day, Segment) %>%
@@ -85,6 +96,7 @@ generate_meta_data_break_activity <- function() {
           
           Length_Break=sum(Segments_Activity=="Out", na.rm = TRUE),
           Length_RW=sum(Segments_Activity=="RW", na.rm = TRUE),
+          Length_Missing_Activity=sum(Segments_Activity=="Missing Activity", na.rm = TRUE),
           Length_Other_Activities=sum(Segments_Activity=="Other", na.rm = TRUE),
           
           Mean_PP_RW=mean(Trans_PP[Segments_Activity=="RW"], na.rm = TRUE),
@@ -101,12 +113,13 @@ generate_meta_data_break_activity <- function() {
     dplyr::mutate(Segment_Order_Percentage=cumsum(Segment_Order_Percentage)) %>% 
       
     merge(segment_meta_data_df_1, by=c("Participant_ID", "Day")) %>%
+    merge(segment_meta_data_df_2, by=c("Participant_ID", "Day")) %>%
+    
     dplyr::mutate(Segment_Order_Percentage=round(100*Segment_Order_Percentage/Length_Day, 0),
                   Segment_Order_Percentage=ifelse(Segment_Order_Percentage==0, 0.05, Segment_Order_Percentage),
                   
                   Mean_PP_RW_Normalized=Mean_PP_RW - Mean_PP_RestingBaseline,
                   Mean_PP_Other_Activities_Normalized=Mean_PP_Other_Activities - Mean_PP_RestingBaseline,
-
                   ) %>%
 
     
@@ -134,6 +147,7 @@ generate_meta_data_break_activity <- function() {
       
       Length_Break,
       Length_RW,
+      Length_Missing_Activity,
       Length_Other_Activities,
       
       Mean_PP_RW,
