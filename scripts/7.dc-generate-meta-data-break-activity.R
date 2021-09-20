@@ -72,7 +72,7 @@ generate_meta_data_break_activity <- function() {
     dplyr::filter(Treatment=='WS') %>% 
     dplyr::group_by(Participant_ID, Day) %>%
     dplyr::summarize(
-      Length_Day=n(),  ## After removing NA from Segments_Activity, is it okay?? ##------------!!
+      Length_Day=n(),  ##------------!!
       Length_Day_Timestamp=as.numeric(difftime(tail(Timestamp, 1), head(Timestamp, 1), units = "secs")+1),
       DiffLengthDaySec=Length_Day_Timestamp-Length_Day,
       DiffLengthDayPercentage=100*(DiffLengthDaySec)/Length_Day_Timestamp, ##------------!!
@@ -102,6 +102,12 @@ generate_meta_data_break_activity <- function() {
           Mean_PP_RW=mean(Trans_PP[Segments_Activity=="RW"], na.rm = TRUE),
           Mean_PP_Other_Activities=mean(Trans_PP[Segments_Activity=="Other"], na.rm = TRUE),
           
+          CT_Length_Sec_Segment=cumsum(Length_Segment),
+          CT_Length_Sec_Break=cumsum(Length_Break),
+          CT_Length_Sec_RW=cumsum(Length_RW),
+          CT_Length_Sec_Missing_Activity=cumsum(Length_Missing_Activity),
+          CT_Length_Sec_Other_Activities=cumsum(Length_Other_Activities),
+          
           ) %>% 
     dplyr::ungroup() %>% 
     
@@ -118,11 +124,17 @@ generate_meta_data_break_activity <- function() {
     dplyr::mutate(Segment_Order_Percentage=round(100*Segment_Order_Percentage/Length_Day, 0),
                   Segment_Order_Percentage=ifelse(Segment_Order_Percentage==0, 0.05, Segment_Order_Percentage),
                   
+                  CT_SL=round(100*CT_Length_Sec_Segment/Length_Day, 2),
+                  CT_RW=round(100*CT_Length_Sec_RW/Length_Day, 2),
+                  CT_Out=round(100*CT_Length_Sec_Break/Length_Day, 2),
+                  CT_Missing_Activity=round(100*CT_Length_Sec_Missing_Activity/Length_Day, 2),
+                  CT_Other_Activities=round(100*CT_Length_Sec_Other_Activities/Length_Day, 2),
+                  
                   Mean_PP_RW_Normalized=Mean_PP_RW - Mean_PP_RestingBaseline,
                   Mean_PP_Other_Activities_Normalized=Mean_PP_Other_Activities - Mean_PP_RestingBaseline,
                   ) %>%
 
-    
+    dplyr::mutate(T_D=Length_Day) %>% 
     dplyr::select(
       Participant_ID,
       Day,
@@ -145,10 +157,17 @@ generate_meta_data_break_activity <- function() {
       Length_RestingBaseline,
       Mean_PP_RestingBaseline,
       
+      T_D, ## Exactly same as Length_Day
       Length_Break,
       Length_RW,
       Length_Missing_Activity,
       Length_Other_Activities,
+      
+      CT_SL,
+      CT_RW,
+      CT_Out,
+      CT_Missing_Activity,
+      CT_Other_Activities,
       
       Mean_PP_RW,
       Mean_PP_Other_Activities,
