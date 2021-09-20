@@ -48,13 +48,13 @@ generate_daywise_model_data <- function() {
     dplyr::summarize(T_D=n(), ##------------!!
                      Break_Time=sum(Segments_Activity=="Out", na.rm = TRUE), ##------------!!
                      
-                     # DW_Sec=coalesce(sum(Applications=="Document Apps"), 0),
+                     # WP_Sec=coalesce(sum(Applications=="Document Apps"), 0),
                      # EM_Sec=coalesce(sum(Applications=="Email"), 0),
                      # EA_Sec=coalesce(sum(Applications=="Entertaining Apps"), 0),
                      # PA_Sec=coalesce(sum(Applications=="Programming Apps"), 0),
                      # VC_Sec=coalesce(sum(Applications=="Virtual Communication Apps"), 0),
                      
-                     # DW=round(100*coalesce(sum(Applications=="Document Apps"), 0)/n(), 2),
+                     # WP=round(100*coalesce(sum(Applications=="Document Apps"), 0)/n(), 2),
                      # EM=round(100*coalesce(sum(Applications=="Email"), 0)/n(), 2),
                      # EA=round(100*coalesce(sum(Applications=="Entertaining Apps"), 0)/n(), 2),
                      # PA=round(100*coalesce(sum(Applications=="Programming Apps"), 0)/n(), 2),

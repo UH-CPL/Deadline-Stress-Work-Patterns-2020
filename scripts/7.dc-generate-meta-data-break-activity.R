@@ -98,6 +98,25 @@ generate_meta_data_break_activity <- function() {
           Length_Missing_Activity=sum(Segments_Activity=="Missing Activity", na.rm = TRUE),
           Length_Other_Activities=sum(Segments_Activity=="Other", na.rm = TRUE),
           
+        
+          WP_Sec=length(Applications[Applications=="Document Apps" & !is.na(Applications)]),
+          EM_Sec=length(Applications[Applications=="Email" & !is.na(Applications)]),
+          EA_Sec=length(Applications[Applications=="Entertaining Apps" & !is.na(Applications)]),
+          PA_Sec=length(Applications[Applications=="Programming Apps" & !is.na(Applications)]),
+          VC_Sec=length(Applications[Applications=="Virtual Communication Apps" & !is.na(Applications)]),
+          UT_Sec=length(Applications[Applications=="Utilities Apps" & !is.na(Applications)]),
+          WB_Sec=length(Applications[Applications=="Web Browsing Apps" & !is.na(Applications)]),
+          NO_APP_Sec=length(Applications[is.na(Applications)]),
+          
+          
+          WP_Sec_2=sum(Applications=="Document Apps", na.rm = TRUE),
+          EM_Sec_2=sum(Applications=="Email", na.rm = TRUE),
+          EA_Sec_2=sum(Applications=="Entertaining Apps", na.rm = TRUE),
+          PA_Sec_2=sum(Applications=="Programming Apps", na.rm = TRUE),
+          VC_Sec_2=sum(Applications=="Virtual Communication Apps", na.rm = TRUE),
+          UT_Sec_2=sum(Applications=="Utilities Apps", na.rm = TRUE),
+          WB_Sec_2=sum(Applications=="Web Browsing Apps", na.rm = TRUE),
+          NO_APP_Sec_2=sum(is.na(Applications)),
           
           
           
@@ -173,6 +192,29 @@ generate_meta_data_break_activity <- function() {
       CT_Out,
       CT_Missing_Activity,
       CT_Other_Activities,
+      
+      
+      
+      WP_Sec,
+      EM_Sec,
+      EA_Sec,
+      PA_Sec,
+      VC_Sec,
+      UT_Sec,
+      WB_Sec,
+      NO_APP_Sec,
+      
+      
+      WP_Sec_2,
+      EM_Sec_2,
+      EA_Sec_2,
+      PA_Sec_2,
+      VC_Sec_2,
+      UT_Sec_2,
+      WB_Sec_2,
+      NO_APP_Sec_2,
+      
+      
       
       Mean_PP_RW,
       Mean_PP_Other_Activities,
