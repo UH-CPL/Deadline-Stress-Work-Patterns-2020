@@ -38,8 +38,10 @@ generate_meta_data_break_activity <- function() {
   #                 Timestamp, Sinterface_Time, TreatmentTime,
   #                 Trans_PP,
   #                 Segments_Activity,
+  #                 Reduced_Application_final,
   #                 Mask) %>%
-  #   replace_na(list(Segments_Activity = 'Missing Activity')) %>%
+  #   dplyr::mutate(Applications=Reduced_Application_final) %>% 
+  #   replace_na(list(Segments_Activity = "Missing Activity")) %>%
   #   dplyr::mutate(Segments_Activity=case_when(Treatment=="RB"~"Out",
   #                                           TRUE~.$Segments_Activity)) %>%
   #   dplyr::group_by(Participant_ID, Day) %>%
@@ -78,9 +80,6 @@ generate_meta_data_break_activity <- function() {
       DiffLengthDayPercentage=100*(DiffLengthDaySec)/Length_Day_Timestamp, ##------------!!
       ) %>%
     ungroup()
-
-  # View(segment_meta_data_df_2)
-    
     
   segment_meta_data_df <- segment_df %>%
     dplyr::group_by(Participant_ID, Day, Segment) %>%
@@ -99,14 +98,17 @@ generate_meta_data_break_activity <- function() {
           Length_Missing_Activity=sum(Segments_Activity=="Missing Activity", na.rm = TRUE),
           Length_Other_Activities=sum(Segments_Activity=="Other", na.rm = TRUE),
           
+          
+          
+          
+          CT_Length_Segment=cumsum(Length_Segment),
+          CT_Length_Break=cumsum(Length_Break),
+          CT_Length_RW=cumsum(Length_RW),
+          CT_Length_Missing_Activity=cumsum(Length_Missing_Activity),
+          CT_Length_Other_Activities=cumsum(Length_Other_Activities),
+          
           Mean_PP_RW=mean(Trans_PP[Segments_Activity=="RW"], na.rm = TRUE),
           Mean_PP_Other_Activities=mean(Trans_PP[Segments_Activity=="Other"], na.rm = TRUE),
-          
-          CT_Length_Sec_Segment=cumsum(Length_Segment),
-          CT_Length_Sec_Break=cumsum(Length_Break),
-          CT_Length_Sec_RW=cumsum(Length_RW),
-          CT_Length_Sec_Missing_Activity=cumsum(Length_Missing_Activity),
-          CT_Length_Sec_Other_Activities=cumsum(Length_Other_Activities),
           
           ) %>% 
     dplyr::ungroup() %>% 
@@ -124,11 +126,14 @@ generate_meta_data_break_activity <- function() {
     dplyr::mutate(Segment_Order_Percentage=round(100*Segment_Order_Percentage/Length_Day, 0),
                   Segment_Order_Percentage=ifelse(Segment_Order_Percentage==0, 0.05, Segment_Order_Percentage),
                   
-                  CT_SL=round(100*CT_Length_Sec_Segment/Length_Day, 2),
-                  CT_RW=round(100*CT_Length_Sec_RW/Length_Day, 2),
-                  CT_Out=round(100*CT_Length_Sec_Break/Length_Day, 2),
-                  CT_Missing_Activity=round(100*CT_Length_Sec_Missing_Activity/Length_Day, 2),
-                  CT_Other_Activities=round(100*CT_Length_Sec_Other_Activities/Length_Day, 2),
+                  ##------------!!
+                  CT_SL=round(100*CT_Length_Segment/Length_Day, 2), ## For some cases, the CT_SL exceeds 100, because Segment_Length includes RB, but Length_Day does not
+                  ##------------!!
+                  
+                  CT_RW=round(100*CT_Length_RW/Length_Day, 2),
+                  CT_Out=round(100*CT_Length_Break/Length_Day, 2),
+                  CT_Missing_Activity=round(100*CT_Length_Missing_Activity/Length_Day, 2),
+                  CT_Other_Activities=round(100*CT_Length_Other_Activities/Length_Day, 2),
                   
                   Mean_PP_RW_Normalized=Mean_PP_RW - Mean_PP_RestingBaseline,
                   Mean_PP_Other_Activities_Normalized=Mean_PP_Other_Activities - Mean_PP_RestingBaseline,
