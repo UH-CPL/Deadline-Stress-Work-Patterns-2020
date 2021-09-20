@@ -61,20 +61,27 @@ generate_meta_data_break_activity <- function() {
 
   segment_meta_data_df_1 <- segment_df %>%
     dplyr::group_by(Participant_ID, Day) %>%
-    dplyr::summarize(Length_Day=n(),  ## After removing NA from Segments_Activity, is it okay?? ##------------!!
-              Mean_PP_RestingBaseline=mean(Trans_PP[Segments_Activity=="Out" & Segment==1], na.rm = TRUE), ##------------!!
-              Length_RestingBaseline=length(Trans_PP[Segments_Activity=="Out" & Segment==1])) %>% ##------------!!
+    dplyr::summarize(
+          Length_Day=n(),  ## After removing NA from Segments_Activity, is it okay?? ##------------!!
+          Length_Day_Timestamp=as.numeric(difftime(tail(Timestamp, 1), head(Timestamp, 1), units = "secs")+1),
+          DiffLengthDaySec=Length_Day_Timestamp-Length_Day,
+          DiffLengthDayPercentage=100*(DiffLengthDaySec)/Length_Day_Timestamp,
+          
+          Mean_PP_RestingBaseline=mean(Trans_PP[Segments_Activity=="Out" & Segment==1], na.rm = TRUE), ##------------!!
+          Length_RestingBaseline=length(Trans_PP[Segments_Activity=="Out" & Segment==1])) %>% ##------------!!
     ungroup()
     
   segment_meta_data_df <- segment_df %>%
     dplyr::group_by(Participant_ID, Day, Segment) %>%
     dplyr::summarize(
-          StartTime=head(Timestamp, 1),
-          EndTime=tail(Timestamp, 1),
-          DiffTimeStamp=as.numeric(difftime(EndTime, StartTime, units = "secs")+1),
+      
+          StartSegmentTime=head(Timestamp, 1),
+          EndSegmentTime=tail(Timestamp, 1),
+          DiffSegmentTimeStamp=as.numeric(difftime(EndSegmentTime, StartSegmentTime, units = "secs")+1),
+          
           Length_Segment=n(),
-          DiffTimeSec=DiffTimeStamp-Length_Segment,
-          DiffTimePercentage=100*(DiffTimeSec)/DiffTimeStamp,
+          DiffSegmentTimeSec=DiffSegmentTimeStamp-Length_Segment,
+          DiffSegmentTimePercentage=100*(DiffSegmentTimeSec)/DiffSegmentTimeStamp,
           
           Length_Break=sum(Segments_Activity=="Out", na.rm = TRUE),
           Length_RW=sum(Segments_Activity=="RW", na.rm = TRUE),
@@ -106,12 +113,18 @@ generate_meta_data_break_activity <- function() {
     dplyr::select(
       Participant_ID,
       Day,
+      
       Length_Day,
-      StartTime,
-      EndTime,
-      DiffTimeStamp,
-      DiffTimePercentage,
-      DiffTimeSec,
+      Length_Day_Timestamp,
+      DiffLengthDaySec,
+      DiffLengthDayPercentage,
+      
+      StartSegmentTime,
+      EndSegmentTime,
+      DiffSegmentTimeStamp,
+      DiffSegmentTimePercentage,
+      DiffSegmentTimeSec,
+      
       Segment,
       Length_Segment,
       Segment_Order_Percentage,
