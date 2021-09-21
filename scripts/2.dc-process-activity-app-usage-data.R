@@ -208,12 +208,23 @@ get_final_activities <- function(all_subj_df) {
 }
 
 
+Activity_pattern = '^R$|^R[+]W$|^W$|^W[+]R$'
+Out_pattern = 'Out'
+SP_pattern = '^SP$|^SP[+]I$'
+SA_pattern = '^SA$'
+MT_pattern = '[+]'
+
 convert_out_to_na <- function(all_subj_df) {
   
   all_subj_df <- all_subj_df %>% 
     mutate(Segments_Activity = case_when(
       str_detect(Reduced_Activities_QC1, Activity_pattern)~'RW',
-      str_detect(Reduced_Activities_QC1, Out_pattern)~'Out', Treatment=='WS'~'Other'))
+      str_detect(Reduced_Activities_QC1, Out_pattern)~'Out', 
+      str_detect(Reduced_Activities_QC1, SP_pattern)~'SP',
+      str_detect(Reduced_Activities_QC1, SA_pattern)~'SA',
+      str_detect(Reduced_Activities_QC1, MT_pattern)~'MT', Treatment=='WS'~'Other'))
+  
+  
   all_subj_df <- all_subj_df %>%
     mutate(Segments_Activity = replace(Segments_Activity, is.na(Reduced_Activities_QC1), NA))
   
@@ -258,6 +269,9 @@ convert_out_to_na <- function(all_subj_df) {
       Length_Segment = n(),
       Length_Break = sum(Segments_Activity == "Out", na.rm = TRUE),
       Length_Reading_Writing = sum(Segments_Activity == "RW", na.rm = TRUE),
+      Length_SP = sum(Segments_Activity == "SP", na.rm = TRUE),
+      Length_SA = sum(Segments_Activity == "SA", na.rm = TRUE),
+      Length_MT = sum(Segments_Activity == "MT", na.rm = TRUE),
       Length_Other_Activities = sum(Segments_Activity == "Other", na.rm = TRUE)
     ) %>%
     merge(segment_meta_data_df_1, by = c("Participant_ID", "Day")) %>%
@@ -267,8 +281,11 @@ convert_out_to_na <- function(all_subj_df) {
       Length_Day,
       Segment,
       Length_Segment,
-      Length_Break,
       Length_Reading_Writing,
+      Length_Break,
+      Length_SP,
+      Length_SA,
+      Length_MT,
       Length_Other_Activities
     )
   

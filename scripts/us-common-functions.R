@@ -81,15 +81,15 @@ EntertainingApps ='^Photos|iTunes$|^Spotify$|^App Store$|^FindMy$'
 
 UtilitiesApps ='^Calendar$|^Finder$|^Notes$|^explorer$'
 
-ProgrammingApps = '^JavaApplicationStub$|^RStudio$|^Osascript$|^Terminal$|^Console$|^ATLAS.ti$|^TeamViewer$|^Idle$|^rstudio$|^pycharm$|^iTerm2$|^Mathematica$|^MATLAB$'  
+ProgrammingApps = '^JavaApplicationStub$|^RStudio$|^Osascript$|^Terminal$|^Console$|^ATLAS.ti$|^TeamViewer$|^Idle$|^rstudio$|^pycharm$|^iTerm2$|^Mathematica$|^MATLAB$|^rsession$|^java$'  
 
-VirtualCommunicationApps = '^QQ$|^Skype$|^FaceTime$|^Slack$|^WeChat$|^Messages$|^Telegram Desktop$|^Discord$'
+VirtualCommunicationApps = '^QQ$|^Skype$|^FaceTime$|^Slack$|^WeChat$|^Messages$|^Telegram Desktop$|^Discord$|^Teams$'
 
 application_usage_pattern ='Other Activities' 
 
 
-Activity_pattern = '^R$|^R[+]W$|^W$|^W[+]R$'
-Out_pattern = 'Out'
+# Activity_pattern = '^R$|^R[+]W$|^W$|^W[+]R$'
+# Out_pattern = 'Out'
 
 ## 1. Timestamp -->    Extract whatever inside []                 -->   \\[(.*)\\]
 ## 2. Application -->  Extract whatever after the space of []     -->   (.*)
@@ -160,11 +160,15 @@ segment_df_file_name <- 'segment_df.csv'
 segment_meta_data_df_file_name <- 'segment_meta_data_df.csv'
 
 
+
+
 model_df_file_name <- 'model_df.csv'
-
-
+  
+  
 full_df_file_name <- 'full_df.csv'
 full_df_osf_file_name <- 'full_df_osf.csv'
+
+
 
 
 
