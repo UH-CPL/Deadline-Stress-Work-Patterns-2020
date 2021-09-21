@@ -26,36 +26,36 @@ library(zoo)
 generate_meta_data_break_activity <- function() {
   physiological_data_path <- file.path(project_dir, curated_data_dir, physiological_data_dir)
   
-  #################################################################################################################
-  # data_file_name <- 'Full_Df_Segment.csv'
-  # data_file_name <- 'mini_full_df.csv'
-  data_file_name <- full_df_file_name
-
-
-  segment_df <- custom_read_csv(file.path(physiological_data_path, data_file_name)) %>%
-    dplyr::select(Participant_ID, Day, Treatment,
-                  Timestamp, Sinterface_Time, TreatmentTime,
-                  Trans_PP,
-                  Segments_Activity,
-                  Reduced_Application_final,
-                  Mask) %>%
-    dplyr::mutate(Applications=Reduced_Application_final) %>%
-
-    # filter(!is.na(Segments_Activity)) %>%  ## What is Segments_Activity and why removing NA??
-    replace_na(list(Segments_Activity = "Missing Activity")) %>%
-
-    dplyr::mutate(Segments_Activity=case_when(Treatment=="RB"~"Out",
-                                            TRUE~.$Segments_Activity)) %>%
-    dplyr::group_by(Participant_ID, Day) %>%
-    dplyr::mutate(Counter=sequence(rle(as.character(Segments_Activity))$lengths),
-           Segment=case_when(Segments_Activity=="Out" & Counter==1~1, TRUE~0),
-           Segment=ifelse(Segment==1, cumsum(Segment==1), NA),
-           Segment=na.locf0(Segment)) %>%
-    dplyr::select(-Counter)
-
-  # View(segment_df)
-  convert_to_csv(segment_df, file.path(physiological_data_path, segment_df_file_name))
-  #################################################################################################################
+  # #################################################################################################################
+  # # data_file_name <- 'Full_Df_Segment.csv'
+  # # data_file_name <- 'mini_full_df.csv'
+  # data_file_name <- full_df_file_name
+  # 
+  # 
+  # segment_df <- custom_read_csv(file.path(physiological_data_path, data_file_name)) %>%
+  #   dplyr::select(Participant_ID, Day, Treatment,
+  #                 Timestamp, Sinterface_Time, TreatmentTime,
+  #                 Trans_PP,
+  #                 Segments_Activity,
+  #                 Reduced_Application_final,
+  #                 Mask) %>%
+  #   dplyr::mutate(Applications=Reduced_Application_final) %>%
+  # 
+  #   # filter(!is.na(Segments_Activity)) %>%  ## What is Segments_Activity and why removing NA??
+  #   replace_na(list(Segments_Activity = "Missing Activity")) %>%
+  # 
+  #   dplyr::mutate(Segments_Activity=case_when(Treatment=="RB"~"Out",
+  #                                           TRUE~.$Segments_Activity)) %>%
+  #   dplyr::group_by(Participant_ID, Day) %>%
+  #   dplyr::mutate(Counter=sequence(rle(as.character(Segments_Activity))$lengths),
+  #          Segment=case_when(Segments_Activity=="Out" & Counter==1~1, TRUE~0),
+  #          Segment=ifelse(Segment==1, cumsum(Segment==1), NA),
+  #          Segment=na.locf0(Segment)) %>%
+  #   dplyr::select(-Counter)
+  # 
+  # # View(segment_df)
+  # convert_to_csv(segment_df, file.path(physiological_data_path, segment_df_file_name))
+  # #################################################################################################################
 
   
   
@@ -97,6 +97,9 @@ generate_meta_data_break_activity <- function() {
           
           Length_Break=sum(Segments_Activity=="Out", na.rm = TRUE),
           Length_RW=sum(Segments_Activity=="RW", na.rm = TRUE),
+          Length_SP=sum(Segments_Activity=="SP", na.rm = TRUE),
+          Length_SA=sum(Segments_Activity=="SA", na.rm = TRUE),
+          Length_MT=sum(Segments_Activity=="MT", na.rm = TRUE),
           Length_Missing_Activity=sum(Segments_Activity=="Missing Activity", na.rm = TRUE),
           Length_Other_Activities=sum(Segments_Activity=="Other", na.rm = TRUE),
           
@@ -144,9 +147,11 @@ generate_meta_data_break_activity <- function() {
                   Cum_T_Segment=cumsum(Length_Segment),
                   Cum_T_Break=cumsum(Length_Break),
                   Cum_T_RW=cumsum(Length_RW),
+                  Cum_T_SP=cumsum(Length_SP),
+                  Cum_T_SA=cumsum(Length_SA),
+                  Cum_T_MT=cumsum(Length_MT),
                   Cum_T_Missing_Activity=cumsum(Length_Missing_Activity),
                   Cum_T_Other_Activities=cumsum(Length_Other_Activities),
-                  
                   ) %>% 
       
     merge(segment_meta_data_df_1, by=c("Participant_ID", "Day")) %>%
@@ -164,10 +169,13 @@ generate_meta_data_break_activity <- function() {
                   
                   CT_RW=round(100*Cum_T_RW/Length_Day, 2),
                   CT_Out=round(100*Cum_T_Break/Length_Day, 2),
+                  CT_SP=round(100*Cum_T_SP/Length_Day, 2),
+                  CT_SA=round(100*Cum_T_SA/Length_Day, 2),
+                  CT_MT=round(100*Cum_T_MT/Length_Day, 2),
                   CT_Missing_Activity=round(100*Cum_T_Missing_Activity/Length_Day, 2),
                   CT_Other_Activities=round(100*Cum_T_Other_Activities/Length_Day, 2),
                   
-                  CT_Activity_Sum=CT_RW+CT_Out+CT_Missing_Activity+CT_Other_Activities,
+                  CT_Activity_Sum=CT_RW+CT_Out+CT_SP+CT_SA+CT_MT+CT_Missing_Activity+CT_Other_Activities,
                   ################################################################################
                   
                   
@@ -224,6 +232,9 @@ generate_meta_data_break_activity <- function() {
       CT_SL,
       CT_RW,
       CT_Out,
+      CT_SP,
+      CT_SA,
+      CT_MT,
       CT_Missing_Activity,
       CT_Other_Activities,
       CT_Activity_Sum,
@@ -289,7 +300,7 @@ investigate_data <- function() {
 #-------------------------#
 #-------Main Program------#
 #-------------------------#
-# generate_meta_data_break_activity()
+generate_meta_data_break_activity()
 ### investigate_data()
 
 
