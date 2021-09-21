@@ -69,17 +69,29 @@ generate_meta_data_break_activity <- function() {
     dplyr::group_by(Participant_ID, Day) %>%
     dplyr::summarize(
           Mean_PP_RestingBaseline=mean(Trans_PP[Segments_Activity=="Out" & Segment==1], na.rm = TRUE), ##------------!!
-          Length_RestingBaseline=length(Trans_PP[Segments_Activity=="Out" & Segment==1])) %>% ##------------!!
+          Length_RestingBaseline=length(Trans_PP[Segments_Activity=="Out" & Segment==1]),
+          
+          # Length_Day=n(),
+          # Length_Day_Timestamp=as.numeric(difftime(tail(Timestamp, 1), head(Timestamp, 1), units = "secs")+1),
+          # DiffLengthDaySec=Length_Day_Timestamp-Length_Day,
+          # DiffLengthDayPercentage=100*(DiffLengthDaySec)/Length_Day_Timestamp,
+          ) %>%
     ungroup() 
   
   segment_meta_data_df_2 <- segment_df %>%
-    dplyr::filter(Treatment=='WS') %>% 
+    dplyr::filter(Treatment=='WS') %>%
     dplyr::group_by(Participant_ID, Day) %>%
     dplyr::summarize(
       Length_Day=n(),
       Length_Day_Timestamp=as.numeric(difftime(tail(Timestamp, 1), head(Timestamp, 1), units = "secs")+1),
       DiffLengthDaySec=Length_Day_Timestamp-Length_Day,
       DiffLengthDayPercentage=100*(DiffLengthDaySec)/Length_Day_Timestamp,
+      
+      
+      # Length_WS=n(),
+      # Length_WS_Timestamp=as.numeric(difftime(tail(Timestamp, 1), head(Timestamp, 1), units = "secs")+1),
+      # DiffLengthWSSec=Length_WS_Timestamp-Length_WS,
+      # DiffLengthWSPercentage=100*(DiffLengthWSSec)/Length_WS_Timestamp,
       ) %>%
     ungroup()
     
@@ -210,6 +222,11 @@ generate_meta_data_break_activity <- function() {
       DiffLengthDaySec,
       DiffLengthDayPercentage,
       
+      # Length_WS,
+      # Length_WS_Timestamp,
+      # DiffLengthWSSec,
+      # DiffLengthWSPercentage,
+      
       StartSegmentTime,
       EndSegmentTime,
       DiffSegmentTimeStamp,
@@ -300,7 +317,7 @@ investigate_data <- function() {
 #-------------------------#
 #-------Main Program------#
 #-------------------------#
-generate_meta_data_break_activity()
+# generate_meta_data_break_activity()
 ### investigate_data()
 
 
