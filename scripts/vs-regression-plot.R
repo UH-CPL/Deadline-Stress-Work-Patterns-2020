@@ -147,7 +147,7 @@ draw_regression_plots <- function() {
   
   for (treatment in c('RB', 'WS')) {
     draw_regression_plots_treatment(treatment, 'E4_HR', 'iWatch_HR')
-    draw_regression_plots_treatment(treatment, 'PP', 'E4_EDA')
+    # draw_regression_plots_treatment(treatment, 'PP', 'E4_EDA')
   }
 }
 
