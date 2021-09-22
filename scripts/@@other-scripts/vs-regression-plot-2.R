@@ -1,0 +1,144 @@
+#-------------------------#
+#--------LIBRARIES--------#
+#-------------------------#
+library(ggplot2)
+library(cowplot)
+library(dplyr)
+library(tidyverse)
+library(Hmisc)
+
+
+
+#-------------------------#
+#-----GLOBAL VARIABLES----#
+#-------------------------#
+
+
+
+#-------------------------#
+#---FUNCTION DEFINITION---#
+#-------------------------#
+read_files <- function(file_type) {
+  if (file_type=="raw") {
+    file_name <- qc1_raw_mean_v1_file_name
+  } else if (file_type=="transformed") {
+    file_name <- qc1_transformed_mean_v1_file_name
+  } else if (file_type=="normalized") {
+    file_name <- qc1_normalized_mean_v1_file_name
+  }
+    
+  custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, file_name))
+}
+
+
+round_p_value <- function(p_value) {
+  if (p_value < 0.00001) {
+    return(0)
+  }
+  return(p_value)
+}
+
+
+draw_regression_plot <- function(df, file_type) {
+  df <- df %>%
+    filter(Treatment=='WS') %>%
+    select(Participant_ID,	Day, E4_HR, iWatch_HR) %>%
+    na.omit() %>% 
+    mutate(Diff_HR=abs(E4_HR-iWatch_HR),
+           ID=paste0(Participant_ID, '-', Day)) %>% 
+    arrange(desc(Diff_HR)) %>% 
+    # mutate(Is_Outlier = ifelse(rownames(.) %in% c(seq(1, 5)), "y", "n")) 
+    mutate(Is_Outlier = ifelse(rownames(.) %in% c(seq(1, 5)), 1, 0)) 
+  
+  # print(head(df, 7))
+  
+  x_col <- 'E4_HR'
+  y_col <- 'iWatch_HR'
+  
+  cor_test <- cor.test(df[[x_col]], df[[y_col]], method = "pearson")
+  sample_no <- df %>% dplyr::summarize(n = dplyr::n())
+  
+  annot_label <- paste0("n = ", sample_no,
+                        ", p = ", round_p_value(cor_test$p.value), 
+                        ", r = ", specify_decimal(cor_test$estimate, 3))
+  
+  
+  outlier_df <- df[df$Is_Outlier==1,]
+  
+  # plot <- df %>%
+  #   # ggplot(aes(df[[x_col]], df[[y_col]], color=df$Is_Outlier, label = ID)) +
+  #   ggplot(aes(df[[x_col]], df[[y_col]])) +
+    
+    
+    plot <- ggplot() +
+    geom_point(data=df, aes(df[[x_col]], df[[y_col]]), size = 3) +
+    geom_point(data=outlier_df, aes(outlier_df[[x_col]], outlier_df[[y_col]]), color='red', size = 3.5) +
+    geom_text(data=outlier_df, 
+              aes(outlier_df[[x_col]], outlier_df[[y_col]], label = ID),
+              # color = 'red', 
+              vjust = 2,
+              # hjust = -0.2,
+              size = 6
+              ) +
+    geom_smooth(data=df, aes(df[[x_col]], df[[y_col]]), method = "lm") +
+    ggtitle(capitalize(file_type)) +
+    theme_bw() + 
+    xlab(x_col) +
+    ylab(y_col) +
+    # scale_colour_gradient(low = "#132B43", high = "#bf0b0b") +
+    annotate("text",
+             x=max(df[[x_col]]),
+             y=Inf,
+             hjust=1,
+             vjust=1.5,
+             label=annot_label,
+             fontface = 'italic', 
+             size = 8) +
+    theme_bw() +
+    theme(text = element_text(size=22),
+          axis.text = element_text(size = 18),
+          plot.title = element_text(hjust = 0.5),
+          legend.position = "none",
+          plot.margin = unit(c(1, 0.5, 1, 0.5), "lines"),  ##top, right, bottom, left
+          panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(),
+          axis.line = element_line(colour = "black")) 
+  
+  plot_list[[length(plot_list)+1]] <<- plot
+}
+
+draw_regression_plots_treatment <- function(treatment) {
+  plot_list <<- list()
+  
+  file_types <- c("raw", "transformed")
+  if (treatment=='WS') {
+    file_types <- c(file_types, "normalized")
+  }
+  
+  for (file_type in file_types) {
+    mean_df <- read_files(file_type)
+    draw_regression_plot(mean_df, paste0(treatment, ' - ', file_type))
+  }
+  
+  save_plot(paste0('hr_', tolower(treatment), '_regression'), 
+            plot_grid(plotlist=plot_list, ncol=2), 
+            30, 
+            length(file_types)*12/2)
+}
+
+
+draw_regression_plots <- function() {
+  for (treatment in c('RB', 'WS')) {
+    draw_regression_plots_treatment(treatment)
+  }
+}
+
+
+#-------------------------#
+#-------Main Program------#
+#-------------------------#
+# draw_regression_plots()
+
+
+
+

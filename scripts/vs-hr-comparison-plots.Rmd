@@ -36,6 +36,10 @@ project_dir<-dirname(getwd())
 source(file.path(getwd(), 'us-common-functions.R'))
 
 # setwd(project_dir)
+# 
+# pdf(file="TestHR.pdf")
+# makeVennDiagram(ol)
+# dev.off()
 
 qc1_treatment_mean_df <- tibble()
 
@@ -56,11 +60,11 @@ read_data <- function() {
   qc1_log_transformed_df <<- custom_read_csv(file.path(project_dir, 
                                                      curated_data_dir, 
                                                      physiological_data_dir, 
-                                                     qc1_log_transformed_file_name))
+                                                     qc1_file_name))
   qc1_treatment_mean_df <<- custom_read_csv(file.path(project_dir, 
                                                      curated_data_dir, 
                                                      physiological_data_dir, 
-                                                     qc1_treatment_mean_v1_file_name))
+                                                     qc1_raw_mean_v1_file_name))
 }
 
 get_hr_y_min_lim <- function(df) {
