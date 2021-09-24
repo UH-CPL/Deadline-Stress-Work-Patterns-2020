@@ -45,7 +45,7 @@ generate_daywise_model_data <- function() {
     
     dplyr::filter(Treatment=='WS') %>%
     dplyr::group_by(Participant_ID, Day) %>%
-    dplyr::summarize(T_D=n(), ##------------!!
+    dplyr::summarize(T_D=n(), # Should we consider RB time for the Length of the Day? ##------------!! 
                      Break_Time=sum(Segments_Activity=="Out", na.rm = TRUE), ##------------!!
                      
                      # WP_Sec=coalesce(sum(Applications=="Document Apps", na.rm = T), 0),
