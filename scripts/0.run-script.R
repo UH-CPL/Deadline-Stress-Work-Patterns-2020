@@ -94,9 +94,9 @@ generate_meta_data_break_activity()
 ### investigate_data()
 
 
-# ---------------------------------------------------------------------------------------------- 8
-source(file.path(script_dir, '8.dc-generate-model-data.R'))
-generate_daywise_model_data()
+# # ---------------------------------------------------------------------------------------------- 8
+# source(file.path(script_dir, '8.dc-generate-model-data.R'))
+# generate_daywise_model_data()
 
 
 
