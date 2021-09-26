@@ -204,9 +204,11 @@ get_rb <- function(df, signal) {
       pull()
   }
 
-  # print(paste(signal, subj, rb_val))
+  print(paste(baseline_parameter, signal, subj, rb_val))
   rb_val
 }
+
+
 
 process_normalize_data <- function() {
   ws_df <- mean_v1_df %>%
