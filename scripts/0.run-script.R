@@ -30,7 +30,7 @@ chunk_sizes <- c(5, 10, 15)
 # day3_day4_ws_min="day3_day4_ws_min"
 #
 ##########################################################
-baseline_parameter <- lowest_baseline
+baseline_parameter <- lowest_baseline  ## Please check segment normalization when change it
 t_test_comparison <- day3_day4_ws_mean
 
 
@@ -61,37 +61,37 @@ smooth_pp_signals <- F # Oiii....REMEMBER TO COMMENT OUT - Raw_Noisy_PP in scrip
 # #-------------------------------------------------------------------------------------------- 1
 # source(file.path(script_dir, '1.dc-curate-and-process-data.R'))
 # curate_data()
-# 
-# 
+
+
 # #-------------------------------------------------------------------------------------------- 2
 # source(file.path(script_dir, '2.dc-process-activity-app-usage-data.R'))
 # format_activity_app_usage_data()
-# 
-# 
+
+ 
 # #-------------------------------------------------------------------------------------------- 3
 # source(file.path(script_dir, '3.dc-quality-control-phase-one.R'))
 # process_quality_control_phase_one()
-# 
-# 
+
+
 # #-------------------------------------------------------------------------------------------- 4
 # source(file.path(script_dir, '4.dc-generate-transformed-data.R'))
 # transform_data()
-# 
-# 
+
+
 # #-------------------------------------------------------------------------------------------- 5
 # source(file.path(script_dir, '5.dc-generate-normalized-data.R'))
 # normalize_data()
-# 
-# 
+
+
 # # -------------------------------------------------------------------------------------------- 6
 # source(file.path(script_dir, '6.dc-merge-all-data.R'))
 # merge_all_data()
-# 
-# 
-#---------------------------------------------------------------------------------------------- 7
-source(file.path(script_dir, '7.dc-generate-meta-data-break-activity.R'))
-generate_meta_data_break_activity()
-### investigate_data()
+
+
+# #---------------------------------------------------------------------------------------------- 7
+# source(file.path(script_dir, '7.dc-generate-meta-data-break-activity.R'))
+# generate_meta_data_break_activity()
+# ### investigate_data()
 
 
 # # ---------------------------------------------------------------------------------------------- 8
