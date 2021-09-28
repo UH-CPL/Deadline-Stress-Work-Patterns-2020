@@ -43,9 +43,13 @@ generate_daywise_model_data <- function() {
     dplyr::select(Participant_ID,	Day, Treatment, Reduced_Application_final, Segments_Activity) %>%
     dplyr::rename(Applications=Reduced_Application_final) %>% 
     
+    dplyr::group_by(Participant_ID, Day) %>%
+    dplyr::summarize(T_D=n()) %>%
+    dplyr::ungroup() %>%
+    
     dplyr::filter(Treatment=='WS') %>%
     dplyr::group_by(Participant_ID, Day) %>%
-    dplyr::summarize(T_D=n(), # Should we consider RB time for the Length of the Day? ##------------!! 
+    dplyr::summarize(Length_WS=n(), # Should we consider RB time for the Length of the Day? ##------------!! 
                      Break_Time=sum(Segments_Activity=="Out", na.rm = TRUE), ##------------!!
                      
                      # WP_Sec=coalesce(sum(Applications=="Document Apps", na.rm = T), 0),
@@ -113,6 +117,7 @@ generate_daywise_model_data <- function() {
       Treatment,
 
       T_D,
+      Length_WS,
 
       PP,
       E4_HR,
@@ -143,8 +148,6 @@ generate_daywise_model_data <- function() {
       T_Percentage_Sum
     )
   
-  # View(full_df)
-  # View(mean_df)
   # print(unique(full_df[c("Applications")]))
   
   View(model_df)

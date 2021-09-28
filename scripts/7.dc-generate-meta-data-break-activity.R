@@ -27,10 +27,7 @@ generate_meta_data_break_activity <- function() {
   physiological_data_path <- file.path(project_dir, curated_data_dir, physiological_data_dir)
   
   #################################################################################################################
-  # data_file_name <- 'Full_Df_Segment.csv'
-  # data_file_name <- 'mini_full_df.csv'
   data_file_name <- full_df_file_name
-
 
   segment_df <- custom_read_csv(file.path(physiological_data_path, data_file_name)) %>%
     dplyr::select(Participant_ID, Day, Treatment,
@@ -53,7 +50,6 @@ generate_meta_data_break_activity <- function() {
            Segment=na.locf0(Segment)) %>%
     dplyr::select(-Counter)
 
-  # View(segment_df)
   convert_to_csv(segment_df, file.path(physiological_data_path, segment_df_file_name))
   #################################################################################################################
 
@@ -80,10 +76,10 @@ generate_meta_data_break_activity <- function() {
           # ---------------------------------------------
           # Please reflect this change to model_df also
           # ---------------------------------------------
-          # Length_Day=n(),
-          # Length_Day_Timestamp=as.numeric(difftime(tail(Timestamp, 1), head(Timestamp, 1), units = "secs")+1),
-          # DiffLengthDaySec=Length_Day_Timestamp-Length_Day,
-          # DiffLengthDayPercentage=100*(DiffLengthDaySec)/Length_Day_Timestamp,
+          Length_Day=n(),
+          Length_Day_Timestamp=as.numeric(difftime(tail(Timestamp, 1), head(Timestamp, 1), units = "secs")+1),
+          DiffLengthDaySec=Length_Day_Timestamp-Length_Day,
+          DiffLengthDayPercentage=100*(DiffLengthDaySec)/Length_Day_Timestamp,
           ) %>%
     ungroup() 
   
@@ -91,16 +87,16 @@ generate_meta_data_break_activity <- function() {
     dplyr::filter(Treatment=='WS') %>%
     dplyr::group_by(Participant_ID, Day) %>%
     dplyr::summarize(
-      Length_Day=n(),
-      Length_Day_Timestamp=as.numeric(difftime(tail(Timestamp, 1), head(Timestamp, 1), units = "secs")+1),
-      DiffLengthDaySec=Length_Day_Timestamp-Length_Day,
-      DiffLengthDayPercentage=100*(DiffLengthDaySec)/Length_Day_Timestamp,
+      # Length_Day=n(),
+      # Length_Day_Timestamp=as.numeric(difftime(tail(Timestamp, 1), head(Timestamp, 1), units = "secs")+1),
+      # DiffLengthDaySec=Length_Day_Timestamp-Length_Day,
+      # DiffLengthDayPercentage=100*(DiffLengthDaySec)/Length_Day_Timestamp,
       
       
-      # Length_WS=n(),
-      # Length_WS_Timestamp=as.numeric(difftime(tail(Timestamp, 1), head(Timestamp, 1), units = "secs")+1),
-      # DiffLengthWSSec=Length_WS_Timestamp-Length_WS,
-      # DiffLengthWSPercentage=100*(DiffLengthWSSec)/Length_WS_Timestamp,
+      Length_WS=n(),
+      Length_WS_Timestamp=as.numeric(difftime(tail(Timestamp, 1), head(Timestamp, 1), units = "secs")+1),
+      DiffLengthWSSec=Length_WS_Timestamp-Length_WS,
+      DiffLengthWSPercentage=100*(DiffLengthWSSec)/Length_WS_Timestamp,
       ) %>%
     ungroup()
     
@@ -244,10 +240,10 @@ generate_meta_data_break_activity <- function() {
       DiffLengthDaySec,
       DiffLengthDayPercentage,
       
-      # Length_WS,
-      # Length_WS_Timestamp,
-      # DiffLengthWSSec,
-      # DiffLengthWSPercentage,
+      Length_WS,
+      Length_WS_Timestamp,
+      DiffLengthWSSec,
+      DiffLengthWSPercentage,
       
       StartSegmentTime,
       EndSegmentTime,
