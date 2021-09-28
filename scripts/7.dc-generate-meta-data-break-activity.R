@@ -26,32 +26,32 @@ library(zoo)
 generate_meta_data_break_activity <- function() {
   physiological_data_path <- file.path(project_dir, curated_data_dir, physiological_data_dir)
   
-  #################################################################################################################
-  data_file_name <- full_df_file_name
-
-  segment_df <- custom_read_csv(file.path(physiological_data_path, data_file_name)) %>%
-    dplyr::select(Participant_ID, Day, Treatment,
-                  Timestamp, Sinterface_Time, TreatmentTime,
-                  Trans_PP,
-                  Segments_Activity,
-                  Reduced_Application_final,
-                  Mask) %>%
-    dplyr::mutate(Applications=Reduced_Application_final) %>%
-
-    # filter(!is.na(Segments_Activity)) %>%  ## What is Segments_Activity and why removing NA??
-    replace_na(list(Segments_Activity = "Missing Activity")) %>%
-
-    dplyr::mutate(Segments_Activity=case_when(Treatment=="RB"~"Out",
-                                            TRUE~.$Segments_Activity)) %>%
-    dplyr::group_by(Participant_ID, Day) %>%
-    dplyr::mutate(Counter=sequence(rle(as.character(Segments_Activity))$lengths),
-           Segment=case_when(Segments_Activity=="Out" & Counter==1~1, TRUE~0),
-           Segment=ifelse(Segment==1, cumsum(Segment==1), NA),
-           Segment=na.locf0(Segment)) %>%
-    dplyr::select(-Counter)
-
-  convert_to_csv(segment_df, file.path(physiological_data_path, segment_df_file_name))
-  #################################################################################################################
+  # #################################################################################################################
+  # data_file_name <- full_df_file_name
+  # 
+  # segment_df <- custom_read_csv(file.path(physiological_data_path, data_file_name)) %>%
+  #   dplyr::select(Participant_ID, Day, Treatment,
+  #                 Timestamp, Sinterface_Time, TreatmentTime,
+  #                 Trans_PP,
+  #                 Segments_Activity,
+  #                 Reduced_Application_final,
+  #                 Mask) %>%
+  #   dplyr::mutate(Applications=Reduced_Application_final) %>%
+  # 
+  #   # filter(!is.na(Segments_Activity)) %>%  ## What is Segments_Activity and why removing NA??
+  #   replace_na(list(Segments_Activity = "Missing Activity")) %>%
+  # 
+  #   dplyr::mutate(Segments_Activity=case_when(Treatment=="RB"~"Out",
+  #                                           TRUE~.$Segments_Activity)) %>%
+  #   dplyr::group_by(Participant_ID, Day) %>%
+  #   dplyr::mutate(Counter=sequence(rle(as.character(Segments_Activity))$lengths),
+  #          Segment=case_when(Segments_Activity=="Out" & Counter==1~1, TRUE~0),
+  #          Segment=ifelse(Segment==1, cumsum(Segment==1), NA),
+  #          Segment=na.locf0(Segment)) %>%
+  #   dplyr::select(-Counter)
+  # 
+  # convert_to_csv(segment_df, file.path(physiological_data_path, segment_df_file_name))
+  # #################################################################################################################
 
   
   
