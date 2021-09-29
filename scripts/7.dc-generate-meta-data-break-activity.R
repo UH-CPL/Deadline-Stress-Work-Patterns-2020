@@ -335,11 +335,7 @@ generate_multi_level_segment <- function() {
     dplyr::select(Participant_ID, Day, Segment, Length_Segment_Without_Break)
   
   segment_multilevel_df <<- custom_read_csv(file.path(physiological_data_path, segment_df_file_name)) %>% 
-    merge(segment_meta_data_df, by=c('Participant_ID', 'Day', 'Segment')) %>% 
-    dplyr::mutate(Half_Segment_Length=floor(Length_Segment_Without_Break/2),
-                  Quarter_Segment_Length=floor(Length_Segment_Without_Break/4),)
-  
-  # View(segment_multilevel_df)
+    merge(segment_meta_data_df, by=c('Participant_ID', 'Day', 'Segment'))
   
   merged_multi_level_segment_df <- tibble()
   
@@ -348,36 +344,55 @@ generate_multi_level_segment <- function() {
       sapply(unique(segment_multilevel_df$Segment), function(segment) {
         
   # sapply(c('T005', 'T009'), function(subj) {
-  # sapply(c('T009'), function(subj) {
   #   sapply(c('Day4'), function(day) {
   #     sapply(c(2), function(segment) {
         
         temp_segment_df <- segment_multilevel_df %>% 
           dplyr::filter(Participant_ID==subj,
                         Day==day,
-                        Segment==segment)
-        
-        break_df <- temp_segment_df %>% 
-          dplyr::filter(Segments_Activity=='Out') %>% 
-          dplyr::mutate(Half_Segment=1,
-                        Quarter_Segment=1)
-        
-        non_break_df <- temp_segment_df %>% 
-          dplyr::filter(Segments_Activity!='Out') %>% 
-          dplyr::mutate(Half_Segment = row_number()%/%Half_Segment_Length+2,
-                        Quarter_Segment = row_number()%/%Quarter_Segment_Length+2,
+                        Segment==segment) %>% 
+          dplyr::mutate(Half_Segment_Length=floor(Length_Segment_Without_Break/2),
+                        Quarter_Segment_Length=floor(Length_Segment_Without_Break/4),
+                        
+                        Half_Segment = ifelse(Segments_Activity=='Out', 1, row_number()%/%Half_Segment_Length+2),
+                        Quarter_Segment = ifelse(Segments_Activity=='Out', 1, row_number()%/%Quarter_Segment_Length+2),
                         
                         Half_Segment = ifelse(Half_Segment > 3, 3, Half_Segment),
                         Quarter_Segment = ifelse(Quarter_Segment > 5, 5, Quarter_Segment) ,
                         
                         Segment_Multi_Level_2 = paste0(Segment, "_", Half_Segment),
                         Segment_Multi_Level_4 = paste0(Segment, "_", Quarter_Segment),
-                        )
+          )
         
-        row_diff <- nrow(temp_segment_df)-nrow(break_df)-nrow(non_break_df)
-        print(paste(subj, day, segment, row_diff))
+        ################################################################################################################
+        # break_df <- temp_segment_df %>% 
+        #   dplyr::filter(Segments_Activity=='Out') %>% 
+        #   dplyr::mutate(Half_Segment=1,
+        #                 Quarter_Segment=1)
+        
+        
+        # dplyr::filter(Segments_Activity!='Out') %>% 
+        
+        
+        # temp_segment_df <- temp_segment_df %>% 
+        #   dplyr::mutate(Half_Segment = ifelse(Segments_Activity=='Out', 1, row_number()%/%Half_Segment_Length+2),
+        #                 Quarter_Segment = ifelse(Segments_Activity=='Out', 1, row_number()%/%Quarter_Segment_Length+2),
+        #                 
+        #                 Half_Segment = ifelse(Half_Segment > 3, 3, Half_Segment),
+        #                 Quarter_Segment = ifelse(Quarter_Segment > 5, 5, Quarter_Segment) ,
+        #                 
+        #                 Segment_Multi_Level_2 = paste0(Segment, "_", Half_Segment),
+        #                 Segment_Multi_Level_4 = paste0(Segment, "_", Quarter_Segment),
+        #                 )
+        
+        # row_diff <- nrow(temp_segment_df)-nrow(break_df)-nrow(non_break_df)
+        # print(paste(subj, day, segment, row_diff))
 
-        merged_multi_level_segment_df <<- rbind.fill(merged_multi_level_segment_df, break_df, non_break_df)
+        # merged_multi_level_segment_df <<- rbind.fill(merged_multi_level_segment_df, break_df, non_break_df)
+        ################################################################################################################
+        
+        print(paste(subj, day, segment))
+        merged_multi_level_segment_df <<- rbind.fill(merged_multi_level_segment_df, temp_segment_df)
       })
     })
   })
