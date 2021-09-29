@@ -19,9 +19,9 @@ library(dplyr)
 
 
 
-#-------------------------#
-#---FUNCTION DEFINITION---#
-#-------------------------#
+#---------------------------#
+#--- FUNCTION DEFINITION ---#
+#---------------------------#
 generate_daywise_model_data <- function() {
   physiological_data_path <- file.path(project_dir, curated_data_dir, physiological_data_dir)
   
