@@ -335,7 +335,9 @@ generate_multi_level_segment <- function() {
     dplyr::select(Participant_ID, Day, Segment, Length_Segment_Without_Break)
   
   segment_multilevel_df <- custom_read_csv(file.path(physiological_data_path, segment_df_file_name)) %>% 
-    merge(segment_meta_data_df, by=c('Participant_ID', 'Day', 'Segment'))
+    merge(segment_meta_data_df, by=c('Participant_ID', 'Day', 'Segment')) %>% 
+    dplyr::mutate(half_segment_length=floor(Length_Segment_Without_Break/2),
+                  quarter_segment_length=floor(Length_Segment_Without_Break/4),)
   
   View(segment_multilevel_df)
   
