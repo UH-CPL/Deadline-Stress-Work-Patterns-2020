@@ -292,7 +292,8 @@ generate_meta_data_break_activity <- function() {
       Mean_PP_Other_Activities_Normalized,
     )
 
-  # View(segment_meta_data_df)
+  View(segment_df)
+  View(segment_meta_data_df)
   convert_to_csv(segment_meta_data_df, file.path(physiological_data_path, segment_meta_data_df_file_name))
   #################################################################################################################
   
