@@ -17,47 +17,49 @@ library(zoo)
 # 
 # source(file.path(script_dir, 'us-common-functions.R'))
 
-
+physiological_data_path <<- file.path(project_dir, curated_data_dir, physiological_data_dir)
 
 
 #-------------------------#
 #---FUNCTION DEFINITION---#
 #-------------------------#
+generate_segments <- function() {
+  data_file_name <- full_df_file_name
+
+  segment_df <- custom_read_csv(file.path(physiological_data_path, data_file_name)) %>%
+    dplyr::select(Participant_ID, Day, Treatment,
+                  Timestamp, Sinterface_Time, TreatmentTime,
+                  Trans_PP,
+                  Segments_Activity,
+                  Reduced_Application_final,
+                  Mask) %>%
+    dplyr::mutate(Applications=Reduced_Application_final) %>%
+
+    # filter(!is.na(Segments_Activity)) %>%  ## What is Segments_Activity and why removing NA??
+    replace_na(list(Segments_Activity = "Missing Activity")) %>%
+
+    dplyr::mutate(Segments_Activity=case_when(Treatment=="RB"~"Out",
+                                            TRUE~.$Segments_Activity)) %>%
+    dplyr::group_by(Participant_ID, Day) %>%
+    dplyr::mutate(Counter=sequence(rle(as.character(Segments_Activity))$lengths),
+           Segment=case_when(Segments_Activity=="Out" & Counter==1~1, TRUE~0),
+           Segment=ifelse(Segment==1, cumsum(Segment==1), NA),
+           Segment=na.locf0(Segment)) %>%
+    dplyr::select(-Counter)
+
+  convert_to_csv(segment_df, file.path(physiological_data_path, segment_df_file_name))
+}
+
+
+
 generate_meta_data_break_activity <- function() {
-  physiological_data_path <- file.path(project_dir, curated_data_dir, physiological_data_dir)
-  
-  # #################################################################################################################
-  # data_file_name <- full_df_file_name
-  # 
-  # segment_df <- custom_read_csv(file.path(physiological_data_path, data_file_name)) %>%
-  #   dplyr::select(Participant_ID, Day, Treatment,
-  #                 Timestamp, Sinterface_Time, TreatmentTime,
-  #                 Trans_PP,
-  #                 Segments_Activity,
-  #                 Reduced_Application_final,
-  #                 Mask) %>%
-  #   dplyr::mutate(Applications=Reduced_Application_final) %>%
-  # 
-  #   # filter(!is.na(Segments_Activity)) %>%  ## What is Segments_Activity and why removing NA??
-  #   replace_na(list(Segments_Activity = "Missing Activity")) %>%
-  # 
-  #   dplyr::mutate(Segments_Activity=case_when(Treatment=="RB"~"Out",
-  #                                           TRUE~.$Segments_Activity)) %>%
-  #   dplyr::group_by(Participant_ID, Day) %>%
-  #   dplyr::mutate(Counter=sequence(rle(as.character(Segments_Activity))$lengths),
-  #          Segment=case_when(Segments_Activity=="Out" & Counter==1~1, TRUE~0),
-  #          Segment=ifelse(Segment==1, cumsum(Segment==1), NA),
-  #          Segment=na.locf0(Segment)) %>%
-  #   dplyr::select(-Counter)
-  # 
-  # convert_to_csv(segment_df, file.path(physiological_data_path, segment_df_file_name))
-  # #################################################################################################################
+  #################################################################################################################
+  # generate_segments()
+  #################################################################################################################
 
   
-  
-  
   ################################################################################################################################
-  #           (end time - start time) vs. total row  --> Because after RB there was a time gap + Activity might not be continuous
+  #       (end time - start time) vs. total row  --> Because after RB there was a time gap + Activity might not be continuous
   ################################################################################################################################
   segment_df <- custom_read_csv(file.path(physiological_data_path, segment_df_file_name))
   mean_df <- custom_read_csv(file.path(physiological_data_path, qc1_transformed_mean_v2_file_name)) %>% 
@@ -227,8 +229,6 @@ generate_meta_data_break_activity <- function() {
         )
     }
   
-  
-  
   segment_meta_data_df <- segment_meta_data_df %>% 
     dplyr::mutate(T_D=Length_Day) %>% 
     dplyr::select(
@@ -292,13 +292,34 @@ generate_meta_data_break_activity <- function() {
       Mean_PP_Other_Activities_Normalized,
     )
 
-  View(segment_df)
-  View(segment_meta_data_df)
+  # View(segment_df)
+  # View(segment_meta_data_df)
   convert_to_csv(segment_meta_data_df, file.path(physiological_data_path, segment_meta_data_df_file_name))
   #################################################################################################################
   
   
-  
+  # #################################################################################################################
+  # segment_cum_percentage_test_df <- segment_meta_data_df %>%
+  #   dplyr::select(
+  #     Participant_ID,
+  #     Day,
+  #     Segment,
+  #     T_D,
+  #     CT_SL,
+  #     CT_Activity_Sum,
+  #     CT_Application_Sum
+  #     )
+  # View(segment_cum_percentage_test_df)
+  # #################################################################################################################
+}
+
+
+
+
+
+generate_multi_level_segment <- function() {
+  segment_df <- custom_read_csv(file.path(physiological_data_path, segment_df_file_name))
+  segment_meta_data_df <- custom_read_csv(file.path(physiological_data_path, segment_meta_data_df_file_name))
   
   #################################################################################################################
   segment_partition_test_df <- segment_meta_data_df %>%
@@ -320,27 +341,13 @@ generate_meta_data_break_activity <- function() {
       # Length_Break,
       # Length_RestingBaseline,
       # Length_WS,
-
+      
     )
   View(segment_partition_test_df)
   #################################################################################################################
   
-  
-  
-  # #################################################################################################################
-  # segment_cum_percentage_test_df <- segment_meta_data_df %>%
-  #   dplyr::select(
-  #     Participant_ID,
-  #     Day,
-  #     Segment,
-  #     # T_D,
-  #     CT_SL,
-  #     CT_Activity_Sum,
-  #     CT_Application_Sum
-  #     )
-  # View(segment_cum_percentage_test_df)
-  # #################################################################################################################
 }
+
 
 
 investigate_data <- function() {
@@ -367,6 +374,7 @@ investigate_data <- function() {
 #-------Main Program------#
 #-------------------------#
 # generate_meta_data_break_activity()
+generate_multi_level_segment()
 ### investigate_data()
 
 
