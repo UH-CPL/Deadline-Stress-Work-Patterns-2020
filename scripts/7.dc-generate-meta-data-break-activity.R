@@ -339,9 +339,21 @@ generate_multi_level_segment <- function() {
     dplyr::mutate(half_segment_length=floor(Length_Segment_Without_Break/2),
                   quarter_segment_length=floor(Length_Segment_Without_Break/4),)
   
-  View(segment_multilevel_df)
+  # View(segment_multilevel_df)
   
   
+  merged_multi_level_segment_df <- tibble()
+  sapply(unique(segment_multilevel_df$Participant_ID), function(subj) {
+    sapply(unique(segment_multilevel_df$Day), function(day) {
+      sapply(unique(segment_multilevel_df$Segment), function(segment) {
+        
+        print(paste(subj, day, segment))
+        
+        
+        # merged_multi_level_segment_df <<- rbind.fill(merged_multi_level_segment_df, multi_level_segment_df)
+      })
+    })
+  })
   
 
   # #################################################################################################################
