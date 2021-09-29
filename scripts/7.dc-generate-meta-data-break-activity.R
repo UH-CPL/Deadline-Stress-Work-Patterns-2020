@@ -43,8 +43,7 @@ investigate_data <- function() {
 }
 
 
-
-generate_segments <- function() {
+generate_segment_df <- function() {
   data_file_name <- full_df_file_name
 
   segment_df <- custom_read_csv(file.path(physiological_data_path, data_file_name)) %>%
@@ -72,13 +71,7 @@ generate_segments <- function() {
 }
 
 
-
-generate_meta_data_break_activity <- function() {
-  #################################################################################################################
-  # generate_segments()
-  #################################################################################################################
-
-  
+generate_segment_meta_data <- function() {
   ################################################################################################################################
   #       (end time - start time) vs. total row  --> Because after RB there was a time gap + Activity might not be continuous
   ################################################################################################################################
@@ -335,9 +328,6 @@ generate_meta_data_break_activity <- function() {
 }
 
 
-
-
-
 generate_multi_level_segment <- function() {
   segment_df <- custom_read_csv(file.path(physiological_data_path, segment_df_file_name))
   segment_meta_data_df <- custom_read_csv(file.path(physiological_data_path, segment_meta_data_df_file_name))
@@ -372,13 +362,12 @@ generate_multi_level_segment <- function() {
 
 
 
-
-
 #-------------------------#
 #-------Main Program------#
 #-------------------------#
 ### investigate_data()
-# generate_meta_data_break_activity()
+# generate_segment_df()
+# generate_segment_meta_data()
 generate_multi_level_segment()
 
 
