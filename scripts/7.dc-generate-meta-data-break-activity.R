@@ -368,34 +368,6 @@ generate_multi_level_segment_df <- function() {
                         Segment_Multi_Level_2 = paste0(Segment, "_", Half_Segment),
                         Segment_Multi_Level_4 = paste0(Segment, "_", Quarter_Segment),
           )
-        
-        ################################################################################################################
-        # break_df <- temp_segment_df %>% 
-        #   dplyr::filter(Segments_Activity=='Out') %>% 
-        #   dplyr::mutate(Half_Segment=1,
-        #                 Quarter_Segment=1)
-        
-        
-        # dplyr::filter(Segments_Activity!='Out') %>% 
-        
-        
-        # temp_segment_df <- temp_segment_df %>% 
-        #   dplyr::mutate(Half_Segment = ifelse(Segments_Activity=='Out', 1, row_number()%/%Half_Segment_Length+2),
-        #                 Quarter_Segment = ifelse(Segments_Activity=='Out', 1, row_number()%/%Quarter_Segment_Length+2),
-        #                 
-        #                 Half_Segment = ifelse(Half_Segment > 3, 3, Half_Segment),
-        #                 Quarter_Segment = ifelse(Quarter_Segment > 5, 5, Quarter_Segment) ,
-        #                 
-        #                 Segment_Multi_Level_2 = paste0(Segment, "_", Half_Segment),
-        #                 Segment_Multi_Level_4 = paste0(Segment, "_", Quarter_Segment),
-        #                 )
-        
-        # row_diff <- nrow(temp_segment_df)-nrow(break_df)-nrow(non_break_df)
-        # print(paste(subj, day, segment, row_diff))
-        
-        # merged_multi_level_segment_df <<- rbind.fill(merged_multi_level_segment_df, break_df, non_break_df)
-        ################################################################################################################
-        
       
         print(paste(subj, day, segment))
         merged_multi_level_segment_df <<- rbind.fill(merged_multi_level_segment_df, temp_segment_df)
@@ -416,7 +388,11 @@ generate_multi_level_segment_meta_data <- function() {
   # generate_multi_level_segment_df()
   # #################################################################################################################
   
-  multi_level_segment_df <- custom_read_csv(file.path(physiological_data_path, multi_level_segment_df_file_name))
+  multi_level_segment_df <- custom_read_csv(file.path(physiological_data_path, multi_level_segment_df_file_name)) %>% 
+    dplyr::mutate(Segment_Multi_Level=paste0(Segment_Multi_Level_2, '_', Segment_Multi_Level_4))
+  
+  
+  #################################################################################################################
   segment_multilevel_2_meta_data_df <- multi_level_segment_df %>%
     dplyr::group_by(Participant_ID, Day, Segment, Segment_Multi_Level_2) %>%
     dplyr::summarize(
@@ -424,28 +400,26 @@ generate_multi_level_segment_meta_data <- function() {
       Mean_PP_Other_Activities_Multi_Level_2=mean(Trans_PP[Segments_Activity=="Other"], na.rm = TRUE),
     ) %>%
     ungroup() %>% 
-    
     merge(mean_df, by=c('Participant_ID')) %>% 
     dplyr::group_by(Participant_ID, Day, Segment, Segment_Multi_Level_2) %>%
     dplyr::mutate(
       Mean_PP_RW_Multi_Level_2_Normalized = Mean_PP_RW_Multi_Level_2 - Lowest_RB_PP,
       Mean_PP_Other_Activities_Multi_Level_2_Normalized = Mean_PP_Other_Activities_Multi_Level_2 - Lowest_RB_PP,
     ) %>%
-    
     dplyr::select(Participant_ID, 
                   Day, 
                   Segment,
-                  
                   Segment_Multi_Level_2, 
-                  Mean_PP_RW_Multi_Level_2, 
-                  Mean_PP_Other_Activities_Multi_Level_2,
+                  # Mean_PP_RW_Multi_Level_2, 
+                  # Mean_PP_Other_Activities_Multi_Level_2,
                   Mean_PP_RW_Multi_Level_2_Normalized,
-                  Mean_PP_Other_Activities_Multi_Level_2_Normalized,
+                  # Mean_PP_Other_Activities_Multi_Level_2_Normalized,
                   )
+  #################################################################################################################
+
   
   
-  
-  
+  #################################################################################################################
   segment_multilevel_4_meta_data_df <- multi_level_segment_df %>%
     dplyr::group_by(Participant_ID, Day, Segment, Segment_Multi_Level_4) %>%
     dplyr::summarize(
@@ -453,55 +427,28 @@ generate_multi_level_segment_meta_data <- function() {
       Mean_PP_Other_Activities_Multi_Level_4=mean(Trans_PP[Segments_Activity=="Other"], na.rm = TRUE),
     ) %>%
     ungroup() %>%
-    
-    
     merge(mean_df, by=c('Participant_ID')) %>% 
     dplyr::group_by(Participant_ID, Day, Segment, Segment_Multi_Level_4) %>%
     dplyr::mutate(
       Mean_PP_RW_Multi_Level_4_Normalized = Mean_PP_RW_Multi_Level_4 - Lowest_RB_PP,
       Mean_PP_Other_Activities_Multi_Level_4_Normalized = Mean_PP_Other_Activities_Multi_Level_4 - Lowest_RB_PP,
     ) %>%
-    
-    
     dplyr::select(Participant_ID,
                   Day,
                   Segment,
-
                   Segment_Multi_Level_4,
-                  Mean_PP_RW_Multi_Level_4,
-                  Mean_PP_Other_Activities_Multi_Level_4,
+                  # Mean_PP_RW_Multi_Level_4,
+                  # Mean_PP_Other_Activities_Multi_Level_4,
+                  Mean_PP_RW_Multi_Level_4_Normalized,
+                  # Mean_PP_Other_Activities_Multi_Level_4_Normalized,
                   )
+  #################################################################################################################
   
   View(segment_multilevel_2_meta_data_df)
   View(segment_multilevel_4_meta_data_df)
   
-  
-
-  # #################################################################################################################
-  # segment_partition_test_df <- segment_meta_data_df %>%
-  #   dplyr::mutate(Length_Segment_Without_Break=Length_Segment-Length_Break) %>% 
-  #   dplyr::select(
-  #     Participant_ID,
-  #     Day,
-  #     
-  #     Segment,
-  #     Length_Segment,
-  #     Length_Break,
-  #     Length_Segment_Without_Break,
-  #     
-  #     StartSegmentTime,
-  #     EndSegmentTime,
-  #     
-  #     # T_D, ## Exactly same as Length_Day
-  #     # Length_Day,
-  #     # Length_Break,
-  #     # Length_RestingBaseline,
-  #     # Length_WS,
-  #     
-  #   )
-  # View(segment_partition_test_df)
-  # #################################################################################################################
-  
+  convert_to_csv(segment_multilevel_2_meta_data_df, file.path(physiological_data_path, "segment_multilevel_2_meta_data_df.csv"))
+  convert_to_csv(segment_multilevel_4_meta_data_df, file.path(physiological_data_path, "segment_multilevel_4_meta_data_df.csv"))
 }
 
 
