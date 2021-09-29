@@ -328,8 +328,9 @@ generate_segment_meta_data <- function() {
 }
 
 
-generate_multi_level_segment <- function() {
 
+generate_multi_level_segment_df <- function() {
+  
   segment_meta_data_df <- custom_read_csv(file.path(physiological_data_path, segment_meta_data_df_file_name)) %>% 
     dplyr::mutate(Length_Segment_Without_Break=Length_Segment-Length_Break) %>% 
     dplyr::select(Participant_ID, Day, Segment, Length_Segment_Without_Break)
@@ -342,10 +343,10 @@ generate_multi_level_segment <- function() {
   sapply(unique(segment_multilevel_df$Participant_ID), function(subj) {
     sapply(unique(segment_multilevel_df$Day), function(day) {
       sapply(unique(segment_multilevel_df$Segment), function(segment) {
-        
+  
   # sapply(c('T005', 'T009'), function(subj) {
-  #   sapply(c('Day4'), function(day) {
-  #     sapply(c(2), function(segment) {
+  #   sapply(c('Day3', 'Day4'), function(day) {
+  #     sapply(unique(segment_multilevel_df$Segment), function(segment) {
         
         temp_segment_df <- segment_multilevel_df %>% 
           dplyr::filter(Participant_ID==subj,
@@ -387,18 +388,40 @@ generate_multi_level_segment <- function() {
         
         # row_diff <- nrow(temp_segment_df)-nrow(break_df)-nrow(non_break_df)
         # print(paste(subj, day, segment, row_diff))
-
+        
         # merged_multi_level_segment_df <<- rbind.fill(merged_multi_level_segment_df, break_df, non_break_df)
         ################################################################################################################
         
+      
         print(paste(subj, day, segment))
         merged_multi_level_segment_df <<- rbind.fill(merged_multi_level_segment_df, temp_segment_df)
       })
     })
   })
   
-  # View(merged_multi_level_segment_df)
-  print(paste(nrow(segment_multilevel_df), nrow(merged_multi_level_segment_df)))
+  View(merged_multi_level_segment_df)
+  print(paste(nrow(merged_multi_level_segment_df), nrow(segment_multilevel_df)))
+  
+  convert_to_csv(merged_multi_level_segment_df, file.path(physiological_data_path, multi_level_segment_df_file_name))
+}
+
+
+
+generate_multi_level_segment_meta_data <- function() {
+  # #################################################################################################################
+  # generate_multi_level_segment_df()
+  # #################################################################################################################
+  
+  segment_multilevel_meta_data_df <- custom_read_csv(file.path(physiological_data_path, multi_level_segment_df_file_name)) %>%
+    dplyr::group_by(Participant_ID, Day, Segment, Segment_Multi_Level_2) %>%
+    dplyr::summarize(
+      Mean_PP_RW=mean(Trans_PP[Segments_Activity=="RW"], na.rm = TRUE),
+      Mean_PP_Other_Activities=mean(Trans_PP[Segments_Activity=="Other"], na.rm = TRUE),
+    ) %>%
+    ungroup()
+  
+  View(segment_multilevel_meta_data_df)
+  
   
 
   # #################################################################################################################
@@ -437,7 +460,7 @@ generate_multi_level_segment <- function() {
 ### investigate_data()
 # generate_segment_df()
 # generate_segment_meta_data()
-generate_multi_level_segment()
+generate_multi_level_segment_meta_data()
 
 
 
