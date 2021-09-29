@@ -329,33 +329,43 @@ generate_segment_meta_data <- function() {
 
 
 generate_multi_level_segment <- function() {
-  segment_df <- custom_read_csv(file.path(physiological_data_path, segment_df_file_name))
-  segment_meta_data_df <- custom_read_csv(file.path(physiological_data_path, segment_meta_data_df_file_name))
-  
-  #################################################################################################################
-  segment_partition_test_df <- segment_meta_data_df %>%
+
+  segment_meta_data_df <- custom_read_csv(file.path(physiological_data_path, segment_meta_data_df_file_name)) %>% 
     dplyr::mutate(Length_Segment_Without_Break=Length_Segment-Length_Break) %>% 
-    dplyr::select(
-      Participant_ID,
-      Day,
-      
-      Segment,
-      Length_Segment,
-      Length_Break,
-      Length_Segment_Without_Break,
-      
-      StartSegmentTime,
-      EndSegmentTime,
-      
-      # T_D, ## Exactly same as Length_Day
-      # Length_Day,
-      # Length_Break,
-      # Length_RestingBaseline,
-      # Length_WS,
-      
-    )
-  View(segment_partition_test_df)
-  #################################################################################################################
+    dplyr::select(Participant_ID, Day, Segment, Length_Segment_Without_Break)
+  
+  segment_multilevel_df <- custom_read_csv(file.path(physiological_data_path, segment_df_file_name)) %>% 
+    merge(segment_meta_data_df, by=c('Participant_ID', 'Day', 'Segment'))
+  
+  View(segment_multilevel_df)
+  
+  
+  
+
+  # #################################################################################################################
+  # segment_partition_test_df <- segment_meta_data_df %>%
+  #   dplyr::mutate(Length_Segment_Without_Break=Length_Segment-Length_Break) %>% 
+  #   dplyr::select(
+  #     Participant_ID,
+  #     Day,
+  #     
+  #     Segment,
+  #     Length_Segment,
+  #     Length_Break,
+  #     Length_Segment_Without_Break,
+  #     
+  #     StartSegmentTime,
+  #     EndSegmentTime,
+  #     
+  #     # T_D, ## Exactly same as Length_Day
+  #     # Length_Day,
+  #     # Length_Break,
+  #     # Length_RestingBaseline,
+  #     # Length_WS,
+  #     
+  #   )
+  # View(segment_partition_test_df)
+  # #################################################################################################################
   
 }
 
