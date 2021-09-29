@@ -28,13 +28,11 @@ generate_daywise_model_data <- function() {
   full_df <- custom_read_csv(file.path(physiological_data_path, full_df_file_name))
   mean_df <- custom_read_csv(file.path(physiological_data_path, qc1_normalized_mean_v1_file_name))
   segment_meta_data_df <- custom_read_csv(file.path(physiological_data_path, segment_meta_data_df_file_name)) %>% 
-    dplyr::select(Participant_ID,	Day, Segment) %>% 
-    dplyr::group_by(Participant_ID, Day) %>%
+    dplyr::select(Participant_ID,	Day, Segment, T_D, Length_RestingBaseline) %>% 
+    dplyr::group_by(Participant_ID, Day, T_D, Length_RestingBaseline) %>%
     dplyr::summarise(Max_Segment = max(Segment)) %>% 
     dplyr::ungroup()
   
-  ##------------!!
-  # View(segment_meta_data_df)
   
   model_df <- full_df %>%
     ### Activity1, Activity2, Activity3, Activities
@@ -42,10 +40,6 @@ generate_daywise_model_data <- function() {
     
     dplyr::select(Participant_ID,	Day, Treatment, Reduced_Application_final, Segments_Activity) %>%
     dplyr::rename(Applications=Reduced_Application_final) %>% 
-    
-    dplyr::group_by(Participant_ID, Day) %>%
-    dplyr::summarize(T_D=n()) %>%
-    dplyr::ungroup() %>%
     
     dplyr::filter(Treatment=='WS') %>%
     dplyr::group_by(Participant_ID, Day) %>%
@@ -69,35 +63,6 @@ generate_daywise_model_data <- function() {
                      UT_Sec=sum(Applications=="Utilities Apps", na.rm = TRUE),
                      WB_Sec=sum(Applications=="Web Browsing Apps", na.rm = TRUE),
                      NO_APP_Sec=sum(is.na(Applications)),
-
-                     T_WP=round(100*WP_Sec/T_D, 2),
-                     T_EM=round(100*EM_Sec/T_D, 2),
-                     T_EA=round(100*EA_Sec/T_D, 2),
-                     T_PA=round(100*PA_Sec/T_D, 2),
-                     T_VC=round(100*VC_Sec/T_D, 2),
-                     T_UT=round(100*UT_Sec/T_D, 2),
-                     T_WB=round(100*WB_Sec/T_D, 2),
-                     T_NO_APP=round(100*NO_APP_Sec/T_D, 2),
-                     
-                     # WP_Sec=length(Applications[Applications=="Document Apps" & !is.na(Applications)]),
-                     # EM_Sec=length(Applications[Applications=="Email" & !is.na(Applications)]),
-                     # EA_Sec=length(Applications[Applications=="Entertaining Apps" & !is.na(Applications)]),
-                     # PA_Sec=length(Applications[Applications=="Programming Apps" & !is.na(Applications)]),
-                     # VC_Sec=length(Applications[Applications=="Virtual Communication Apps" & !is.na(Applications)]),
-                     # UT_Sec=length(Applications[Applications=="Utilities Apps" & !is.na(Applications)]),
-                     # WB_Sec=length(Applications[Applications=="Web Browsing Apps" & !is.na(Applications)]),
-                     # NO_APP_Sec=length(Applications[is.na(Applications)]),
-                     # 
-                     # T_WP=round(100*WP_Sec/T_D, 2),
-                     # T_EM=round(100*EM_Sec/T_D, 2),
-                     # T_EA=round(100*EA_Sec/T_D, 2),
-                     # T_PA=round(100*PA_Sec/T_D, 2),
-                     # T_VC=round(100*VC_Sec/T_D, 2),
-                     # T_UT=round(100*UT_Sec/T_D, 2),
-                     # T_WB=round(100*WB_Sec/T_D, 2),
-                     # T_NO_APP=round(100*NO_APP_Sec/T_D, 2),
-                     
-                     T_Percentage_Sum=T_WP+T_EM+T_EA+T_PA+T_VC+T_UT+T_WB+T_NO_APP
                      
                      ) %>% 
     dplyr::ungroup() %>% 
@@ -105,8 +70,43 @@ generate_daywise_model_data <- function() {
     merge(mean_df, by=c('Participant_ID', 'Day'), all=T) %>%
     merge(segment_meta_data_df, by=c('Participant_ID', 'Day'), all=T) %>%
     
-    dplyr::mutate(tOut=ifelse(Max_Segment==1, 0, Break_Time/(Max_Segment-1)),
-                  fOut=(Max_Segment-1)*3600/T_D) %>%
+    dplyr::mutate(
+                  T_RB=T_D-Length_WS,
+                  RB_Diff=T_RB-Length_RestingBaseline,
+      
+                  tOut=ifelse(Max_Segment==1, 0, Break_Time/(Max_Segment-1)),
+                  fOut=(Max_Segment-1)*3600/T_D,
+                  
+                  T_WP=round(100*WP_Sec/T_D, 2),
+                  T_EM=round(100*EM_Sec/T_D, 2),
+                  T_EA=round(100*EA_Sec/T_D, 2),
+                  T_PA=round(100*PA_Sec/T_D, 2),
+                  T_VC=round(100*VC_Sec/T_D, 2),
+                  T_UT=round(100*UT_Sec/T_D, 2),
+                  T_WB=round(100*WB_Sec/T_D, 2),
+                  T_NO_APP=round(100*NO_APP_Sec/T_D, 2),
+                  
+                  # WP_Sec=length(Applications[Applications=="Document Apps" & !is.na(Applications)]),
+                  # EM_Sec=length(Applications[Applications=="Email" & !is.na(Applications)]),
+                  # EA_Sec=length(Applications[Applications=="Entertaining Apps" & !is.na(Applications)]),
+                  # PA_Sec=length(Applications[Applications=="Programming Apps" & !is.na(Applications)]),
+                  # VC_Sec=length(Applications[Applications=="Virtual Communication Apps" & !is.na(Applications)]),
+                  # UT_Sec=length(Applications[Applications=="Utilities Apps" & !is.na(Applications)]),
+                  # WB_Sec=length(Applications[Applications=="Web Browsing Apps" & !is.na(Applications)]),
+                  # NO_APP_Sec=length(Applications[is.na(Applications)]),
+                  # 
+                  # T_WP=round(100*WP_Sec/T_D, 2),
+                  # T_EM=round(100*EM_Sec/T_D, 2),
+                  # T_EA=round(100*EA_Sec/T_D, 2),
+                  # T_PA=round(100*PA_Sec/T_D, 2),
+                  # T_VC=round(100*VC_Sec/T_D, 2),
+                  # T_UT=round(100*UT_Sec/T_D, 2),
+                  # T_WB=round(100*WB_Sec/T_D, 2),
+                  # T_NO_APP=round(100*NO_APP_Sec/T_D, 2),
+                  
+                  T_Percentage_Sum=T_WP+T_EM+T_EA+T_PA+T_VC+T_UT+T_WB+T_NO_APP
+                  
+                  ) %>%
     
     # tOut: The mean break time in seconds during the daily observation period. 
     # fOut The number of breaks per hour during the daily observation period.
@@ -117,7 +117,10 @@ generate_daywise_model_data <- function() {
       Treatment,
 
       T_D,
-      Length_WS,
+      # Length_WS,
+      # T_RB,
+      # Length_RestingBaseline,
+      # RB_Diff,
 
       PP,
       E4_HR,

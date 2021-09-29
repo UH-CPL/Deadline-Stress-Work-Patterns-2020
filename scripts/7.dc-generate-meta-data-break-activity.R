@@ -304,6 +304,7 @@ generate_meta_data_break_activity <- function() {
       Participant_ID,
       Day,
       Segment,
+      # T_D,
       CT_SL,
       CT_Activity_Sum,
       CT_Application_Sum
