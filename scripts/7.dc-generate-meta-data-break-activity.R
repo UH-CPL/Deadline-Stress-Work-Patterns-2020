@@ -18,7 +18,11 @@ library(zoo)
 # source(file.path(script_dir, 'us-common-functions.R'))
 
 physiological_data_path <<- file.path(project_dir, curated_data_dir, physiological_data_dir)
-
+mean_df <<- custom_read_csv(file.path(physiological_data_path, qc1_transformed_mean_v2_file_name)) %>% 
+  dplyr::filter(Signal=='PP',
+                Treatment=='RB') %>% 
+  dplyr::select(Participant_ID, Four_Day_Min) %>% 
+  dplyr::rename(Lowest_RB_PP=Four_Day_Min)
 
 #-------------------------#
 #---FUNCTION DEFINITION---#
@@ -76,11 +80,11 @@ generate_segment_meta_data <- function() {
   #       (end time - start time) vs. total row  --> Because after RB there was a time gap + Activity might not be continuous
   ################################################################################################################################
   segment_df <- custom_read_csv(file.path(physiological_data_path, segment_df_file_name))
-  mean_df <- custom_read_csv(file.path(physiological_data_path, qc1_transformed_mean_v2_file_name)) %>% 
-    dplyr::filter(Signal=='PP',
-                  Treatment=='RB') %>% 
-    dplyr::select(Participant_ID, Four_Day_Min) %>% 
-    dplyr::rename(Lowest_RB_PP=Four_Day_Min)
+  # mean_df <- custom_read_csv(file.path(physiological_data_path, qc1_transformed_mean_v2_file_name)) %>% 
+  #   dplyr::filter(Signal=='PP',
+  #                 Treatment=='RB') %>% 
+  #   dplyr::select(Participant_ID, Four_Day_Min) %>% 
+  #   dplyr::rename(Lowest_RB_PP=Four_Day_Min)
     
 
   segment_meta_data_df_1 <- segment_df %>%
@@ -412,15 +416,64 @@ generate_multi_level_segment_meta_data <- function() {
   # generate_multi_level_segment_df()
   # #################################################################################################################
   
-  segment_multilevel_meta_data_df <- custom_read_csv(file.path(physiological_data_path, multi_level_segment_df_file_name)) %>%
+  multi_level_segment_df <- custom_read_csv(file.path(physiological_data_path, multi_level_segment_df_file_name))
+  segment_multilevel_2_meta_data_df <- multi_level_segment_df %>%
     dplyr::group_by(Participant_ID, Day, Segment, Segment_Multi_Level_2) %>%
     dplyr::summarize(
-      Mean_PP_RW=mean(Trans_PP[Segments_Activity=="RW"], na.rm = TRUE),
-      Mean_PP_Other_Activities=mean(Trans_PP[Segments_Activity=="Other"], na.rm = TRUE),
+      Mean_PP_RW_Multi_Level_2=mean(Trans_PP[Segments_Activity=="RW"], na.rm = TRUE),
+      Mean_PP_Other_Activities_Multi_Level_2=mean(Trans_PP[Segments_Activity=="Other"], na.rm = TRUE),
     ) %>%
-    ungroup()
+    ungroup() %>% 
+    
+    merge(mean_df, by=c('Participant_ID')) %>% 
+    dplyr::group_by(Participant_ID, Day, Segment, Segment_Multi_Level_2) %>%
+    dplyr::mutate(
+      Mean_PP_RW_Multi_Level_2_Normalized = Mean_PP_RW_Multi_Level_2 - Lowest_RB_PP,
+      Mean_PP_Other_Activities_Multi_Level_2_Normalized = Mean_PP_Other_Activities_Multi_Level_2 - Lowest_RB_PP,
+    ) %>%
+    
+    dplyr::select(Participant_ID, 
+                  Day, 
+                  Segment,
+                  
+                  Segment_Multi_Level_2, 
+                  Mean_PP_RW_Multi_Level_2, 
+                  Mean_PP_Other_Activities_Multi_Level_2,
+                  Mean_PP_RW_Multi_Level_2_Normalized,
+                  Mean_PP_Other_Activities_Multi_Level_2_Normalized,
+                  )
   
-  View(segment_multilevel_meta_data_df)
+  
+  
+  
+  segment_multilevel_4_meta_data_df <- multi_level_segment_df %>%
+    dplyr::group_by(Participant_ID, Day, Segment, Segment_Multi_Level_4) %>%
+    dplyr::summarize(
+      Mean_PP_RW_Multi_Level_4=mean(Trans_PP[Segments_Activity=="RW"], na.rm = TRUE),
+      Mean_PP_Other_Activities_Multi_Level_4=mean(Trans_PP[Segments_Activity=="Other"], na.rm = TRUE),
+    ) %>%
+    ungroup() %>%
+    
+    
+    merge(mean_df, by=c('Participant_ID')) %>% 
+    dplyr::group_by(Participant_ID, Day, Segment, Segment_Multi_Level_4) %>%
+    dplyr::mutate(
+      Mean_PP_RW_Multi_Level_4_Normalized = Mean_PP_RW_Multi_Level_4 - Lowest_RB_PP,
+      Mean_PP_Other_Activities_Multi_Level_4_Normalized = Mean_PP_Other_Activities_Multi_Level_4 - Lowest_RB_PP,
+    ) %>%
+    
+    
+    dplyr::select(Participant_ID,
+                  Day,
+                  Segment,
+
+                  Segment_Multi_Level_4,
+                  Mean_PP_RW_Multi_Level_4,
+                  Mean_PP_Other_Activities_Multi_Level_4,
+                  )
+  
+  View(segment_multilevel_2_meta_data_df)
+  View(segment_multilevel_4_meta_data_df)
   
   
 
