@@ -299,19 +299,44 @@ generate_meta_data_break_activity <- function() {
   
   
   
+  
   #################################################################################################################
-  segment_meta_data_mini_df <- segment_meta_data_df %>%
+  segment_partition_test_df <- segment_meta_data_df %>%
     dplyr::select(
       Participant_ID,
       Day,
+      
       Segment,
-      # T_D,
-      CT_SL,
-      CT_Activity_Sum,
-      CT_Application_Sum
-      )
-  View(segment_meta_data_mini_df)
+      Length_Segment,
+      
+      StartSegmentTime,
+      EndSegmentTime,
+      
+      T_D, ## Exactly same as Length_Day
+      Length_Day,
+      
+      Length_Break,
+      Length_WS,
+      Length_RestingBaseline,
+    )
+  View(segment_partition_test_df)
   #################################################################################################################
+  
+  
+  
+  # #################################################################################################################
+  # segment_cum_percentage_test_df <- segment_meta_data_df %>%
+  #   dplyr::select(
+  #     Participant_ID,
+  #     Day,
+  #     Segment,
+  #     # T_D,
+  #     CT_SL,
+  #     CT_Activity_Sum,
+  #     CT_Application_Sum
+  #     )
+  # View(segment_cum_percentage_test_df)
+  # #################################################################################################################
 }
 
 
