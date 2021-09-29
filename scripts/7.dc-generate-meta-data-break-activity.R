@@ -302,22 +302,25 @@ generate_meta_data_break_activity <- function() {
   
   #################################################################################################################
   segment_partition_test_df <- segment_meta_data_df %>%
+    dplyr::mutate(Length_Segment_Without_Break=Length_Segment-Length_Break) %>% 
     dplyr::select(
       Participant_ID,
       Day,
       
       Segment,
       Length_Segment,
+      Length_Break,
+      Length_Segment_Without_Break,
       
       StartSegmentTime,
       EndSegmentTime,
       
-      T_D, ## Exactly same as Length_Day
-      Length_Day,
-      
-      Length_Break,
-      Length_WS,
-      Length_RestingBaseline,
+      # T_D, ## Exactly same as Length_Day
+      # Length_Day,
+      # Length_Break,
+      # Length_RestingBaseline,
+      # Length_WS,
+
     )
   View(segment_partition_test_df)
   #################################################################################################################
