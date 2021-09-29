@@ -23,6 +23,27 @@ physiological_data_path <<- file.path(project_dir, curated_data_dir, physiologic
 #-------------------------#
 #---FUNCTION DEFINITION---#
 #-------------------------#
+investigate_data <- function() {
+  physiological_data_path <- file.path(project_dir, curated_data_dir, physiological_data_dir)
+  
+  #################################################################################################################
+  # data_file_name <- qc0_raw_file_name
+  # data_file_name <- qc0_final_file_name
+  # data_file_name <- qc1_file_name
+  data_file_name <- full_df_file_name
+  
+  investigation_df <- custom_read_csv(file.path(physiological_data_path, data_file_name)) %>%
+    dplyr::group_by(Participant_ID, Day, Treatment, Sinterface_Time) %>%
+    dplyr::summarize(Duplicate_Row=n()) %>% 
+    filter(Duplicate_Row>1)
+  
+  View(investigation_df)
+  convert_to_csv(investigation_df, file.path(physiological_data_path, paste0("investigation_", data_file_name)))
+  #################################################################################################################
+}
+
+
+
 generate_segments <- function() {
   data_file_name <- full_df_file_name
 
@@ -350,32 +371,16 @@ generate_multi_level_segment <- function() {
 
 
 
-investigate_data <- function() {
-  physiological_data_path <- file.path(project_dir, curated_data_dir, physiological_data_dir)
-  
-  #################################################################################################################
-  # data_file_name <- qc0_raw_file_name
-  # data_file_name <- qc0_final_file_name
-  # data_file_name <- qc1_file_name
-  data_file_name <- full_df_file_name
-  
-  investigation_df <- custom_read_csv(file.path(physiological_data_path, data_file_name)) %>%
-    dplyr::group_by(Participant_ID, Day, Treatment, Sinterface_Time) %>%
-    dplyr::summarize(Duplicate_Row=n()) %>% 
-    filter(Duplicate_Row>1)
-  
-  View(investigation_df)
-  convert_to_csv(investigation_df, file.path(physiological_data_path, paste0("investigation_", data_file_name)))
-  #################################################################################################################
-}
+
 
 
 #-------------------------#
 #-------Main Program------#
 #-------------------------#
+### investigate_data()
 # generate_meta_data_break_activity()
 generate_multi_level_segment()
-### investigate_data()
+
 
 
 
