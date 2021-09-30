@@ -30,7 +30,7 @@ chunk_sizes <- c(5, 10, 15)
 # day3_day4_ws_min="day3_day4_ws_min"
 #
 ##########################################################
-baseline_parameter <- lowest_baseline  ## Please check segment normalization when change it
+baseline_parameter <- lowest_baseline  ## Please check multilevel(2, 4) segment normalization when change it
 t_test_comparison <- day3_day4_ws_mean
 
 
