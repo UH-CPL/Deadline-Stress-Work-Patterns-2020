@@ -150,8 +150,8 @@ generate_segment_meta_data <- function() {
           NO_APP_Sec=sum(is.na(Applications)),
           
           Mean_PP=mean(Trans_PP[Segments_Activity!="Out"], na.rm = TRUE),
-          Mean_PP_RW=mean(Trans_PP[Segments_Activity=="RW"], na.rm = TRUE),
-          Mean_PP_Other_Activities=mean(Trans_PP[Segments_Activity=="Other"], na.rm = TRUE),
+          # Mean_PP_RW=mean(Trans_PP[Segments_Activity=="RW"], na.rm = TRUE),
+          # Mean_PP_Other_Activities=mean(Trans_PP[Segments_Activity=="Other"], na.rm = TRUE),
           
           ) %>% 
     dplyr::ungroup() %>% 
@@ -227,16 +227,16 @@ generate_segment_meta_data <- function() {
       segment_meta_data_df <- segment_meta_data_df %>%
         dplyr::mutate(
           Mean_PP_Normalized = Mean_PP - Lowest_RB_PP,
-          Mean_PP_RW_Normalized = Mean_PP_RW - Lowest_RB_PP,
-          Mean_PP_Other_Activities_Normalized = Mean_PP_Other_Activities - Lowest_RB_PP,
+          # Mean_PP_RW_Normalized = Mean_PP_RW - Lowest_RB_PP,
+          # Mean_PP_Other_Activities_Normalized = Mean_PP_Other_Activities - Lowest_RB_PP,
         )
       
     } else if (baseline_parameter==corresponding_baseline) {
       segment_meta_data_df <- segment_meta_data_df %>%
         dplyr::mutate(
           Mean_PP_Normalized = Mean_PP - Mean_PP_RestingBaseline,
-          Mean_PP_RW_Normalized = Mean_PP_RW - Mean_PP_RestingBaseline,
-          Mean_PP_Other_Activities_Normalized = Mean_PP_Other_Activities - Mean_PP_RestingBaseline,
+          # Mean_PP_RW_Normalized = Mean_PP_RW - Mean_PP_RestingBaseline,
+          # Mean_PP_Other_Activities_Normalized = Mean_PP_Other_Activities - Mean_PP_RestingBaseline,
         )
     }
   
@@ -411,17 +411,31 @@ generate_multi_level_segment_meta_data <- function() {
     dplyr::group_by(Participant_ID, Day, Segment, Segment_Multi_Level_2) %>%
     dplyr::summarize(
       Mean_PP_Multi_Level_2=mean(Trans_PP[Segments_Activity!="Out"], na.rm = TRUE),
-      Mean_PP_RW_Multi_Level_2=mean(Trans_PP[Segments_Activity=="RW"], na.rm = TRUE),
-      Mean_PP_Other_Activities_Multi_Level_2=mean(Trans_PP[Segments_Activity=="Other"], na.rm = TRUE),
+      # Mean_PP_RW_Multi_Level_2=mean(Trans_PP[Segments_Activity=="RW"], na.rm = TRUE),
+      # Mean_PP_Other_Activities_Multi_Level_2=mean(Trans_PP[Segments_Activity=="Other"], na.rm = TRUE),
     ) %>%
     ungroup() %>% 
     merge(mean_df, by=c('Participant_ID')) %>% 
-    dplyr::group_by(Participant_ID, Day, Segment, Segment_Multi_Level_2) %>%
-    dplyr::mutate(
-      Mean_PP_Multi_Level_2_Normalized = Mean_PP_Multi_Level_2 - Lowest_RB_PP,
-      Mean_PP_RW_Multi_Level_2_Normalized = Mean_PP_RW_Multi_Level_2 - Lowest_RB_PP,
-      Mean_PP_Other_Activities_Multi_Level_2_Normalized = Mean_PP_Other_Activities_Multi_Level_2 - Lowest_RB_PP,
-    ) %>%
+    dplyr::group_by(Participant_ID, Day, Segment, Segment_Multi_Level_2) 
+    
+    if (baseline_parameter==lowest_baseline) {
+      segment_multilevel_2_meta_data_df <- segment_multilevel_2_meta_data_df %>%
+        dplyr::mutate(
+          Mean_PP_Multi_Level_2_Normalized = Mean_PP_Multi_Level_2 - Lowest_RB_PP,
+          # Mean_PP_RW_Multi_Level_2_Normalized = Mean_PP_RW_Multi_Level_2 - Lowest_RB_PP,
+          # Mean_PP_Other_Activities_Multi_Level_2_Normalized = Mean_PP_Other_Activities_Multi_Level_2 - Lowest_RB_PP,
+        )
+      
+    } else if (baseline_parameter==corresponding_baseline) {
+      segment_multilevel_2_meta_data_df <- segment_multilevel_2_meta_data_df %>%
+        dplyr::mutate(
+          Mean_PP_Multi_Level_2_Normalized = Mean_PP_Multi_Level_2 - Mean_PP_RestingBaseline,
+          # Mean_PP_RW_Multi_Level_2_Normalized = Mean_PP_RW_Multi_Level_2 - Mean_PP_RestingBaseline,
+          # Mean_PP_Other_Activities_Multi_Level_2_Normalized = Mean_PP_Other_Activities_Multi_Level_2 - Mean_PP_RestingBaseline,
+        )
+    }
+    
+  segment_multilevel_2_meta_data_df <- segment_multilevel_2_meta_data_df %>%
     dplyr::select(Participant_ID, 
                   Day, 
                   Segment,
@@ -442,17 +456,31 @@ generate_multi_level_segment_meta_data <- function() {
     dplyr::group_by(Participant_ID, Day, Segment, Segment_Multi_Level_4) %>%
     dplyr::summarize(
       Mean_PP_Multi_Level_4=mean(Trans_PP[Segments_Activity!="Out"], na.rm = TRUE),
-      Mean_PP_RW_Multi_Level_4=mean(Trans_PP[Segments_Activity=="RW"], na.rm = TRUE),
-      Mean_PP_Other_Activities_Multi_Level_4=mean(Trans_PP[Segments_Activity=="Other"], na.rm = TRUE),
+      # Mean_PP_RW_Multi_Level_4=mean(Trans_PP[Segments_Activity=="RW"], na.rm = TRUE),
+      # Mean_PP_Other_Activities_Multi_Level_4=mean(Trans_PP[Segments_Activity=="Other"], na.rm = TRUE),
     ) %>%
     ungroup() %>%
     merge(mean_df, by=c('Participant_ID')) %>% 
-    dplyr::group_by(Participant_ID, Day, Segment, Segment_Multi_Level_4) %>%
-    dplyr::mutate(
-      Mean_PP_Multi_Level_4_Normalized = Mean_PP_Multi_Level_4 - Lowest_RB_PP,
-      Mean_PP_RW_Multi_Level_4_Normalized = Mean_PP_RW_Multi_Level_4 - Lowest_RB_PP,
-      Mean_PP_Other_Activities_Multi_Level_4_Normalized = Mean_PP_Other_Activities_Multi_Level_4 - Lowest_RB_PP,
-    ) %>%
+    dplyr::group_by(Participant_ID, Day, Segment, Segment_Multi_Level_4)
+    
+    if (baseline_parameter==lowest_baseline) {
+      segment_multilevel_4_meta_data_df <- segment_multilevel_4_meta_data_df %>%
+        dplyr::mutate(
+          Mean_PP_Multi_Level_4_Normalized = Mean_PP_Multi_Level_4 - Lowest_RB_PP,
+          # Mean_PP_RW_Multi_Level_4_Normalized = Mean_PP_RW_Multi_Level_4 - Lowest_RB_PP,
+          # Mean_PP_Other_Activities_Multi_Level_4_Normalized = Mean_PP_Other_Activities_Multi_Level_4 - Lowest_RB_PP,
+        )
+      
+    } else if (baseline_parameter==corresponding_baseline) {
+      segment_multilevel_4_meta_data_df <- segment_multilevel_4_meta_data_df %>%
+        dplyr::mutate(
+          Mean_PP_Multi_Level_4_Normalized = Mean_PP_Multi_Level_4 - Mean_PP_RestingBaseline,
+          # Mean_PP_RW_Multi_Level_4_Normalized = Mean_PP_RW_Multi_Level_4 - Mean_PP_RestingBaseline,
+          # Mean_PP_Other_Activities_Multi_Level_4_Normalized = Mean_PP_Other_Activities_Multi_Level_4 - Mean_PP_RestingBaseline,
+        )
+    }
+    
+  segment_multilevel_4_meta_data_df <- segment_multilevel_4_meta_data_df %>%
     dplyr::select(Participant_ID,
                   Day,
                   Segment,
@@ -482,7 +510,7 @@ generate_multi_level_segment_meta_data <- function() {
 ### investigate_data()
 # generate_segment_df()
 # generate_segment_meta_data()
-generate_multi_level_segment_meta_data()
+# generate_multi_level_segment_meta_data()
 
 
 
