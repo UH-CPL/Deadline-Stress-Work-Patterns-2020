@@ -336,7 +336,6 @@ generate_multi_level_segment_df <- function() {
   
   segment_multilevel_df <- custom_read_csv(file.path(physiological_data_path, segment_df_file_name)) %>% 
     merge(segment_meta_data_df, by=c('Participant_ID', 'Day', 'Segment')) %>% 
-    # merge(segment_meta_data_df_1, by=c("Participant_ID", "Day")) %>%
     dplyr::group_by(Participant_ID, Day, Segment) %>% 
     dplyr::mutate(Half_Segment_Length=floor(Length_Segment_Without_Break/2),
                   Quarter_Segment_Length=floor(Length_Segment_Without_Break/4),
@@ -353,49 +352,6 @@ generate_multi_level_segment_df <- function() {
   
   convert_to_csv(segment_multilevel_df, file.path(physiological_data_path, multi_level_segment_df_file_name))
 }
-
-
-
-  ################################################################################################
-  #                                     DELETE IT
-  ################################################################################################
-  # merged_multi_level_segment_df <- tibble()
-  # 
-  # sapply(unique(segment_multilevel_df$Participant_ID), function(subj) {
-  #   sapply(unique(segment_multilevel_df$Day), function(day) {
-  #     sapply(unique(segment_multilevel_df$Segment), function(segment) {
-  # 
-  # # sapply(c('T005', 'T009'), function(subj) {
-  # #   sapply(c('Day3', 'Day4'), function(day) {
-  # #     sapply(unique(segment_multilevel_df$Segment), function(segment) {
-  #       
-  #       temp_segment_df <- segment_multilevel_df %>% 
-  #         dplyr::filter(Participant_ID==subj,
-  #                       Day==day,
-  #                       Segment==segment) %>% 
-  #         dplyr::mutate(Half_Segment_Length=floor(Length_Segment_Without_Break/2),
-  #                       Quarter_Segment_Length=floor(Length_Segment_Without_Break/4),
-  #                       
-  #                       Half_Segment = ifelse(Segments_Activity=='Out', 1, row_number()%/%Half_Segment_Length+2),
-  #                       Quarter_Segment = ifelse(Segments_Activity=='Out', 1, row_number()%/%Quarter_Segment_Length+2),
-  #                       
-  #                       Half_Segment = ifelse(Half_Segment > 3, 3, Half_Segment),
-  #                       Quarter_Segment = ifelse(Quarter_Segment > 5, 5, Quarter_Segment) ,
-  #                       
-  #                       Segment_Multi_Level_2 = paste0(Segment, "_", Half_Segment),
-  #                       Segment_Multi_Level_4 = paste0(Segment, "_", Quarter_Segment),
-  #         )
-  #     
-  #       print(paste(subj, day, segment))
-  #       merged_multi_level_segment_df <<- rbind.fill(merged_multi_level_segment_df, temp_segment_df)
-  #     })
-  #   })
-  # })
-  # View(merged_multi_level_segment_df)
-  # print(paste(nrow(merged_multi_level_segment_df), nrow(segment_multilevel_df)))
-  ################################################################################################
-
-
 
 
 generate_multi_level_segment_meta_data <- function() {
