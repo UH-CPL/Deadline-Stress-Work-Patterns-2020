@@ -83,7 +83,7 @@ generate_segment_meta_data <- function() {
   ################################################################################################################################
   segment_df <- custom_read_csv(file.path(physiological_data_path, segment_df_file_name))
 
-  segment_meta_data_df_1 <- segment_df %>%
+  segment_meta_data_df_1 <<- segment_df %>%
     dplyr::group_by(Participant_ID, Day) %>%
     dplyr::summarize(
           Mean_PP_RestingBaseline=mean(Trans_PP[Segments_Activity=="Out" & Segment==1], na.rm = TRUE),
@@ -336,6 +336,7 @@ generate_multi_level_segment_df <- function() {
   
   segment_multilevel_df <- custom_read_csv(file.path(physiological_data_path, segment_df_file_name)) %>% 
     merge(segment_meta_data_df, by=c('Participant_ID', 'Day', 'Segment')) %>% 
+    # merge(segment_meta_data_df_1, by=c("Participant_ID", "Day")) %>%
     dplyr::group_by(Participant_ID, Day, Segment) %>% 
     dplyr::mutate(Half_Segment_Length=floor(Length_Segment_Without_Break/2),
                   Quarter_Segment_Length=floor(Length_Segment_Without_Break/4),
@@ -416,6 +417,7 @@ generate_multi_level_segment_meta_data <- function() {
     ) %>%
     ungroup() %>% 
     merge(mean_df, by=c('Participant_ID')) %>% 
+    merge(segment_meta_data_df_1, by=c("Participant_ID", "Day")) %>%
     dplyr::group_by(Participant_ID, Day, Segment, Segment_Multi_Level_2) 
     
     if (baseline_parameter==lowest_baseline) {
@@ -461,6 +463,7 @@ generate_multi_level_segment_meta_data <- function() {
     ) %>%
     ungroup() %>%
     merge(mean_df, by=c('Participant_ID')) %>% 
+    merge(segment_meta_data_df_1, by=c("Participant_ID", "Day")) %>%
     dplyr::group_by(Participant_ID, Day, Segment, Segment_Multi_Level_4)
     
     if (baseline_parameter==lowest_baseline) {
