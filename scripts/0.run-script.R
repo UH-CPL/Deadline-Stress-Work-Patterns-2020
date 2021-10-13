@@ -89,13 +89,13 @@ smooth_pp_signals <- F # Oiii....REMEMBER TO COMMENT OUT - Raw_Noisy_PP in scrip
 # 
 # 
 # #-------------------------------------------------------------------------------------------- 7
-# source(file.path(script_dir, '7.dc-generate-meta-data-break-activity.R'))
-# ### investigate_data()
-# generate_segment_df()
-# generate_segment_meta_data()
-# generate_multi_level_segment_meta_data()
-# 
-# 
+source(file.path(script_dir, '7.dc-generate-meta-data-break-activity.R'))
+### investigate_data()
+generate_segment_df()
+generate_segment_meta_data()
+generate_multi_level_segment_meta_data()
+
+
 # # ------------------------------------------------------------------------------------------- 8
 # source(file.path(script_dir, '8.dc-generate-model-data.R'))
 # generate_daywise_model_data()

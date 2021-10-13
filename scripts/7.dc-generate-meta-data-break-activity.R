@@ -229,6 +229,8 @@ generate_segment_meta_data <- function() {
           Mean_PP_Normalized = Mean_PP - Lowest_RB_PP,
           # Mean_PP_RW_Normalized = Mean_PP_RW - Lowest_RB_PP,
           # Mean_PP_Other_Activities_Normalized = Mean_PP_Other_Activities - Lowest_RB_PP,
+          
+          Mean_PP_Normalized_Percentage_Change = 100*abs(Mean_PP_Normalized/Lowest_RB_PP),
         )
       
     } else if (baseline_parameter==corresponding_baseline) {
@@ -237,6 +239,8 @@ generate_segment_meta_data <- function() {
           Mean_PP_Normalized = Mean_PP - Mean_PP_RestingBaseline,
           # Mean_PP_RW_Normalized = Mean_PP_RW - Mean_PP_RestingBaseline,
           # Mean_PP_Other_Activities_Normalized = Mean_PP_Other_Activities - Mean_PP_RestingBaseline,
+          
+          Mean_PP_Normalized_Percentage_Change = 100*abs(Mean_PP_Normalized/Mean_PP_RestingBaseline),
         )
     }
   
@@ -303,6 +307,8 @@ generate_segment_meta_data <- function() {
       Mean_PP_Normalized,
       # Mean_PP_RW_Normalized,
       # Mean_PP_Other_Activities_Normalized,
+      
+      Mean_PP_Normalized_Percentage_Change,
     )
 
   # View(segment_df)
