@@ -228,6 +228,8 @@ process_normalize_data <- function() {
               E4_EDA=E4_EDA-get_rb(., 'E4_EDA'),
               E4_HR=E4_HR-get_rb(., 'E4_HR'),
               iWatch_HR=iWatch_HR-get_rb(., 'iWatch_HR'),
+              
+              PP_Percentage_Change = 100*abs(PP/(PP+get_rb(., 'PP')))
               ))
 
   convert_to_csv(normalized_df, file.path(curated_data_dir, physiological_data_dir, qc1_normalized_mean_v1_file_name))
