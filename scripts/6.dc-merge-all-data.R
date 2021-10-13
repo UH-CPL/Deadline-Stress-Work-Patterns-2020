@@ -160,6 +160,7 @@ merge_all_data <- function() {
       Timestamp,
       TreatmentTime,
       
+      Raw_PP,
       Trans_PP,
       Trans_E4_EDA,
       Trans_E4_HR,
@@ -174,6 +175,7 @@ merge_all_data <- function() {
       
     ) %>% 
     dplyr::rename(
+      Noise_Removed_PP=Raw_PP,
       PP=Trans_PP,
       E4_EDA=Trans_E4_EDA,
       E4_HR=Trans_E4_HR,
