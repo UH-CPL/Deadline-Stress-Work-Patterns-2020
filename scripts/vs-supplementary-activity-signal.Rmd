@@ -59,6 +59,7 @@ save_plot <- function(plot_name, plot, width=default_plot_width, height=default_
 
 
 read_data <- function() {
+  #@@@@
   if (test==TRUE) {
     full_df <<- custom_read_csv(file.path(project_dir, curated_data_dir, physiological_data_dir, 'mini_full_df.csv'))
   } else {
@@ -81,6 +82,15 @@ add_theme <- function(plot) {
       # axis.title.x=element_blank(),
       # axis.text.x=element_blank(),
       # axis.ticks.x=element_blank(),
+      
+                      
+      #@@@@
+      # axis.text.x = element_text(size = 14),
+      # legend.key.size = unit(1, "cm"),
+      # # legend.spacing.x = unit(0.5, "cm"),
+      # legend.text=element_text(size=14),
+      
+      
       axis.title.y=element_blank(),
       axis.text.y=element_blank(),
       axis.ticks.y=element_blank()
@@ -131,9 +141,11 @@ modify_activity_data <- function(activity_df) {
 
 draw_signal_activity_comparison_plots <- function() {
   if (test==T) {
-    # subj_list <- c('T001', 'T011', 'T017')
-    subj_list <- c('T005')
-    day_list <- c('Day1')
+    subj_list <- c('T009', 'T011')
+    day_list <- c('Day1', 'Day3')
+    
+    # subj_list <- c('T009')
+    # day_list <- c('Day3')
     
   } else {
     subj_list <- unique(full_df$Participant_ID)
@@ -161,10 +173,10 @@ draw_signal_activity_comparison_plots <- function() {
           # select(TreatmentTime, Trans_PP, Trans_E4_EDA, Trans_E4_HR, Trans_iWatch_HR)
           select(TreatmentTime, 
                  PP, E4_EDA, E4_HR, iWatch_HR)
-          
-        melted_df <- melt(signal_df, 'TreatmentTime') 
         # %>%
         #   na.omit()
+        
+        melted_df <- melt(signal_df, 'TreatmentTime')
         
         signal_plot <- ggplot(melted_df, aes(TreatmentTime, value, colour = variable)) + 
           geom_line(size=0.5) +
@@ -182,9 +194,9 @@ draw_signal_activity_comparison_plots <- function() {
                 panel.grid.minor = element_blank(),
                 axis.line = element_line(colour = "black"),
                 plot.title = element_text(hjust = 0.5, size = 16),
-                axis.title.x=element_blank(),
                 axis.title.y=element_blank(),
                 axis.text.y=element_blank(),
+                axis.title.x=element_blank(),
                 axis.ticks.y=element_blank(),
                 legend.position = 'None',
                 )
@@ -290,13 +302,22 @@ draw_signal_activity_comparison_plots <- function() {
           app_usage_plot <- add_theme(app_usage_plot)
           activity_plot <- add_theme(activity_plot)
 
+          #@@@@
           grid_plot <- grid.arrange(signal_plot, activity_plot, app_usage_plot, ncol=1)
           save_plot(file.path(project_dir, plots_dir, activity_plots_dir,
-                              paste0(subj, '_', day, '_', treatment)), 
+                              paste0(subj, '_', day, '_', treatment)),
                     grid_plot,
                     14,
                     10
                     )
+          
+          #@@@@
+          # save_plot(file.path(project_dir, plots_dir, activity_plots_dir,
+          #                     paste0(subj, '_', day, '_', treatment, '_chi')), 
+          #           activity_plot,
+          #           15,
+          #           4
+          #           )
           
           
         } else {
@@ -320,6 +341,7 @@ draw_signal_activity_comparison_plots <- function() {
 
 <!-- \newpage -->
 ```{r echo=FALSE, warning = FALSE, message = FALSE}
+#@@@@
 test <<- F
 show_activity_details <<- F
 
