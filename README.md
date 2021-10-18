@@ -18,18 +18,13 @@ Packages are available on CRAN and can be installed using a simple call to `inst
 ## Script Set
 ##### Please run the following scripts sequentially
 1. **Data Curation (dc)**
-	- dc-curate-and-process-data.R
-	- dc-format-activity-data.R
-	- dc-process-mean-per-session.R
-2. **Validation Scripts (vs)**
-	- vs-quality-control-plots.Rmd
+	- 0.run-script.R
 
 
 
 ##### Note: Please do not run any script after this
 -------------------------------------------------------------------------------------------------------------
 **Utility Scripts (us)**
-
 	- us-common-functions.R
 	- us-down-sample-pp.R
 	- us-filter-pp.R
