@@ -33,9 +33,13 @@ help/*
 
 raw-data/*
 curated-data/*
-#log-files/*
+
+log-files/*
+python-scripts/*
+report/*
 #plots/*
 
+--- meta-data-formation/*
 
 # R files #
 ##############################################
