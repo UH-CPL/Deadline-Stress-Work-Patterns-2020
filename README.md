@@ -36,9 +36,9 @@ Packages are available on CRAN and can be installed using a simple call to `inst
 	- us-filter-pp.R
 	    - Removes noise from PP signals. It is called from 1.dc-curate-and-process-data
 	- us-down-sample-pp.R
-    	    - Downsamples data to 1 fps. It is called from 1.dc-curate-and-process-data
-	
-	
+	    - Downsamples data to 1 fps. It is called from 1.dc-curate-and-process-data
+	    
+	    
 **Data Curation (dc)**
 
 	- 1.dc-curate-and-process-data.R
