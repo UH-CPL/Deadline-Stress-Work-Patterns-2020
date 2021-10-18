@@ -29,3 +29,15 @@ Packages are available on CRAN and can be installed using a simple call to `inst
 	- us-common-functions.R
 	- us-down-sample-pp.R
 	- us-filter-pp.R
+	
+	
+**Data Curation (dc)**
+
+	- 1.dc-curate-and-process-data.R
+	- 2.dc-process-activity-app-usage-data.R
+	- 3.dc-quality-control-phase-one.R
+	- 4.dc-generate-transformed-data.R
+	- 5.dc-generate-normalized-data.R
+	- 6.dc-merge-all-data.R
+	- 7.dc-generate-meta-data-break-activity.R
+	- 8.dc-generate-model-data.R
