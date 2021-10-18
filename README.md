@@ -18,6 +18,7 @@ Packages are available on CRAN and can be installed using a simple call to `inst
 ## Script Set
 ##### Please run the following scripts sequentially
 1. **Data Curation (dc)** 
+
 	- 0.dc-all-script.R
 
 
