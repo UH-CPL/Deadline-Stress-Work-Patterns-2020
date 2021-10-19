@@ -51,7 +51,7 @@ report/*
 *vs-linear-models.Rmd
 *vs-reduced-ontologies.rmd
 *vs-segmented_data_visualization_modeling.rmd
-*vs-supplementary-activity-signal.Rmd
+#*vs-supplementary-activity-signal.Rmd
 *vs-supplementary-raw-smooth-trans.Rmd
 *vs-supplementary-signal-comparison.Rmd
 *us-install-packages.R
