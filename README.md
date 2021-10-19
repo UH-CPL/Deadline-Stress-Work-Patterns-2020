@@ -20,7 +20,7 @@ Packages are available on CRAN and can be installed using a simple call to `inst
 **Data Curation (dc)** 
 
 	- 0.dc-all-script.R
-		- This is the only script to run to get the final data. This script calls all the following scripts sequentially
+		- This is the only script to run to curate, control the quality, transform and get the final data for modeling. This script calls all the following scripts sequentially.
 			- 1.dc-curate-and-process-data.R
 			- 2.dc-process-activity-app-usage-data.R
 			- 3.dc-quality-control-phase-one.R
@@ -34,6 +34,8 @@ Packages are available on CRAN and can be installed using a simple call to `inst
 
 	- vs-supplementary-activity-signal.Rmd
 		- Generate plots for activity and app usage
+	- vs-modeling-analysis.R
+	- 
 
 
 
