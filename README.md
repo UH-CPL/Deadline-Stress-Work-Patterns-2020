@@ -35,7 +35,7 @@ Packages are available on CRAN and can be installed using a simple call to `inst
 	- vs-supplementary-activity-signal.Rmd
 		- Generate plots for activity and app usage
 	- vs-modeling-analysis.R
-	- 
+	- vs-final-model-visualization.rmd
 
 
 
