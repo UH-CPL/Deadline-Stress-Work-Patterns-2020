@@ -47,7 +47,7 @@ Data$R <- as.factor(Data$R)
 Data$G <- as.factor(Data$G)
 
 
-Data <- subset(Data , select = -c(Participant_ID, Treatment, F_Angry, F_Disgusted, F_Afraid, F_Sad, F_Surprised, F_Binary, FSum_Binary, F_Happy, F_Neutral, N_TD, N_E, N_F, Out, T_RW_APPS, T_EA, T_PA, T_VC, AB, B5_O, B5_N))
+Data <- subset(Data , select = -c(Participant_ID, Treatment, F_Angry, F_Disgusted, F_Afraid, F_Sad, F_Surprised, F_Binary, FSum_Binary, Out, T_RW_APPS, T_EA, T_PA, T_VC, AB))
 
 write.csv(Data, file.path(data_dir, "model_data.csv"), row.names = FALSE)
 ```
@@ -136,7 +136,7 @@ model_plot_int <-
         values = c("green", "blue", "orange", "red")
       ) +
       labs(y = y_title, x = X_title, title = "") +
-      theme(legend.position = 'none',
+      theme(legend.position = 'top',
             # legend.spacing.x = unit(0.5, "cm"),
             legend.title = element_blank())
   }
@@ -174,11 +174,11 @@ y_title= element_blank()
 X_title <- expression(italic(T[SP])~paste('[ % ]'))
 int_plot <- model_plot_int(model_interaction,"pred",predictor = c("SP","R"), X_title, y_title)
 int_plot
-
+# legend_int <- get_legend(int_plot)
 
 
 final_plot <-
-  plot_grid(RW_plot,
+  ggarrange(RW_plot,
             int_plot,
             fout_plot,
             nrow = 1)
