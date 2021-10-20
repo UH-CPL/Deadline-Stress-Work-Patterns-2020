@@ -41,6 +41,22 @@ report/*
 
 --- meta-data-formation/*
 
+
+
+
+*smoothing-param-15
+*smoothing-param-150
+*smoothing-param-15-3-sd-curated-rb---------------------
+*raw-smooth-signals
+*final-reports
+*09-22-2021
+*activity-pp-box-plots
+*activity-plots
+
+
+
+
+
 # R files #
 ##############################################
 #*basic-check-and-practice.R
