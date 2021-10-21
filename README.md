@@ -56,10 +56,18 @@ Packages are available on CRAN and can be installed using a simple call to `inst
 **Data Curation (dc)**
 
 	- 1.dc-curate-and-process-data.R
+	    - For each participant the script does the following:
+	    	- Reads the original perinasal perspiration signal data, removes noise, downsamples to 1 frame per second (fps)
+		- Reads the E4 and iWatch signal files, downsamples them, removes noise, and merges them with the PP signal file
+
 	- 2.dc-process-activity-app-usage-data.R
+	    - Process and finalize the participant's activity data
+	    - Process and finalize the app usage data
+
 	- 3.dc-quality-control-phase-one.R
 	- 4.dc-generate-transformed-data.R
 	- 5.dc-generate-normalized-data.R
 	- 6.dc-merge-all-data.R
+	    - Gathers and merges all report and email responses for 10 participants
 	- 7.dc-generate-meta-data-break-activity.R
 	- 8.dc-generate-model-data.R
