@@ -65,15 +65,19 @@ Packages are available on CRAN and can be installed using a simple call to `inst
 	    - Processes and finalizes the app usage data
 
 	- 3.dc-quality-control-phase-one.R
+	    - Performs filtering on physiological data, to remove the signals with invalid range
 	
 	- 4.dc-generate-transformed-data.R
+	    - Performs log transformation on all modalities of the physiological channel
 	
 	- 5.dc-generate-normalized-data.R
+	    - Generates normalized data in respect of the Resting Baseline session
 	
 	- 6.dc-merge-all-data.R
-	    - Gathers and merges the physiological, psychometrics, activities data for all participants
+	    - Gathers and merges the physiological, psychometrics, activity data for all participants
 	    
 	- 7.dc-generate-meta-data-break-activity.R
+	    - Generates info regarding total breaks, time of the break, frequency of the breaks etc.
 	
 	- 8.dc-generate-model-data.R
 	    - Generates the working session mean data to perform the linear modeling
