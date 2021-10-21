@@ -33,11 +33,11 @@ Packages are available on CRAN and can be installed using a simple call to `inst
 **Validation Scripts (vs)**
 
 	- vs-supplementary-activity-signal.Rmd
-	    - Generate plots for activity and app usage
-	- vs-modeling-analysis.R
-	    - Check collinearity and perform linear model
+	    - Generates plots for activity and app usage
+	- vs-modeling-sanalysis.R
+	    - Checks collinearity and performs linear modeling
 	- vs-final-model-visualization.rmd
-	    - Visualize the significant predictors of the model
+	    - Visualizes the significant predictors of the model
 
 
 
@@ -61,13 +61,19 @@ Packages are available on CRAN and can be installed using a simple call to `inst
 		- Reads the E4 and iWatch signal files, downsamples them, removes noise, and merges them with the PP signal file
 
 	- 2.dc-process-activity-app-usage-data.R
-	    - Process and finalize the participant's activity data
-	    - Process and finalize the app usage data
+	    - Processes and finalizes the participant's activity data
+	    - Processes and finalizes the app usage data
 
 	- 3.dc-quality-control-phase-one.R
+	
 	- 4.dc-generate-transformed-data.R
+	
 	- 5.dc-generate-normalized-data.R
+	
 	- 6.dc-merge-all-data.R
-	    - Gathers and merges all report and email responses for 10 participants
+	    - Gathers and merges the physiological, psychometrics, activities data for all participants
+	    
 	- 7.dc-generate-meta-data-break-activity.R
+	
 	- 8.dc-generate-model-data.R
+	    - Generates the working session mean data to perform the linear modeling
