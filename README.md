@@ -46,11 +46,11 @@ Packages are available on CRAN and can be installed using a simple call to `inst
 **Utility Scripts (us)**
 
 	- us-common-functions.R
-	    - Useful functions that are called from almost all scripts
+	    - Useful functions that are called from almost all scripts.
 	- us-filter-pp.R
-	    - Removes noise from PP signals. It is called from 1.dc-curate-and-process-data
+	    - Removes noise from PP signals. It is called from 1.dc-curate-and-process-data.
 	- us-down-sample-pp.R
-	    - Downsamples data to 1 fps. It is called from 1.dc-curate-and-process-data
+	    - Downsamples data to 1 fps. It is called from 1.dc-curate-and-process-data.
 	    
 	    
 **Data Curation (dc)**
@@ -58,7 +58,7 @@ Packages are available on CRAN and can be installed using a simple call to `inst
 	- 1.dc-curate-and-process-data.R
 	    - For each participant the script does the following:
 	    	- Reads the original perinasal perspiration signal data, removes noise, downsamples to 1 frame per second (fps)
-		- Reads the E4 and iWatch signal files, downsamples them, removes noise, and merges them with the PP signal file
+		- Reads the E4 and iWatch signal files, downsamples them, removes noise, and merges them with the PP signal
 
 	- 2.dc-process-activity-app-usage-data.R
 	    - Processes and finalizes the participant's activity data
@@ -77,7 +77,7 @@ Packages are available on CRAN and can be installed using a simple call to `inst
 	    - Gathers and merges the physiological, psychometrics, activity data for all participants
 	    
 	- 7.dc-generate-meta-data-break-activity.R
-	    - Generates info regarding total breaks, time of the break, frequency of the breaks etc.
+	    - Generates data for total breaks, time of the break, frequency of the breaks etc.
 	
 	- 8.dc-generate-model-data.R
 	    - Generates the working session mean data to perform the linear modeling
