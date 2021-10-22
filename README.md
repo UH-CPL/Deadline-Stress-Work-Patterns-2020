@@ -20,8 +20,8 @@ Packages are available on CRAN and can be installed using a simple call to `inst
 **Data Curation (dc)** 
 
 	- 0.dc-all-script.R
-	    - This is the only script to run to curate, control the quality, transform and get the final data for modeling. 
-	      This script calls all the following scripts sequentially.
+	    - The only script to run to curate, control the quality, transform and get the final data for modeling. 
+	      This script calls all the following scripts sequentially:
 		- 1.dc-curate-and-process-data.R
 		- 2.dc-process-activity-app-usage-data.R
 		- 3.dc-quality-control-phase-one.R
