@@ -1,6 +1,6 @@
 # Computer-centered deadline behaviors and stress patterns
 This repository contains the R scripts to curate, ensure quality control, normalize, and generate final model data from the raw data collected
-via the S-Interface and other tools in the "Office Tasks 2020" project.
+via the S-Interface and other tools in the "Deadline Stress and Work Patterns - 2020" project.
 
 
 ## Getting Started
@@ -20,7 +20,8 @@ Packages are available on CRAN and can be installed using a simple call to `inst
 **Data Curation (dc)** 
 
 	- 0.dc-all-script.R
-	    - This is the only script to run to curate, control the quality, transform and get the final data for modeling. This script calls all the following scripts sequentially.
+	    - This is the only script to run to curate, control the quality, transform and get the final data for modeling. 
+	      This script calls all the following scripts sequentially.
 		- 1.dc-curate-and-process-data.R
 		- 2.dc-process-activity-app-usage-data.R
 		- 3.dc-quality-control-phase-one.R
