@@ -21,7 +21,7 @@ Packages are available on CRAN and can be installed using a simple call to `inst
 
 - 0.dc-all-script.R
     - The only script to run to curate, control the quality, transform and get the final data for modeling. 
-    - Download raw_and_noise_removed_df.csv from [OSF Deadline Stress-Work Patterns](https://osf.io/46x7w) and put it on the "all-subj-data" folder under "curated-data" folder. 
+    - Download raw_and_noise_removed_df.csv from [OSF Deadline Stress-Work Patterns/Arousal 2020](https://osf.io/46x7w) and put it on the "all-subj-data" folder under "curated-data" folder. 
     - This script calls all the following scripts sequentially:
 	- 1.dc-curate-and-process-data.R
 	- 2.dc-process-activity-app-usage-data.R
@@ -34,12 +34,12 @@ Packages are available on CRAN and can be installed using a simple call to `inst
 	
 **Validation Scripts (vs)**
 
-	- vs-supplementary-activity-signal.Rmd
-	    - Generates plots for activity and app usage
-	- vs-modeling-sanalysis.R
-	    - Checks collinearity and performs linear modeling
-	- vs-final-model-visualization.rmd
-	    - Visualizes the significant predictors of the model
+- vs-supplementary-activity-signal.Rmd
+    - Generates plots for activity and app usage
+- vs-modeling-sanalysis.R
+    - Checks collinearity and performs linear modeling
+- vs-final-model-visualization.rmd
+    - Visualizes the significant predictors of the model
 
 
 
