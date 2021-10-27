@@ -7,7 +7,8 @@ curated_data_dir <- 'curated-data'
 
 subj_data_dir <- 'subject-data'
 utility_data_dir <- 'utility-data'
-physiological_data_dir <- 'physiological-data'
+# physiological_data_dir <- 'physiological-data'
+physiological_data_dir <- 'all-subj-data'
 physiological_questionnaire_data_dir <- 'physiological-questionnaire-data'
 questionnaire_data_dir <- 'questionnaire-data'
 performance_data_dir <- 'performance-data'
@@ -130,7 +131,8 @@ baseline_curated_time_file_name <- 'baseline_curated_time.csv'
 # qc0_file_name -> qc0_raw_file_name
 # qc99_file_name -> qc0_final_file_name
 ###############################################################
-qc0_raw_file_name <- 'qc0_raw_data.csv'        # all raw data - generates from dc-curate-and-process-data.R file
+# qc0_raw_file_name <- 'qc0_raw_data.csv'
+qc0_raw_file_name <- 'raw_and_noise_removed_df.csv'        # all raw data - generates from dc-curate-and-process-data.R file
 qc0_final_file_name <- 'qc0_final_data.csv'    # masked and manifested ontologies & activities data - generates from dc-curate-and-process-data.R file
 
 qc1_file_name <- 'qc1_data.csv'
