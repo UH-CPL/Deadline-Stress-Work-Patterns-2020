@@ -21,7 +21,8 @@ Packages are available on CRAN and can be installed using a simple call to `inst
 
 	- 0.dc-all-script.R
 	    - The only script to run to curate, control the quality, transform and get the final data for modeling. 
-	      This script calls all the following scripts sequentially:
+	    - Download raw_and_noise_removed_df.csv from https://osf.io/46x7w/ and put it on the "all-subj-data" folder under "curated-data" folder. 
+	    - This script calls all the following scripts sequentially:
 		- 1.dc-curate-and-process-data.R
 		- 2.dc-process-activity-app-usage-data.R
 		- 3.dc-quality-control-phase-one.R
