@@ -49,7 +49,7 @@ Data$G <- as.factor(Data$G)
 
 Data <- subset(Data , select = -c(Participant_ID, Treatment, F_Angry, F_Disgusted, F_Afraid, F_Sad, F_Surprised, F_Binary, FSum_Binary, Out, T_RW_APPS, T_EA, T_PA, T_VC, AB))
 
-write.csv(Data, file.path(data_dir, "model_data.csv"), row.names = FALSE)
+write.csv(Data, file.path(data_dir, "model_df.csv"), row.names = FALSE)
 ```
 
 
