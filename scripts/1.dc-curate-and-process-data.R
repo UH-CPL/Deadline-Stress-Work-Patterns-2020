@@ -517,32 +517,28 @@ get_downsampled_br <- function(subj_name, day_serial, session_name) {
   session_dir <- file.path(raw_data_dir, grp_dir, subj_name, day_serial, session_name)
   
   br_file_name <- get_matched_file_names(session_dir, br_file_pattern)
-  # nr_br_file_name <- get_matched_file_names(file.path(curated_data_dir, subj_data_dir), paste0('.*', subj_name, '_', day_serial, '_', session_name, nr_br_file_pattern))
+  downsampled_br_file_name <- get_matched_file_names(file.path(curated_data_dir, subj_data_dir), paste0('.*', subj_name, '_', day_serial, '_', session_name, downsampled_br_file_pattern))
   
-  # if(!is_empty(br_file_name)) {
-  #   if(is_empty(nr_br_file_name) | smooth_br_signals) {
-  #     ##### write_log_msg('--- noise reduced br file NOT found ---', curation_log_file)
-  #     ##### downsampled_br_df <- reduce_noise_and_downsample(session_dir, br_file_name)
-  #     downsampled_br_df <- reduce_noise_and_downsample_newFFT(session_dir, br_file_name, session_name)
-  #   } else {
-  #     # write_log_msg('--- noise reduced br file found ---', curation_log_file)
-  #     downsampled_br_df <- read_downsampled_br(nr_br_file_name)
-  #     downsampled_br_df$Timestamp <- as.POSIXct(downsampled_br_df$Timestamp)
-  #   }
-  # }
-  
-  ## This is when we need to update the *br_nr.csv file
-  # downsampled_br_df <- reduce_noise_and_downsample(session_dir, br_file_name)
-  
-  
-  br_df <- custom_read_csv(file.path(session_dir, br_file_name))
-  names(br_df) <- c("Frame",	"Time",	"Timestamp", "ROI", "Breathing")
-  
-  # br_df$Timestamp <- as.POSIXct(strptime(br_df$Timestamp, format=s_interface_date_format)) 
-  br_df$Timestamp <- convert_s_interface_date(convert_marker_date(br_df$Timestamp))
-  
-  downsampled_br_df <- downsample_using_mean(br_df, c('ROI'))
-  convert_to_csv(downsampled_br_df, file.path(curated_data_dir, subj_data_dir, paste0(substr(br_file_name, 1, nchar(br_file_name)-7), '_breath_downsampled.csv')))
+  if(!is_empty(br_file_name)) {
+    if(is_empty(downsampled_br_file_name)) {
+      ##### write_log_msg('--- noise reduced br file NOT found ---', curation_log_file)
+      ##### downsampled_br_df <- reduce_noise_and_downsample(session_dir, br_file_name)
+      br_df <- custom_read_csv(file.path(session_dir, br_file_name))
+      names(br_df) <- c("Frame",	"Time",	"Timestamp", "ROI", "Breathing")
+      
+      # br_df$Timestamp <- as.POSIXct(strptime(br_df$Timestamp, format=s_interface_date_format)) 
+      br_df$Timestamp <- convert_s_interface_date(convert_marker_date(br_df$Timestamp))
+      
+      downsampled_br_df <- downsample_using_mean(br_df, c('ROI'))
+      
+    } else {
+      # write_log_msg('--- noise reduced br file found ---', curation_log_file)
+      downsampled_br_df <- custom_read_csv(file.path(curated_data_dir, subj_data_dir, downsampled_br_file_name))
+      downsampled_br_df$Timestamp <- as.POSIXct(downsampled_br_df$Timestamp)
+    }
+  }
+
+  convert_to_csv(downsampled_br_df, file.path(curated_data_dir, subj_data_dir, paste0(substr(br_file_name, 1, nchar(br_file_name)-11), '_breath_downsampled.csv')))
   
   
   # downsampled_br_df <- downsampled_br_df %>% 
@@ -567,7 +563,7 @@ curate_breathing_data <- function(subj_name, day_serial, full_day_df){
     ###################################################
     ## Get 1-fps signal
     ###################################################
-    downsampled_br_df <- get_downsampled_br(subj_name, day_serial, session_name)
+    downsampled_br_df <- get_downsampled_br(subj_name, day_serial, session)
     
     
     ## rbind.fill bind two data frames that don't have the same set of columns
@@ -579,7 +575,7 @@ curate_breathing_data <- function(subj_name, day_serial, full_day_df){
   full_day_df <- merge(full_day_df, br_df, by='Timestamp', all=T)   ## CHECK!!! - all vs. all.x
   ##############################################################################################
   
-  
+  View(full_day_df)
   full_day_df
   
 }
