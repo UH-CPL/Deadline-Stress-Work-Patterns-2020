@@ -45,6 +45,7 @@ win_app_usage_file_pattern <- '.*MonitorLog.csv'
 e4_file_pattern <- 'HR.csv|EDA.csv'
 rr_file_pattern <- 'IBI.csv'
 iWatch_file_pattern <- '.*iWatch.csv'
+br_file_pattern <- '.*_breath.csv'
 
 
 ################-------Activities-------------##################

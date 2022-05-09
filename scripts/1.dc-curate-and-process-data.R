@@ -513,6 +513,80 @@ curate_ws_session_data <- function(subj_name, day_serial, rb_df) {
 }
 
 
+get_downsampled_br <- function(subj_name, day_serial, session_name) {
+  session_dir <- file.path(raw_data_dir, grp_dir, subj_name, day_serial, session_name)
+  
+  br_file_name <- get_matched_file_names(session_dir, br_file_pattern)
+  # nr_br_file_name <- get_matched_file_names(file.path(curated_data_dir, subj_data_dir), paste0('.*', subj_name, '_', day_serial, '_', session_name, nr_br_file_pattern))
+  
+  # if(!is_empty(br_file_name)) {
+  #   if(is_empty(nr_br_file_name) | smooth_br_signals) {
+  #     ##### write_log_msg('--- noise reduced br file NOT found ---', curation_log_file)
+  #     ##### downsampled_br_df <- reduce_noise_and_downsample(session_dir, br_file_name)
+  #     downsampled_br_df <- reduce_noise_and_downsample_newFFT(session_dir, br_file_name, session_name)
+  #   } else {
+  #     # write_log_msg('--- noise reduced br file found ---', curation_log_file)
+  #     downsampled_br_df <- read_downsampled_br(nr_br_file_name)
+  #     downsampled_br_df$Timestamp <- as.POSIXct(downsampled_br_df$Timestamp)
+  #   }
+  # }
+  
+  ## This is when we need to update the *br_nr.csv file
+  # downsampled_br_df <- reduce_noise_and_downsample(session_dir, br_file_name)
+  
+  
+  br_df <- custom_read_csv(file.path(session_dir, br_file_name))
+  names(br_df) <- c("Frame",	"Time",	"Timestamp", "ROI", "Breathing")
+  
+  # br_df$Timestamp <- as.POSIXct(strptime(br_df$Timestamp, format=s_interface_date_format)) 
+  br_df$Timestamp <- convert_s_interface_date(convert_marker_date(br_df$Timestamp))
+  
+  downsampled_br_df <- downsample_using_mean(br_df, c('ROI'))
+  convert_to_csv(downsampled_br_df, file.path(curated_data_dir, subj_data_dir, paste0(substr(br_file_name, 1, nchar(br_file_name)-7), '_breath_downsampled.csv')))
+  
+  
+  # downsampled_br_df <- downsampled_br_df %>% 
+  #   dplyr::mutate(Participant_ID=subj_name,
+  #                 Day=day_serial,
+  #                 Ontologies=NA,
+  #                 Treatment=get_session_abbr(session_name)) %>%
+  #   mutate_if(is.logical, as.character)
+  
+  downsampled_br_df
+}
+
+
+curate_breathing_data <- function(subj_name, day_serial, full_day_df){
+  
+  br_df <- tibble()
+  day_dir <- file.path(raw_data_dir, grp_dir, subj_name, day_serial)
+  
+  sessions <- c('Baseline', 'WorkingSession')
+  
+  for (session in sessions) {
+    ###################################################
+    ## Get 1-fps signal
+    ###################################################
+    downsampled_br_df <- get_downsampled_br(subj_name, day_serial, session_name)
+    
+    
+    ## rbind.fill bind two data frames that don't have the same set of columns
+    br_df <- rbind.fill(br_df, downsampled_br_df)
+  }
+
+  
+  ##############################################################################################
+  full_day_df <- merge(full_day_df, br_df, by='Timestamp', all=T)   ## CHECK!!! - all vs. all.x
+  ##############################################################################################
+  
+  
+  full_day_df
+  
+}
+
+
+
+
 get_decay <- function(signal, treatment) {
   if (signal %in% c('EDA')) {
     if (treatment == 'RB') {
@@ -926,15 +1000,15 @@ curate_data <- function() {
   subj_list <- custom_read_csv(file.path(curated_data_dir, utility_data_dir, subj_list_file_name))$Subject
   # print(subj_list)
   
-  sapply(subj_list, function(subj_name) {
+  # sapply(subj_list, function(subj_name) {
   # sapply(c('T003', 'T005'), function(subj_name) {
-  # sapply(c('T019'), function(subj_name) {
+  sapply(c('T003'), function(subj_name) {
 
     subj_dir <- file.path(raw_data_dir, grp_dir, subj_name)
     day_list <- get_dir_list(subj_dir)
     
-    sapply(day_list, function(day_serial) {
-    # sapply(day_list[1], function(day_serial) {
+    # sapply(day_list, function(day_serial) {
+    sapply(day_list[1], function(day_serial) {
       tryCatch({
         write_log_msg(paste0('\n----------\n', subj_name, '-', day_serial, "\n----------"), curation_log_file)
         
@@ -943,6 +1017,9 @@ curate_data <- function() {
         
         write_log_msg('Processing.....Working Session', curation_log_file)
         full_day_df <- curate_ws_session_data(subj_name, day_serial, rb_df)
+        
+        write_log_msg('Processing.....Breathing', curation_log_file)
+        full_day_df <- curate_breathing_data(subj_name, day_serial, full_day_df)
         
         write_log_msg('Merging.....e4 data', curation_log_file)
         full_day_df <- merge_e4_data(subj_name, day_serial, full_day_df)
