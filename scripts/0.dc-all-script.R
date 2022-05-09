@@ -58,9 +58,9 @@ smooth_pp_signals <- F # Oiii....REMEMBER TO COMMENT OUT - Raw_Noisy_PP in scrip
 #-------------------------#
 
 
-#-------------------------------------------------------------------------------------------- 1
-source(file.path(script_dir, '1.dc-curate-and-process-data.R'))
-curate_data()
+# #-------------------------------------------------------------------------------------------- 1
+# source(file.path(script_dir, '1.dc-curate-and-process-data.R'))
+# curate_data()
 
 
 #-------------------------------------------------------------------------------------------- 2
