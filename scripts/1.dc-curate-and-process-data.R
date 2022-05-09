@@ -529,7 +529,7 @@ get_downsampled_br <- function(subj_name, day_serial, session_name) {
       # br_df$Timestamp <- as.POSIXct(strptime(br_df$Timestamp, format=s_interface_date_format)) 
       br_df$Timestamp <- convert_s_interface_date(convert_marker_date(br_df$Timestamp))
       
-      downsampled_br_df <- downsample_using_mean(br_df, c('ROI'))
+      downsampled_br_df <- downsample_using_mean(br_df, c('ROI', 'Breathing'))
       
     } else {
       # write_log_msg('--- noise reduced br file found ---', curation_log_file)
@@ -570,12 +570,15 @@ curate_breathing_data <- function(subj_name, day_serial, full_day_df){
     br_df <- rbind.fill(br_df, downsampled_br_df)
   }
 
+  br_df <- br_df %>% 
+    select(-Time)
+  
   
   ##############################################################################################
   full_day_df <- merge(full_day_df, br_df, by='Timestamp', all=T)   ## CHECK!!! - all vs. all.x
   ##############################################################################################
   
-  View(full_day_df)
+  # View(full_day_df)
   full_day_df
   
 }
@@ -950,6 +953,9 @@ refactor_and_export_all_subj_data <- function(all_subj_df) {
            Raw_PP,
            PP,
            
+           ROI,
+           Breathing,
+           
            Raw_E4_EDA,
            E4_EDA,
            
@@ -996,15 +1002,15 @@ curate_data <- function() {
   subj_list <- custom_read_csv(file.path(curated_data_dir, utility_data_dir, subj_list_file_name))$Subject
   # print(subj_list)
   
-  # sapply(subj_list, function(subj_name) {
+  sapply(subj_list, function(subj_name) {
   # sapply(c('T003', 'T005'), function(subj_name) {
-  sapply(c('T003'), function(subj_name) {
+  # sapply(c('T003'), function(subj_name) {
 
     subj_dir <- file.path(raw_data_dir, grp_dir, subj_name)
     day_list <- get_dir_list(subj_dir)
     
-    # sapply(day_list, function(day_serial) {
-    sapply(day_list[1], function(day_serial) {
+    sapply(day_list, function(day_serial) {
+    # sapply(day_list[1], function(day_serial) {
       tryCatch({
         write_log_msg(paste0('\n----------\n', subj_name, '-', day_serial, "\n----------"), curation_log_file)
         
