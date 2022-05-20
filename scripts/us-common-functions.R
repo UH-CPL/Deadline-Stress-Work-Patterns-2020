@@ -18,6 +18,7 @@ final_data_dir <- 'final-data'
 signal_comparison_dir <- 'signal-comparison'
 activity_plots_dir <- 'activity-plots'
 activity_pp_box_plots_dir <- 'activity-pp-box-plots'
+roi_plots_dir <- 'roi-plots'
 
 
 default_plot_width <- 12
