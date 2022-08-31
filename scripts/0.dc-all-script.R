@@ -28,6 +28,7 @@ chunk_sizes <- c(5, 10, 15)
 # corresponding_baseline="corresponding_baseline"
 # day3_day4_ws_mean="day3_day4_ws_mean"
 # day3_day4_ws_min="day3_day4_ws_min"
+# four_day_ws_mean="four_day_ws_mean"
 #
 ##########################################################
 baseline_parameter <- corresponding_baseline  ## Please check multilevel(2, 4) segment normalization when change it
@@ -58,9 +59,9 @@ smooth_pp_signals <- F # Oiii....REMEMBER TO COMMENT OUT - Raw_Noisy_PP in scrip
 #-------------------------#
 
 
-#-------------------------------------------------------------------------------------------- 1
-source(file.path(script_dir, '1.dc-curate-and-process-data.R'))
-curate_data()
+# #-------------------------------------------------------------------------------------------- 1
+# source(file.path(script_dir, '1.dc-curate-and-process-data.R'))
+# curate_data()
 
 
 # #-------------------------------------------------------------------------------------------- 2
@@ -73,14 +74,14 @@ curate_data()
 # process_quality_control_phase_one()
 # 
 # 
-# #-------------------------------------------------------------------------------------------- 4
-# source(file.path(script_dir, '4.dc-generate-transformed-data.R'))
-# transform_data()
-# 
-# 
-# #-------------------------------------------------------------------------------------------- 5
-# source(file.path(script_dir, '5.dc-generate-normalized-data.R'))
-# normalize_data()
+#-------------------------------------------------------------------------------------------- 4
+source(file.path(script_dir, '4.dc-generate-transformed-data.R'))
+transform_data()
+
+
+#-------------------------------------------------------------------------------------------- 5
+source(file.path(script_dir, '5.dc-generate-normalized-data.R'))
+normalize_data()
 # 
 # 
 # # ------------------------------------------------------------------------------------------- 6

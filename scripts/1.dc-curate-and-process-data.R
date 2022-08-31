@@ -941,7 +941,8 @@ refactor_and_export_all_subj_data <- function(all_subj_df) {
     # arrange(BaseTreatmentTime) %>%
     # dplyr::mutate(TreatmentTime=BaseTreatmentTime-head(BaseTreatmentTime, 1)) %>%
     
-    dplyr::select(Participant_ID,
+    dplyr::select(
+           Participant_ID,
            Day,
            Treatment,
            Timestamp,

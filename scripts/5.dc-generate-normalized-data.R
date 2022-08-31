@@ -172,7 +172,13 @@ process_rb_data <- function() {
     mean_v2_df <<- mean_v2_df %>%
       dplyr::select(Participant_ID, Treatment, Signal, Day3_Day4_Min) %>%
       filter(Treatment=='WS')
+    
+  } else if (baseline_parameter==four_day_ws_mean) {
+    mean_v2_df <<- mean_v2_df %>%
+      dplyr::select(Participant_ID, Treatment, Signal, Four_Day_Mean) %>%
+      filter(Treatment=='WS')
   }
+  
 }
 
 get_rb <- function(df, signal) {
@@ -201,6 +207,12 @@ get_rb <- function(df, signal) {
     rb_val <- mean_v2_df %>%
       filter(Participant_ID==subj & Signal==signal) %>%
       dplyr::select(Day3_Day4_Min) %>%
+      pull()
+    
+  } else if (baseline_parameter==four_day_ws_mean) {
+    rb_val <- mean_v2_df %>%
+      filter(Participant_ID==subj & Signal==signal) %>%
+      dplyr::select(Four_Day_Mean) %>%
       pull()
   }
 
