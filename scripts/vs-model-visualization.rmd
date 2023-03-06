@@ -1,0 +1,468 @@
+---
+title: "Model"
+output: pdf_document
+date: '2023-01-09'
+---
+
+
+```{r setup, include=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(reshape2)
+library(dplyr)
+library(ggplot2)
+library(car)
+library(MASS)
+library(sjPlot)
+library(ggcorrplot)
+library(lmerTest)
+library(lme4)
+library(sjPlot)
+library(sjmisc)
+library(sjlabelled)
+library(ggpubr)
+library(cowplot)
+```
+
+
+```{r, echo=FALSE}
+root_dir <- getwd()
+project_directory<-dirname(root_dir)
+curated_data_dir <- file.path(project_directory, 'curated-data')
+plot_dir <- file.path(project_directory, 'plots')
+script_dir<- file.path(project_directory, 'scripts')
+log_dir <- file.path(project_directory, 'log-files')
+```
+
+
+
+
+```{r, echo=FALSE, warning=FALSE}
+file_name= 'model_data.csv'
+tmpData0<-read.csv(file.path(curated_data_dir, file_name), stringsAsFactors = FALSE) ### DATA WITH FACS
+# dim(tmpData0)
+tmpD0<-tmpData0
+tmpD0<-tmpD0[,-c(1,3,34:42)]
+```
+
+
+```{r, echo=FALSE, warning=FALSE}
+
+P_ID = c(rep("P001", 4), rep("P003", 4), rep("P005", 4), rep("P007", 4), rep("P009", 4), rep("P011", 4), rep("P013", 4), rep("P015", 4), rep("P017", 4), rep("P019", 4))
+
+tmpD0<-cbind(tmpD0,tmpData0[,37],tmpData0[,38],rowSums(tmpData0[,c(34:36,39)]),tmpData0[,40])
+colnames(tmpD0)[32:35]<-c("Hap","Sad","Neg","Neu")
+
+```
+
+
+
+
+```{r, echo=FALSE, warning=FALSE}
+Corr_Data = tmpD0
+Day_factor = factor(Corr_Data$Day)
+Corr_Data$Day = as.numeric(Day_factor)
+Corr_Data = Corr_Data %>% dplyr::select(-c(6:11, 24, 28:31))
+
+
+corr <- round(cor(Corr_Data), 1)
+modified_ticks = c(
+  "PP" = expression(bar(Delta*bold(ln*bolditalic(PP)))),
+  "RW" = expression(bolditalic(T[RW])),
+  "SA" = expression(bolditalic(T[SA])),
+  "SP" = expression(bolditalic(T[SP])),
+  "I" = expression(bolditalic(T[I])),
+  "T_D" = expression(bolditalic(T[D])),
+  
+  "fOut" = expression(bolditalic(f[Out])),
+  "tOut" = expression(bolditalic(bar(t)[Out])),
+  "Sad" = expression(bolditalic(DE[S])),
+  "Neg" = expression(bolditalic(DE['-'])),
+  "Hap" = expression(bolditalic(DE['+'])),
+  "Neu" = expression(bolditalic(DE['N'])),
+  
+  
+  "Day" = expression(bolditalic(D)),
+  "SA_B" = expression(bolditalic(SA[M])),
+  "SA_E" = expression(bolditalic(SA[E])),
+  "N_MD" = expression(bolditalic(N[MD])),
+  "N_PD" = expression(bolditalic(N[PD])),
+  "N_TD" = expression(bolditalic(N[TD])),
+  "N_P" = expression(bolditalic(N[P])),
+  "N_E" = expression(bolditalic(N[E])),
+  "N_F" = expression(bolditalic(N[F])),
+
+
+  "G" = expression(bolditalic(G)),
+  "R" = expression(bolditalic(R)),
+  "TA" = expression(bolditalic(TA))
+)
+
+library(corrplot)
+corplt_diagonal = ggcorrplot(corr,
+  type = "upper",
+  outline.col = "white",
+  ggtheme = ggplot2::theme_bw(),
+  colors = c("#6D9EC1", "white", "#E46726"),
+  lab = TRUE,
+  lab_size = 2,
+  # label = TRUE,
+  title = "Correlation plot"
+  # diag = TRUE
+)+ theme(
+  panel.grid = element_blank(),
+  axis.text.x = element_text(size = 10, angle = 60),
+  axis.text.y = element_text(size = 10),
+  legend.title = element_blank(),
+  plot.title = element_blank(),
+  legend.position = c(.75, .6)
+) + scale_x_discrete(
+  # position = "top",
+    limits = c(
+      "Day",
+      "PP",
+      "G",
+      "R",
+      "TA",
+      "T_D",
+      "SA_B",
+      "SA_E",
+      "N_MD",
+      "N_PD",
+      "N_TD",    
+      "N_P",
+      "N_E",
+      "N_F",     
+      "RW",
+      "SA",
+      "SP",
+      "I",
+      "tOut",   
+      "fOut",
+      "Hap",
+      "Sad",
+      "Neg"
+    ),
+    labels = modified_ticks
+  ) + scale_y_discrete(
+    limits = c(
+      "Neg",
+      "Sad",
+      "Hap",
+      "fOut",
+      "I",
+      "SP",
+      "SA",
+      "RW",
+      "N_F",
+      "N_E",
+      "N_P",
+      "N_TD",
+      "N_PD",
+      "N_MD",
+      "SA_E",
+      "SA_B",
+      "T_D",
+      "TA",
+      "R",
+      "G",
+      "PP",
+      "Day"
+      
+    ),
+    labels = modified_ticks
+  ) + geom_rect(mapping=aes(xmin=17.5, xmax=18.5, ymin=2.5, ymax=3.5), color="black", fill=NA) +
+  geom_rect(mapping=aes(xmin=10.5, xmax=11.5, ymin=9.5, ymax=10.5), color="black", fill=NA) +
+  geom_rect(mapping=aes(xmin=8.5, xmax=9.5, ymin=11.5, ymax=12.5), color="black", fill=NA) +
+  geom_rect(mapping=aes(xmin=8.5, xmax=9.5, ymin=9.5, ymax=10.5), color="black", fill=NA) +
+  geom_rect(mapping=aes(xmin=7.5, xmax=8.5, ymin=8.5, ymax=9.5), color="black", fill=NA) 
+
+
+corplt_diagonal
+
+filename <- "Correlation_plot.pdf"
+full_path <- file.path(plot_dir, filename)
+ggsave(
+  full_path,
+  corplt_diagonal,
+  width = 8.5,
+  height = 5.5,
+  units = "in"
+)
+```
+
+
+```{r, echo=FALSE, warning=FALSE}
+Scaled_Data = tmpD0 [,c("Day", "G", "R", "PP", "TA" , "T_D" , "SA_B" , "SA_E" , "N_MD" , "N_PD" , "N_P" , "RW" , "SA" , "SP" , "I" , "tOut" , "fOut" , "Sad" , "Neg" , "Neu")]
+Scaled_Data = Scaled_Data %>% mutate_at(c(4,20), funs(c(scale(.))))
+
+Scaled_Data$Day = as.factor(Scaled_Data$Day)
+Scaled_Data$G = as.factor(Scaled_Data$G)
+Scaled_Data$R = as.factor(Scaled_Data$R)
+```
+\newpage
+## Null Model
+```{r, echo=FALSE, warning=FALSE}
+NullModel <- lmer(PP ~ 1 + (1 | P_ID), data = Scaled_Data)
+summary(NullModel)
+```
+\newpage
+## Full Model
+```{r, echo=FALSE, warning=FALSE}
+
+FullModel <-
+  lmer(
+    PP ~ 1 + Day + G + R + TA + T_D + SA_B + SA_E + N_MD + N_PD + N_P + RW + SA + SP +
+      I + tOut + fOut + Sad + Neg + Neu + (1 | P_ID),
+    data = tmpD0
+  )
+summary(FullModel)
+```
+
+
+
+
+
+\newpage
+## Get Final Model
+
+```{r, echo=FALSE, warning=FALSE}
+step_fm <- step(FullModel)
+step_fm
+
+final_fm <- get_model(step_fm)
+final_fm
+```
+\newpage
+## Final Model(Backward)
+```{r, echo=FALSE, warning=FALSE}
+FM = lmer( PP ~ 1 + RW + SP + fOut + (1|P_ID), data = tmpD0)
+summary(FM)
+```
+
+
+
+\newpage
+## AIC values of Full vs Final_model
+```{r, echo=FALSE, warning=FALSE}
+AIC(FullModel, FM)
+```
+
+
+<!-- \newpage -->
+<!-- ```{r, echo=FALSE} -->
+<!-- plot_model(FM, "eff",sort=TRUE, show.values = TRUE, value.offset = .3,xlab="") -->
+<!-- ``` -->
+
+
+\newpage
+```{r, echo=FALSE, warning=FALSE}
+random_effect = plot_model(FM,
+           type = "re",
+           show.values = TRUE, value.offset = .3) +
+  theme_bw() +
+  theme(
+    axis.text.x = element_text(size = 10, face = "bold"),
+    axis.text.y = element_text(size = 10, face = "bold"),
+    plot.title = element_blank()
+  ) + scale_x_discrete(
+    limits = c(
+      "P001",
+      "P003",
+      "P005",
+      "P007",
+      "P009",
+      "P011",
+      "P013",
+      "P015",
+      "P017",
+      "P019"
+    ),
+    labels = c(
+      "P01",
+      "P03",
+      "P05",
+      "P07",
+      "P09",
+      "P11",
+      "P13",
+      "P15",
+      "P17",
+      "P19"
+    )
+  )
+  
+random_effect 
+
+filename <- "Figure6.pdf"
+full_path <- file.path(plot_dir, filename)
+ggsave(
+  full_path,
+  random_effect,
+  width = 8.5,
+  height = 5.5,
+  units = "in"
+)
+
+
+
+```
+
+```{r,echo=FALSE, warning=FALSE}
+library(cowplot)
+levels = c("A", "B", "C")
+num = c(5, 10, 15)
+ymin = c(0, 0, 0)
+ymax = c(1, 2, 3)
+
+Legend_DF = data.frame(levels, num, ymin, ymax)
+
+
+
+plot <- ggplot(Legend_DF, aes(x = levels, y = num, colour = levels)) +
+  geom_errorbar(aes(ymin = ymin, ymax = ymax), size = 1.1) +
+  theme_bw() +
+  theme(
+    panel.grid = element_blank(),
+    axis.text.x = element_text(face = "bold", size = 10),
+    legend.position = "bottom",
+    legend.direction = "horizontal",
+    legend.title = element_blank(),
+    legend.key.width = unit(2, 'cm'),
+    legend.text = element_text(size = 20)
+  ) +
+  theme(axis.ticks.y = element_blank(),
+        axis.ticks.x = element_blank()) +
+  scale_color_manual(
+    values = c("#4CAEE3", "#ee9a00", "red"),
+    breaks = c("A", "B", "C"),
+    labels = c("*     ", "**     ", "***")
+  ) 
+# print(plot)
+
+legend = get_legend(plot)
+```
+
+## Model Plot
+\newpage
+```{r, echo=FALSE, warning=FALSE}
+orange = "#ee9a00"
+blue = "#4CAEE3"
+
+plot1 = plot_model(FM, type = "pred", terms = "RW") + 
+  aes(color = "RW") +
+  scale_color_manual(values = orange) +
+    geom_vline(
+    xintercept = mean(tmpD0$RW),
+    linetype = "dashed",
+    color = "gray",
+    size = 1
+  ) +
+  theme_bw() + 
+  theme(panel.grid = element_blank(),
+        plot.title = element_blank(),
+        axis.text.x = element_text(size = 10, face = "bold"),
+        axis.text.y = element_text(size = 10, face = "bold"),
+        legend.position = "none"
+        )+
+  labs(y = expression(bar(Delta*bold(ln*bolditalic(PP)))), x = expression(italic(T[RW])~paste('[ % ]')))
+
+
+plot2 =  plot_model(FM, type = "pred", terms = "SP") + 
+  aes(color = "SP") +
+  scale_color_manual(values = blue) +
+      geom_vline(
+    xintercept = mean(tmpD0$SP),
+    linetype = "dashed",
+    color = "gray",
+    size = 1
+  ) +
+  theme_bw() + 
+  theme(panel.grid = element_blank(),
+        axis.title.y = element_blank(),
+        plot.title = element_blank(),
+        axis.text.x = element_text(size = 10, face = "bold"),
+        axis.text.y = element_text(size = 10, face = "bold"),
+        legend.position = "none"
+        )+
+  labs( x = expression(italic(T[SP])~paste('[ % ]')))
+
+
+
+plot3 = plot_model(FM, type = "pred")$fOut + 
+  aes(color = "fOut") +
+    scale_color_manual(values = blue) +
+    geom_vline(
+    xintercept = mean(tmpD0$fOut),
+    linetype = "dashed",
+    color = "gray",
+    size = 1
+  ) +
+  scale_color_manual(values = "red") +
+  theme_bw() + 
+  theme(panel.grid = element_blank(),
+        axis.title.y = element_blank(),
+        plot.title = element_blank(),
+        axis.text.x = element_text(size = 10, face = "bold"),
+        axis.text.y = element_text(size = 10, face = "bold"),
+        legend.position = "none"
+        )+
+  labs( x = expression(italic(f[out])~paste('[breaks/hour]')))
+
+
+modle_plots = ggarrange(plot1, plot2, plot3, nrow = 1)
+
+final_plot = plot_grid(modle_plots, legend, nrow =2, rel_heights = c(.9,.1))
+final_plot
+
+filename <- "Figure5.pdf"
+full_path <- file.path(plot_dir, filename)
+ggsave(
+  full_path,
+  final_plot,
+  width = 8.5,
+  height = 4.5,
+  units = "in"
+)
+```
+
+<!-- \newpage -->
+<!-- ## NASA Model -->
+<!-- ```{r, echo=FALSE} -->
+<!-- file_name = 'State_Daily.csv' -->
+<!-- State_Data <-read.csv(file.path(curated_data_dir_Q, file_name), stringsAsFactors = FALSE) -->
+
+<!-- State_Data$Participant_ID = NULL -->
+
+<!-- # State_Data = melt(State_Data) -->
+<!-- colnames(State_Data) -->
+
+<!-- NASA_DATA = State_Data[, c(1, 6)] -->
+<!-- NASA_DATA$P_ID = P_ID -->
+
+<!-- NASA_DATA$Day <- relevel(factor(NASA_DATA$Day), ref = "Day1") -->
+<!-- NASA_DATA$N_P = NASA_DATA$N_P -->
+<!-- NASA_DATA$PP = tmpD0$PP -->
+<!-- NASA_DATA$PP = NASA_DATA$PP -->
+<!-- NASA_DATA$TA = tmpD0$TA -->
+<!-- NASA_DATA$R = as.factor(tmpD0$R) -->
+
+<!-- ``` -->
+
+<!-- ```{r, echo=FALSE} -->
+<!-- NASA_model = lmer(N_E ~ Day +  (1|P_ID) , data = NASA_DATA) -->
+<!-- summary(NASA_model) -->
+<!-- ``` -->
+
+<!-- ```{r, echo=FALSE} -->
+
+<!-- NASA_DATA = NASA_DATA %>% mutate(Deadline = dplyr::recode(Day, "Day1" = "BD", "Day2" = "BD", "Day3" = "AD", "Day4" = "AD")) -->
+
+<!-- Grouped_NASA = NASA_DATA %>% group_by(Deadline, P_ID) %>% summarise(N_P_Mean = mean(N_P)) -->
+<!-- ``` -->
+
+<!-- ```{r, echo=FALSE} -->
+<!-- Grouped_NASA$Deadline <- relevel(factor(Grouped_NASA$Deadline), ref = "BD") -->
+<!-- NASA_model = lmer(N_P_Mean ~ Deadline + (1|P_ID), data = Grouped_NASA) -->
+<!-- summary(NASA_model) -->
+<!-- ``` -->
+
