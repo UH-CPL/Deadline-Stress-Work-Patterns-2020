@@ -34,9 +34,9 @@ Packages are available on CRAN and can be installed using a simple call to `inst
 	
 **Validation Scripts (vs)**
 
-- vs-supplementary-activity-signal.Rmd
+- vs-supplementary-activity-signal.rmd
     - Generates plots for activity and app usage
-- vs-descriptive-plots.R
+- vs-descriptive-plots.rmd
     - Produces the exploratory data visualization
 - vs-model-visualization.rmd
     - Checks collinearity and performs linear modeling and Visualizes the significant predictors of the model
