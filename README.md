@@ -36,10 +36,10 @@ Packages are available on CRAN and can be installed using a simple call to `inst
 
 - vs-supplementary-activity-signal.Rmd
     - Generates plots for activity and app usage
-- vs-modeling-sanalysis.R
-    - Checks collinearity and performs linear modeling
-- vs-final-model-visualization.rmd
-    - Visualizes the significant predictors of the model
+- vs-descriptive-plots.R
+    - Produces the exploratory data visualization
+- vs-model-visualization.rmd
+    - Checks collinearity and performs linear modeling and Visualizes the significant predictors of the model
 
 
 
