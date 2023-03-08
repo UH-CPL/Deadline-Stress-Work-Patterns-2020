@@ -261,8 +261,8 @@ random_effect = plot_model(FM,
            show.values = TRUE, value.offset = .3) +
   theme_bw() +
   theme(
-    axis.text.x = element_text(size = 10, face = "bold"),
-    axis.text.y = element_text(size = 10, face = "bold"),
+    axis.text.x = element_text(size = 14, face = "bold"),
+    axis.text.y = element_text(size = 14, face = "bold"),
     plot.title = element_blank()
   ) + scale_x_discrete(
     limits = c(
@@ -345,6 +345,8 @@ legend = get_legend(plot)
 ## Model Plot
 \newpage
 ```{r, echo=FALSE, warning=FALSE}
+library(latex2exp)
+
 orange = "#ee9a00"
 blue = "#4CAEE3"
 
@@ -387,6 +389,7 @@ plot2 =  plot_model(FM, type = "pred", terms = "SP") +
   labs( x = expression(italic(T[SP])~paste('[ % ]')))
 
 
+library(knitr)
 
 plot3 = plot_model(FM, type = "pred")$fOut + 
   aes(color = "fOut") +
@@ -406,7 +409,8 @@ plot3 = plot_model(FM, type = "pred")$fOut +
         axis.text.y = element_text(size = 10, face = "bold"),
         legend.position = "none"
         )+
-  labs( x = expression(italic(f[out])~paste('[breaks/hour]')))
+  labs( x = expression(italic(f[out])~ paste('[ breaks / hour ]')) , parse = TRUE)
+  # labs( x = expression(italic(f[out])~paste('[ breaks / hour ]')))
 
 
 modle_plots = ggarrange(plot1, plot2, plot3, nrow = 1)
@@ -423,7 +427,16 @@ ggsave(
   height = 4.5,
   units = "in"
 )
+
 ```
+
+
+```{r, echo=FALSE}
+g <- ggplot(data=data.frame(x=0,y=0))+geom_point(aes(x=x,y=y))
+g+ xlab( expression(paste("Value is ", sigma,",", R^{2},'=0.6'))) + 
+  annotate('text', x = 0, y = 0, label = expression(italic(f[out])~ paste('[ breaks / hour ]')) , parse = TRUE)
+```
+
 
 <!-- \newpage -->
 <!-- ## NASA Model -->
