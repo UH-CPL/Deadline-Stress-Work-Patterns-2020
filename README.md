@@ -17,7 +17,6 @@ Packages are available on CRAN and can be installed using a simple call to `inst
 	
 ## Script Set
 ##### Please run the following scripts sequentially
-**Data Curation (dc) & Modeling Scripts (ms)** 
 
 The **Data Curation (dc)** scrips will process the raw data and create the model data. The **Modeling Scripts (ms)** will perform the multy linear regression and produce the visualizations.
 
@@ -38,7 +37,7 @@ The **Data Curation (dc)** scrips will process the raw data and create the model
 
 ##### Note: Please do not run any script after this
 -------------------------------------------------------------------------------------------------------------
-**Utility Scripts (us)**
+**Details of Utility Scripts (us)**
 
 The **Utility Scripts (us)** are used to define the common functions like read-write files, and are being called from the **Data Curation (dc)** scripts.  
 
@@ -50,7 +49,7 @@ The **Utility Scripts (us)** are used to define the common functions like read-w
 	    - Downsamples data to 1 fps. It is called from 1.dc-curate-and-process-data.
 	    
 	    
-**Data Curation (dc) and Modeling Scripts (ms)**
+**Details of Data Curation (dc) & Modeling Scripts (ms)**
 
 	- 1.dc-curate-and-process-data.R
 	    - For each participant the script does the following:
