@@ -30,8 +30,8 @@ Packages are available on CRAN and can be installed using a simple call to `inst
     	- 6.dc-merge-all-data.R
     	- 7.dc-generate-meta-data-break-activity.R
     	- 8.dc-generate-model-data.R
-	- vs-descriptive.rmd
-	- vs-model-visualization.rmd
+    	- vs-descriptive.rmd
+    	- vs-model-visualization.rmd
 	
 **Validation Scripts (vs)**
 - vs-descriptive.rmd
