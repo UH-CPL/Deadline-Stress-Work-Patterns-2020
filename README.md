@@ -1,6 +1,6 @@
-# Computer-centered deadline behaviors and stress patterns
+# Sympathetic Activation in Deadlines
 This repository contains the R scripts to curate, ensure quality control, normalize, and generate final model data from the raw data collected
-via the S-Interface and other tools in the "Deadline Stress and Work Patterns - 2020" project.
+via the S-Interface and other tools in the paper **Sympathetic Activation in Deadlines of Deskbound Research - A Study in the Wild**, publushed in CHI 23.
 
 
 ## Getting Started
@@ -17,7 +17,9 @@ Packages are available on CRAN and can be installed using a simple call to `inst
 	
 ## Script Set
 ##### Please run the following scripts sequentially
-**Data Curation (dc)** 
+**Data Curation (dc) & Modeling Scripts (ms)** 
+
+The **Data Curation (dc)** scrips will process the raw data and create the model data. The **Modeling Scripts (ms)** will perform the multy linear regression and produce the visualizations.
 
 - 0.dc-all-script.R
     - The only script to run to curate, control the quality, transform and get the final data for modeling. 
@@ -30,20 +32,15 @@ Packages are available on CRAN and can be installed using a simple call to `inst
     	- 6.dc-merge-all-data.R
     	- 7.dc-generate-meta-data-break-activity.R
     	- 8.dc-generate-model-data.R
-    	- vs-descriptive.rmd
-    	- vs-model-visualization.rmd
-	
-**Validation Scripts (vs)**
-- vs-descriptive.rmd
-    - Produces the exploratory data visualization
-- vs-model-visualization.rmd
-    - Checks collinearity and performs linear modeling and Visualizes the significant predictors of the model
-
+    	- ms-descriptive.rmd
+    	- ms-model-visualization.rmd
 
 
 ##### Note: Please do not run any script after this
 -------------------------------------------------------------------------------------------------------------
 **Utility Scripts (us)**
+
+The **Utility Scripts (us)** are used to define the common functions like read-write files, and are being called from the **Data Curation (dc)** scripts.  
 
 	- us-common-functions.R
 	    - Useful functions that are called from almost all scripts.
@@ -53,7 +50,7 @@ Packages are available on CRAN and can be installed using a simple call to `inst
 	    - Downsamples data to 1 fps. It is called from 1.dc-curate-and-process-data.
 	    
 	    
-**Data Curation (dc)**
+**Data Curation (dc) and Modeling Scripts (ms)**
 
 	- 1.dc-curate-and-process-data.R
 	    - For each participant the script does the following:
@@ -81,3 +78,9 @@ Packages are available on CRAN and can be installed using a simple call to `inst
 	
 	- 8.dc-generate-model-data.R
 	    - Generates the working session mean data to perform the linear modeling
+	
+	- ms-descriptive.rmd
+	    - Produces the exploratory data visualization
+	
+	- ms-model-visualization.rmd
+	    - Checks collinearity and performs linear modeling and Visualizes the significant predictors of the model
