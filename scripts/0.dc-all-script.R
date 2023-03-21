@@ -7,7 +7,7 @@ setwd(project_dir)
 
 source(file.path(script_dir, 'us-common-functions.R'))
 
-
+library(plyr)
 
 
 ##########################################################
@@ -65,54 +65,46 @@ smooth_pp_signals <- F # Oiii....REMEMBER TO COMMENT OUT - Raw_Noisy_PP in scrip
 
 
 # #-------------------------------------------------------------------------------------------- 2
-# source(file.path(script_dir, '2.dc-process-activity-app-usage-data.R'))
-# format_activity_app_usage_data()
-# 
-# 
-# #-------------------------------------------------------------------------------------------- 3
-# source(file.path(script_dir, '3.dc-quality-control-phase-one.R'))
-# process_quality_control_phase_one()
-# 
-# 
-#-------------------------------------------------------------------------------------------- 4
+source(file.path(script_dir, '2.dc-process-activity-app-usage-data.R'))
+format_activity_app_usage_data()
+# # 
+# # 
+# # #-------------------------------------------------------------------------------------------- 3
+source(file.path(script_dir, '3.dc-quality-control-phase-one.R'))
+process_quality_control_phase_one()
+# # 
+# # 
+# #-------------------------------------------------------------------------------------------- 4
 source(file.path(script_dir, '4.dc-generate-transformed-data.R'))
 transform_data()
-
-
-#-------------------------------------------------------------------------------------------- 5
+# 
+# 
+# #-------------------------------------------------------------------------------------------- 5
 source(file.path(script_dir, '5.dc-generate-normalized-data.R'))
 normalize_data()
-# 
-# 
-# # ------------------------------------------------------------------------------------------- 6
-# source(file.path(script_dir, '6.dc-merge-all-data.R'))
-# merge_all_data()
-# 
-# 
-# #-------------------------------------------------------------------------------------------- 7
-# source(file.path(script_dir, '7.dc-generate-meta-data-break-activity.R'))
-# ### investigate_data()
-# generate_segment_df()
-# generate_segment_meta_data()
-# generate_multi_level_segment_meta_data()
-# 
-# 
-# # ------------------------------------------------------------------------------------------- 8
-# source(file.path(script_dir, '8.dc-generate-model-data.R'))
-# generate_daywise_model_data()
+# # 
+# # 
+# # # ------------------------------------------------------------------------------------------- 6
+source(file.path(script_dir, '6.dc-merge-all-data.R'))
+merge_all_data()
+# # 
+# # 
+# # #-------------------------------------------------------------------------------------------- 7
+source(file.path(script_dir, '7.dc-generate-meta-data-break-activity.R'))
+investigate_data()
+generate_segment_df()
+generate_segment_meta_data()
+generate_multi_level_segment_meta_data()
+# # 
+# # 
+# # # ------------------------------------------------------------------------------------------- 8
+source(file.path(script_dir, '8.dc-generate-model-data.R'))
+generate_daywise_model_data()
 
 
 
-
-
-
-
-
-
-
-
-
-
+rmarkdown::render(file.path(script_dir, 'vs-descriptive.rmd'), "pdf_document")
+rmarkdown::render(file.path(script_dir, 'vs-model-visualization.rmd'), "pdf_document")
 
 #-------------------------------------------------------------------------------------------- 10.1
 # source(file.path(script_dir, 'vs-regression-plot.R'))
@@ -154,13 +146,13 @@ normalize_data()
 
 
 #-------------------------------------------------------------------------------------------- 20.1
-# source(file.path(script_dir, 7.dc-process-rr-data.R'))
+# source(file.path(script_dir, '7.dc-process-rr-data.R'))
 # gather_rr_data()
 # qc1_clean_rr_data()
 
 ### Remember after QC2, Based on the bad HR data from E4, RR should be removed also
 ### Check multi-modal-email-study/vs-validation-plot-hrv/clean_invalid_rr() method
-# remove_bad_sensor_rr_data()  
+# remove_bad_sensor_rr_data()
 
 
 
