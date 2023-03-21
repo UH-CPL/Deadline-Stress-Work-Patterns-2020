@@ -103,8 +103,8 @@ generate_daywise_model_data()
 
 
 
-rmarkdown::render(file.path(script_dir, 'vs-descriptive.rmd'), "pdf_document")
-rmarkdown::render(file.path(script_dir, 'vs-model-visualization.rmd'), "pdf_document")
+rmarkdown::render(file.path(script_dir, 'ms-descriptive.rmd'), "pdf_document")
+rmarkdown::render(file.path(script_dir, 'ms-model-visualization.rmd'), "pdf_document")
 
 #-------------------------------------------------------------------------------------------- 10.1
 # source(file.path(script_dir, 'vs-regression-plot.R'))
