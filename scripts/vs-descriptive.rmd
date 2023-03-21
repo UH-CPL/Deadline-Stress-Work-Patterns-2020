@@ -17,7 +17,7 @@ library(cowplot)
 ```{r, echo=FALSE}
 root_dir <- getwd()
 project_directory<-dirname(root_dir)
-curated_data_dir <- file.path(project_directory, 'curated-data')
+curated_data_dir <- file.path(project_directory, 'curated-data/final-data')
 plot_dir <- file.path(project_directory, 'plots')
 script_dir<- file.path(project_directory, 'scripts')
 log_dir <- file.path(project_directory, 'log-files')
@@ -50,19 +50,17 @@ colnames(Facial_Data_final) = c("Day", "PP", "F_Pos", "F_Sad", "F_Neutral", "F_N
 PP_Data = Facial_Data_final[, c(1,2)]
 PP_Data = melt(PP_Data)
 
-PP_Data = PP_Data %>% mutate(Day = dplyr::recode(Day, "Day1" = "Day 1", "Day2" = "Day 2",  "Day3" = "Day 3", "Day4" = "Day 4"))
-
 
 PP = ggplot(data = PP_Data, aes(x = variable, y = value)) +
   geom_boxplot() +
   theme_bw() +
   theme(
     panel.grid = element_blank(),
-    axis.text.y = element_text(size = 12, face = "bold"),
-    axis.text.x = element_text(size = 12, face = "bold"),
+    axis.text.y = element_text(size = 10, face = "bold"),
+    axis.text.x = element_text(size = 10, face = "bold"),
     axis.title.x = element_blank(),
     axis.title.y = element_blank(),
-    strip.text.x = element_text(size = 12, face = "bold")
+    strip.text.x = element_text(size = 10, face = "bold")
   ) + facet_grid(cols = vars(Day)) + scale_x_discrete(limits = c("PP"),labels = expression(bar(Delta*bold(ln*bolditalic(PP)))))
 
 
@@ -73,8 +71,7 @@ PP_colored <- ggplot_gtable(ggplot_build(PP))
 
 strips <- which(grepl('strip-', PP_colored$layout$name))
 
-# pal <- c("salmon", "salmon", "limegreen", "limegreen")
-pal <- c("salmon", "salmon", "seagreen3", "seagreen3")
+pal <- c("brown1", "brown1", "limegreen", "limegreen")
 
 
 for (i in seq_along(strips)) {
@@ -100,8 +97,8 @@ valence = ggplot(data = Facial_Data_final, aes(x = variable, y = value)) +
   theme_bw() +
   theme(
     panel.grid = element_blank(),
-    axis.text.y = element_text(size = 12, face = "bold"),
-    axis.text.x = element_text(size = 12, face = "bold"),
+    axis.text.y = element_text(size = 10, face = "bold"),
+    axis.text.x = element_text(size = 10, face = "bold"),
     axis.title.x = element_blank(),
     axis.title.y = element_blank(),
     strip.text.x = element_blank()
@@ -114,7 +111,7 @@ valence = ggplot(data = Facial_Data_final, aes(x = variable, y = value)) +
 
 
 
-figure3 = plot_grid(PP_colored, valence, nrow = 2, labels = c('a', 'b'),  scale = c(.90, .90), label_size = 20)
+figure3 = plot_grid(PP_colored, valence, nrow = 2, labels = c('a', 'b'),  scale = c(.95, .95))
 figure3
 
 
@@ -149,8 +146,8 @@ Activity_Plot = ggplot(data = Activity_Data, aes(x = variable, y = value)) +
   theme_bw() +
   theme(
     panel.grid = element_blank(),
-    axis.text.y = element_text(size = 12, face = "bold"),
-    axis.text.x = element_text(size = 12, face = "bold"),
+    axis.text.y = element_text(size = 10, face = "bold"),
+    axis.text.x = element_text(size = 10, face = "bold"),
     axis.title.x = element_blank(),
     axis.title.y = element_blank(),
     plot.title = element_blank(),
@@ -181,8 +178,8 @@ Out_plot = ggplot(data = Out_Data, aes(x = variable, y = value)) +
   theme_bw() +
   theme(
     panel.grid = element_blank(),
-    axis.text.y = element_text(size = 12, face = "bold"),
-    axis.text.x = element_text(size = 12, face = "bold"),
+    axis.text.y = element_text(size = 10, face = "bold"),
+    axis.text.x = element_text(size = 10, face = "bold"),
     axis.title.x = element_blank(),
     axis.title.y = element_blank(),
     plot.title = element_blank(),
@@ -222,8 +219,8 @@ BFI_Plot = ggplot(data = BFI_Data, aes(x = variable, y = value)) +
   theme_bw() +
   theme(
     panel.grid = element_blank(),
-    axis.text.y = element_text(size = 12, face = "bold"),
-    axis.text.x = element_text(size = 12, face = "bold"),
+    axis.text.y = element_text(size = 10, face = "bold"),
+    axis.text.x = element_text(size = 10, face = "bold"),
     axis.title.x = element_blank(),
     axis.title.y = element_blank()
   ) + scale_x_discrete(limits = c("B5_A",
@@ -240,8 +237,8 @@ Trait_plot = ggplot(data = TA_Data, aes(x = variable, y = value)) +
   theme_bw() +
   theme(
     panel.grid = element_blank(),
-    axis.text.y = element_text(size = 12, face = "bold"),
-    axis.text.x = element_text(size = 12, face = "bold"),
+    axis.text.y = element_text(size = 10, face = "bold"),
+    axis.text.x = element_text(size = 10, face = "bold"),
     axis.title.x = element_blank(),
     axis.title.y = element_blank()
   ) + scale_x_discrete(limits = c("TA"),
@@ -276,11 +273,8 @@ State_Data$Participant_ID = NULL
 
 NASA_DATA = State_Data[, c(1:7)]
 NASA_DATA = melt(NASA_DATA)
-NASA_DATA = NASA_DATA %>% mutate(Day = dplyr::recode(Day, "Day1" = "Day 1", "Day2" = "Day 2",  "Day3" = "Day 3", "Day4" = "Day 4"))
-
 State_Data = State_Data[, c(1, 8:9)]
 State_Data = melt(State_Data)
-State_Data = State_Data %>% mutate(Day = dplyr::recode(Day, "Day1" = "Day 1", "Day2" = "Day 2",  "Day3" = "Day 3", "Day4" = "Day 4"))
 ```
 
 
@@ -304,8 +298,8 @@ NASA_Plots = ggplot(data = NASA_DATA,  aes(x = variable, y = value)) +
   theme_bw() +
   theme(
     panel.grid = element_blank(),
-    axis.text.y = element_text(size = 12, face = "bold"),
-    axis.text.x = element_text(size = 12, face = "bold"),
+    axis.text.y = element_text(size = 10, face = "bold"),
+    axis.text.x = element_text(size = 10, face = "bold"),
     axis.title.x = element_blank(),
     axis.title.y = element_blank()
   ) + scale_x_discrete(limits = c("N_MD",
@@ -325,11 +319,11 @@ SA_PLot = ggplot(data = State_Data,  aes(x = variable, y = value)) +
   theme_bw() +
   theme(
     panel.grid = element_blank(),
-    axis.text.y = element_text(size = 12, face = "bold"),
-    axis.text.x = element_text(size = 12, face = "bold"),
+    axis.text.y = element_text(size = 10, face = "bold"),
+    axis.text.x = element_text(size = 10, face = "bold"),
     axis.title.x = element_blank(),
     axis.title.y = element_blank(),
-    strip.text.y = element_text(size = 12, face = "bold")
+    strip.text.y = element_text(size = 10, face = "bold")
   ) + facet_grid(rows = vars(Day)) + 
   scale_x_discrete(limits = c("SA_B", "SA_E"), labels = modified_ticks)
 
@@ -338,8 +332,7 @@ SA_PLot = ggplot(data = State_Data,  aes(x = variable, y = value)) +
 g <- ggplot_gtable(ggplot_build(SA_PLot)) 
 
 strips <- which(grepl('strip-', g$layout$name))
-# pal <- c("brown1", "brown1", "limegreen", "limegreen")
-pal <- c("salmon", "salmon", "seagreen3", "seagreen3")
+pal <- c("brown1", "brown1", "limegreen", "limegreen")
 
 
 for (i in seq_along(strips)) {
@@ -372,7 +365,7 @@ for (i in seq_along(strips)) {
 
 ```{r, echo=FALSE}
 
-final_plot = plot_grid(Activity_Plot, Out_plot, NASA_Plots, g, labels = c('a', 'b', 'c', 'd'), nrow = 1,  scale = c(.90, .90, .90, .90), rel_widths = c(2, 1, 2.5, 1.5), label_size = 20)
+final_plot = plot_grid(Activity_Plot, Out_plot, NASA_Plots, g, labels = c('a', 'b', 'c', 'd'), nrow = 1,  scale = c(.95, .95, .95, .95), rel_widths = c(2, 1, 2.5, 1.5))
 final_plot
 
 filename = 'Figure4.pdf'

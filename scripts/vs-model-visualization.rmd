@@ -27,7 +27,7 @@ library(cowplot)
 ```{r, echo=FALSE}
 root_dir <- getwd()
 project_directory<-dirname(root_dir)
-curated_data_dir <- file.path(project_directory, 'curated-data')
+curated_data_dir <- file.path(project_directory, 'curated-data/final-data')
 plot_dir <- file.path(project_directory, 'plots')
 script_dir<- file.path(project_directory, 'scripts')
 log_dir <- file.path(project_directory, 'log-files')
