@@ -30,9 +30,11 @@ Packages are available on CRAN and can be installed using a simple call to `inst
     	- 6.dc-merge-all-data.R
     	- 7.dc-generate-meta-data-break-activity.R
     	- 8.dc-generate-model-data.R
+	- vs-descriptive.rmd
+	- vs-model-visualization.rmd
 	
 **Validation Scripts (vs)**
-- vs-descriptive-plots.rmd
+- vs-descriptive.rmd
     - Produces the exploratory data visualization
 - vs-model-visualization.rmd
     - Checks collinearity and performs linear modeling and Visualizes the significant predictors of the model
