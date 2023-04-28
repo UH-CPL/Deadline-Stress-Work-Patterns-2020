@@ -116,7 +116,7 @@ figure3
 
 
 
-filename = 'Figure3.pdf'
+filename = 'Figure2.pdf'
 
 full_path <- file.path(plot_dir, filename)
 ggsave(
@@ -368,7 +368,7 @@ for (i in seq_along(strips)) {
 final_plot = plot_grid(Activity_Plot, Out_plot, NASA_Plots, g, labels = c('a', 'b', 'c', 'd'), nrow = 1,  scale = c(.95, .95, .95, .95), rel_widths = c(2, 1, 2.5, 1.5))
 final_plot
 
-filename = 'Figure4.pdf'
+filename = 'Figure3.pdf'
 
 full_path <- file.path(plot_dir, filename)
 ggsave(
