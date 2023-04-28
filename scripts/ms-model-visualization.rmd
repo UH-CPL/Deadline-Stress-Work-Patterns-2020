@@ -293,7 +293,7 @@ random_effect = plot_model(FM,
   
 random_effect 
 
-filename <- "Figure6.pdf"
+filename <- "Figure4a.pdf"
 full_path <- file.path(plot_dir, filename)
 ggsave(
   full_path,
@@ -418,7 +418,7 @@ modle_plots = ggarrange(plot1, plot2, plot3, nrow = 1)
 final_plot = plot_grid(modle_plots, legend, nrow =2, rel_heights = c(.9,.1))
 final_plot
 
-filename <- "Figure5.pdf"
+filename <- "Figure4b.pdf"
 full_path <- file.path(plot_dir, filename)
 ggsave(
   full_path,
