@@ -1,6 +1,6 @@
 # Sympathetic Activation in Deadlines
 This repository contains the R scripts to curate, ensure quality control, normalize, and generate final model results from the raw data collected
-via the S-Interface and other tools in the context of a naturalistic study on deadlines. The study appeared in the paper **Sympathetic Activation in Deadlines of Deskbound Research - A Study in the Wild**, published in CHI 23.
+via the S-Interface and other tools in the context of a naturalistic study on deadlines. The study was funded by NSF (grant #1704682) and appeared in the paper **Sympathetic Activation in Deadlines of Deskbound Research - A Study in the Wild**, published in CHI 2023.
 
 
 ## Getting Started
